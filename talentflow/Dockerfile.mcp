@@ -1,0 +1,7 @@
+FROM node:20-alpine
+WORKDIR /app
+COPY mcp-bridge/package*.json ./
+RUN npm install
+COPY mcp-bridge/ .
+EXPOSE 3001
+CMD ["node", "server.js"]
