@@ -8,12 +8,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter
+} from "@/components/ui/dialog";
+import { 
     ArrowLeft, MapPin, Briefcase, GraduationCap, 
     Calendar, Mail, Phone, History, Sparkles, 
-    ExternalLink, PlusCircle, ClipboardList 
+    ExternalLink, PlusCircle, ClipboardList, Loader2, Copy, Check
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -52,11 +62,19 @@ export default function CandidateProfilePage() {
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(true);
   const [applications, setApplications] = useState<any[]>([]);
+  
+  // Scheduling States
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleResult, setScheduleResult] = useState<any>(null);
+  const [activeJobs, setActiveJobs] = useState<any[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState<string>("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (id) {
       fetchCandidate();
       fetchApplications();
+      fetchJobs();
     }
   }, [id]);
 
@@ -81,13 +99,60 @@ export default function CandidateProfilePage() {
     try {
        const { data, error } = await supabase
          .from("applications")
-         .select(`*, jobs (title, status)`)
+         .select(`*, jobs (id, title, status)`)
          .eq("candidate_id", id);
        
-       if (!error) setApplications(data || []);
+       if (!error) {
+           setApplications(data || []);
+           if (data && data.length > 0) setSelectedJobId(data[0].job_id);
+       }
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const fetchJobs = async () => {
+      const { data } = await supabase.from("jobs").select("id, title").eq("status", "open");
+      setActiveJobs(data || []);
+      if (data && data.length > 0 && !selectedJobId) setSelectedJobId(data[0].id);
+  };
+
+  const handleSchedule = async () => {
+    if (!selectedJobId) {
+        toast.error("Please select a job to schedule for.");
+        return;
+    }
+
+    setScheduling(true);
+    try {
+        const response = await fetch("/api/schedule", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                candidate_id: id,
+                job_id: selectedJobId
+            })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            setScheduleResult(data);
+            toast.success("Interview scheduled and Meet link generated!");
+        } else {
+            throw new Error(data.error || "Scheduling failed");
+        }
+    } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Failed to schedule");
+    } finally {
+        setScheduling(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast.success("Copied to clipboard!");
   };
 
   const getSourceColor = (source: string) => {
@@ -147,14 +212,100 @@ export default function CandidateProfilePage() {
             </div>
             
             <div className="flex gap-2">
-                <button className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-900/40 flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    Interview
-                </button>
-                <button className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all border border-white/5 flex items-center gap-2">
+                <Dialog>
+                    <DialogTrigger render={
+                        <Button className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-900/40 flex items-center gap-2 h-auto">
+                            <Calendar className="h-4 w-4" />
+                            Interview
+                        </Button>
+                    } />
+                    <DialogContent className="bg-slate-950 border-white/10 text-white max-w-2xl">
+                        <DialogHeader>
+                            <DialogTitle className="text-2xl font-black flex items-center gap-2">
+                                <Sparkles className="h-6 w-6 text-purple-400" />
+                                AI Interview Scheduler
+                            </DialogTitle>
+                            <DialogDescription className="text-slate-400">
+                                This will create a Google Calendar event and generate a Google Meet link.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        {!scheduleResult ? (
+                            <div className="space-y-6 py-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Select Job Post</label>
+                                    <select 
+                                        value={selectedJobId} 
+                                        onChange={(e) => setSelectedJobId(e.target.value)}
+                                        className="w-full bg-slate-900 border border-white/5 rounded-xl p-3 text-sm focus:ring-indigo-500/20"
+                                    >
+                                        {activeJobs.map(job => (
+                                            <option key={job.id} value={job.id}>{job.title}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-xl">
+                                    <p className="text-sm text-indigo-200">
+                                        The AI will pick the first available slot tomorrow at 10:00 AM for the initial proposal. You can adjust this in your calendar later.
+                                    </p>
+                                </div>
+                                <Button 
+                                    onClick={handleSchedule} 
+                                    disabled={scheduling}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-500 h-12 font-bold text-lg rounded-xl"
+                                >
+                                    {scheduling ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Calendar className="h-5 w-5 mr-2" />}
+                                    Confirm & Generate Meet Link
+                                </Button>
+                            </div>
+                        ) : (
+                            <div className="space-y-6 py-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Google Meet Link</label>
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 bg-slate-900 border border-emerald-500/20 p-3 rounded-xl text-emerald-400 font-mono text-sm truncate">
+                                            {scheduleResult.meet_url || "Link generation in progress..."}
+                                        </div>
+                                        <Button 
+                                            size="icon" 
+                                            variant="outline" 
+                                            onClick={() => copyToClipboard(scheduleResult.meet_url)}
+                                            className="rounded-xl border-white/5 bg-slate-900"
+                                        >
+                                            {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Draft Invitation Email</label>
+                                    <textarea 
+                                        readOnly
+                                        value={scheduleResult.draft_email}
+                                        className="w-full h-48 bg-slate-900 border border-white/5 rounded-xl p-4 text-sm text-slate-300 font-sans"
+                                    />
+                                </div>
+
+                                <DialogFooter>
+                                    <Button variant="ghost" onClick={() => setScheduleResult(null)} className="text-slate-500">
+                                        Schedule Another
+                                    </Button>
+                                    <Button className="bg-emerald-600 hover:bg-emerald-500 rounded-xl" render={
+                                        <a href={scheduleResult.event_link} target="_blank" rel="noreferrer">
+                                            View in Calendar
+                                            <ExternalLink className="h-4 w-4 ml-2" />
+                                        </a>
+                                    } />
+                                </DialogFooter>
+                            </div>
+                        )}
+                    </DialogContent>
+                </Dialog>
+
+                <Button className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all border border-white/5 flex items-center gap-2 h-auto">
                     <PlusCircle className="h-4 w-4" />
                     Shortlist
-                </button>
+                </Button>
             </div>
           </div>
 
