@@ -1,0 +1,302 @@
+[
+  {
+    "name": "Priya Sharma",
+    "headline": "Senior React Developer",
+    "location": "Bangalore, India",
+    "email": "priya.sharma@email.com",
+    "phone": "+91 98765 43210",
+    "skills": ["React", "TypeScript", "Node.js", "GraphQL", "AWS"],
+    "experience": [
+      { "company": "Razorpay", "title": "Senior Frontend Engineer", "years": 3 },
+      { "company": "Flipkart", "title": "Frontend Developer", "years": 2 }
+    ],
+    "education": [
+      { "degree": "B.Tech Computer Science", "institution": "IIT Bombay", "year": "2018" }
+    ]
+  },
+  {
+    "name": "Arjun Mehta",
+    "headline": "Full Stack Engineer",
+    "location": "Mumbai, India",
+    "email": "arjun.m@example.com",
+    "phone": "+91 98234 56789",
+    "skills": ["Next.js", "Python", "PostgreSQL", "Docker", "Redis"],
+    "experience": [
+      { "company": "Zomato", "title": "Software Engineer II", "years": 2 },
+      { "company": "Swiggy", "title": "Software Engineer", "years": 2 }
+    ],
+    "education": [
+      { "degree": "B.E. Information Technology", "institution": "BITS Pilani", "year": "2020" }
+    ]
+  },
+  {
+    "name": "Sarah Jenkins",
+    "headline": "Product Manager",
+    "location": "Remote, US/India",
+    "email": "sarah.pm@techcorp.com",
+    "phone": "+1 555 0123",
+    "skills": ["Product Strategy", "Agile", "SQL", "Mixpanel", "User Research"],
+    "experience": [
+      { "company": "Atlassian", "title": "Product Manager", "years": 4 },
+      { "company": "Trello", "title": "Associate PM", "years": 2 }
+    ],
+    "education": [
+      { "degree": "MBA", "institution": "Stanford University", "year": "2017" }
+    ]
+  },
+  {
+    "name": "Rohan Das",
+    "headline": "Backend Lead",
+    "location": "Pune, India",
+    "email": "rohan.das@backend.io",
+    "phone": "+91 88888 77777",
+    "skills": ["Go", "Kubernetes", "gRPC", "Kafka", "MongoDB"],
+    "experience": [
+      { "company": "Ola Electric", "title": "Backend Lead", "years": 1 },
+      { "company": "Directi", "title": "Platform Engineer", "years": 5 }
+    ],
+    "education": [
+      { "degree": "B.Tech CSE", "institution": "NIT Trichy", "year": "2016" }
+    ]
+  },
+  {
+    "name": "Ananya Iyer",
+    "headline": "UX/UI Designer",
+    "location": "Chennai, India",
+    "email": "ananya.design@portfolio.me",
+    "phone": "+91 91234 56780",
+    "skills": ["Figma", "Design Systems", "Prototyping", "Adobe XD", "User Testing"],
+    "experience": [
+      { "company": "Freshworks", "title": "Senior Product Designer", "years": 3 },
+      { "company": "Zoho", "title": "UI Designer", "years": 3 }
+    ],
+    "education": [
+      { "degree": "B.Des Visual Communication", "institution": "NID Ahmedabad", "year": "2018" }
+    ]
+  },
+  {
+    "name": "Vikram Singh",
+    "headline": "Data Engineer",
+    "location": "Hyderabad, India",
+    "email": "vikram.data@analytix.com",
+    "phone": "+91 99001 22334",
+    "skills": ["Python", "Spark", "Airflow", "Snowflake", "dbt"],
+    "experience": [
+      { "company": "Standard Chartered", "title": "Data Engineer", "years": 4 },
+      { "company": "Mu Sigma", "title": "Data Analyst", "years": 2 }
+    ],
+    "education": [
+      { "degree": "M.Tech Data Science", "institution": "IISc Bangalore", "year": "2016" }
+    ]
+  },
+  {
+    "name": "Meera Nair",
+    "headline": "DevOps Architect",
+    "location": "Bangalore, India",
+    "email": "meera.cloud@devops.net",
+    "phone": "+91 97766 55443",
+    "skills": ["Terraform", "Azure", "CI/CD", "Prometheus", "Golang"],
+    "experience": [
+      { "company": "Microsoft", "title": "DevOps Architect", "years": 2 },
+      { "company": "Consulting", "title": "Infrastructure Consultant", "years": 6 }
+    ],
+    "education": [
+      { "degree": "B.E. Electronics", "institution": "Anna University", "year": "2015" }
+    ]
+  },
+  {
+    "name": "Siddharth Kapoor",
+    "headline": "Sales Director",
+    "location": "Delhi, India",
+    "email": "sid.sales@saasgrowth.com",
+    "phone": "+91 95555 11111",
+    "skills": ["SaaS Sales", "CRM", "Revenue Ops", "Negotiation", "Lead Gen"],
+    "experience": [
+      { "company": "Salesforce", "title": "Enterprise Account Executive", "years": 5 },
+      { "company": "HubSpot", "title": "Territory Manager", "years": 3 }
+    ],
+    "education": [
+      { "degree": "B.Com", "institution": "SRCC Delhi", "year": "2014" }
+    ]
+  },
+  {
+    "name": "Emily White",
+    "headline": "Frontend Specialist",
+    "location": "Remote, Global",
+    "email": "emily.white@modernweb.dev",
+    "phone": "+44 20 7946 0958",
+    "skills": ["Vue.js", "Nuxt.js", "TailwindCSS", "Vite", "Jest"],
+    "experience": [
+      { "company": "Vercel", "title": "Developer Advocate", "years": 2 },
+      { "company": "Freelance", "title": "Frontend Architect", "years": 5 }
+    ],
+    "education": [
+      { "degree": "B.Sc Computer Science", "institution": "University College London", "year": "2016" }
+    ]
+  },
+  {
+    "name": "Karthik Raja",
+    "headline": "Cybersecurity Lead",
+    "location": "Bangalore, India",
+    "email": "karthik.security@shield.ai",
+    "phone": "+91 90000 80000",
+    "skills": ["Penetration Testing", "SOC", "Cloud Security", "Python", "SIEM"],
+    "experience": [
+      { "company": "CrowdStrike", "title": "Security consultant", "years": 3 },
+      { "company": "TCS", "title": "Security Analyst", "years": 4 }
+    ],
+    "education": [
+      { "degree": "B.Tech Information Security", "institution": "PSG Tech", "year": "2016" }
+    ]
+  },
+  {
+    "name": "Tanvi Gupta",
+    "headline": "Engineering Manager",
+    "location": "Mumbai, India",
+    "email": "tanvi.em@hiring.com",
+    "phone": "+91 93333 44444",
+    "skills": ["Leadership", "System Design", "Recruiting", "KPIs", "Mentoring"],
+    "experience": [
+      { "company": "Cred", "title": "Engineering Manager", "years": 2 },
+      { "company": "Hotstar", "title": "SDE-III", "years": 5 }
+    ],
+    "education": [
+      { "degree": "B.E. CSE", "institution": "Vilasrao Deshmukh College", "year": "2015" }
+    ]
+  },
+  {
+    "name": "Nikhil Varma",
+    "headline": "ML Engineer",
+    "location": "Hyderabad, India",
+    "email": "nikhil.ml@deepai.org",
+    "phone": "+91 80000 90000",
+    "skills": ["PyTorch", "NLP", "TensorFlow", "Scikit-Learn", "Python"],
+    "experience": [
+      { "company": "Oracle", "title": "AI Researcher", "years":3 },
+      { "company": "Fractal Analytics", "title": "Data Scientist", "years": 2 }
+    ],
+    "education": [
+      { "degree": "MS Machine Learning", "institution": "Carnegie Mellon", "year": "2018" }
+    ]
+  },
+  {
+    "name": "Chloe Bennett",
+    "headline": "Marketing Manager",
+    "location": "Remote, USA",
+    "email": "chloe.b@brandhub.com",
+    "phone": "+1 650 555 0199",
+    "skills": ["Growth Marketing", "SEO", "Content Strategy", "PPC", "Analytics"],
+    "experience": [
+      { "company": "Shopify", "title": "Senior Growth Marketer", "years": 4 },
+      { "company": "Canva", "title": "Content strategist", "years": 2 }
+    ],
+    "education": [
+      { "degree": "B.A. Marketing", "institution": "NYU", "year": "2017" }
+    ]
+  },
+  {
+    "name": "Rahul More",
+    "headline": "Mobile Developer (iOS)",
+    "location": "Pune, India",
+    "email": "rahul.ios@swiftdev.com",
+    "phone": "+91 98989 89898",
+    "skills": ["Swift", "SwiftUI", "Combine", "CoreData", "Unit Testing"],
+    "experience": [
+      { "company": "Urban Company", "title": "iOS Engineer", "years": 3 },
+      { "company": "InMobi", "title": "Software Engineer", "years": 2 }
+    ],
+    "education": [
+      { "degree": "B.Tech IT", "institution": "COEP Pune", "year": "2019" }
+    ]
+  },
+  {
+    "name": "Sanya Malhotra",
+    "headline": "Customer Success Manager",
+    "location": "Gurgaon, India",
+    "email": "sanya.success@saas.com",
+    "phone": "+91 92222 33333",
+    "skills": ["Customer Retention", "Onboarding", "Zendesk", "Churn analysis", "Salesforce"],
+    "experience": [
+      { "company": "Postman", "title": "Senior CSM", "years": 2 },
+      { "company": "Gainsight", "title": "Success Associate", "years": 3 }
+    ],
+    "education": [
+      { "degree": "B.A. Economics", "institution": "Miranda House", "year": "2017" }
+    ]
+  },
+  {
+    "name": "Abhishek Joshi",
+    "headline": "Solution Architect",
+    "location": "Bangalore, India",
+    "email": "abhishek.j@cloudnative.tech",
+    "phone": "+91 94444 55555",
+    "skills": ["Microservices", "Event-Driven Architecture", "Node.js", "Redis", "CloudFormation"],
+    "experience": [
+      { "company": "Infosys", "title": "Tech Lead", "years": 8 },
+      { "company": "Wipro", "title": "Senior Developer", "years": 4 }
+    ],
+    "education": [
+      { "degree": "B.E. Computer Engineering", "institution": "VJTI Mumbai", "year": "2011" }
+    ]
+  },
+  {
+    "name": "Ishita Saxena",
+    "headline": "E-commerce Analyst",
+    "location": "Ahmedabad, India",
+    "email": "ishita.ecomm@retail.com",
+    "phone": "+91 96666 77777",
+    "skills": ["Google Analytics", "SQL", "Shopify", "Inventory Management", "Tableau"],
+    "experience": [
+      { "company": "Nykaa", "title": "Business Analyst", "years": 3 },
+      { "company": "Amazon", "title": "Operations Specialist", "years": 2 }
+    ],
+    "education": [
+      { "degree": "B.Com Honors", "institution": "Loyola College", "year": "2018" }
+    ]
+  },
+  {
+    "name": "David Miller",
+    "headline": "Site Reliability Engineer",
+    "location": "Remote, EU",
+    "email": "david.sre@uptime.io",
+    "phone": "+49 30 1234567",
+    "skills": ["Linux", "Python", "Kubernetes", "Observability", "Incident Management"],
+    "experience": [
+      { "company": "Google", "title": "SRE", "years": 4 },
+      { "company": "Spotify", "title": "Cloud Engineer", "years": 3 }
+    ],
+    "education": [
+      { "degree": "B.Sc Informatik", "institution": "TU Berlin", "year": "2016" }
+    ]
+  },
+  {
+    "name": "Kiran Deshmukh",
+    "headline": "QA Automation Lead",
+    "location": "Nagpur, India",
+    "email": "kiran.qa@quality.com",
+    "phone": "+91 91111 22222",
+    "skills": ["Selenium", "Playwright", "Java", "Appium", "Test Automation"],
+    "experience": [
+      { "company": "Cognizant", "title": "QA Lead", "years": 6 },
+      { "company": "Persistent Systems", "title": "Manual Tester", "years": 4 }
+    ],
+    "education": [
+      { "degree": "B.E. IT", "institution": "YCCE Nagpur", "year": "2013" }
+    ]
+  },
+  {
+    "name": "Liam Scott",
+    "headline": "HR Business Partner",
+    "location": "Sydney, Australia",
+    "email": "liam.hr@peoplefirst.com",
+    "phone": "+61 2 9876 5432",
+    "skills": ["Talent Acquisition", "Employee Relations", "Compensation", "HRIS", "Strategy"],
+    "experience": [
+      { "company": "Atlassian", "title": "Senior HRBP", "years": 3 },
+      { "company": "Canva", "title": "People Lead", "years": 4 }
+    ],
+    "education": [
+      { "degree": "Bachelor of Psychology", "institution": "University of Sydney", "year": "2014" }
+    ]
+  }
+]
