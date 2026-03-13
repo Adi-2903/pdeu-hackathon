@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     // Log to ingestion_logs
     await supabase.from("ingestion_logs").insert({
-      source: source === "merge" ? "merge_ats" : "indeed", // Mapping to enum candidate_source
+      source: source === "merge" ? "merge_ats" : "zoho",
       status: "completed",
       total_fetched: result.queued,
       total_inserted: result.queued,
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     console.error(`[ATS Ingestion API] ${source} Error:`, error);
     
     await supabase.from("ingestion_logs").insert({
-      source: source === "merge" ? "merge_ats" : "indeed",
+      source: source === "merge" ? "merge_ats" : "zoho",
       status: "failed",
       error_message: error instanceof Error ? error.message : "Unknown error",
       started_at: new Date().toISOString(),
