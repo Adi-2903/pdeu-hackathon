@@ -5,26 +5,26 @@
   --color-orange-light: #FF8C42;
   --color-orange-dark: #E55A00;
   --color-orange-glow: rgba(255,107,0,0.15);
-  --color-glass-card: rgba(255,255,255,0.60);
-  --color-glass-border: rgba(0,0,0,0.08);
-  --color-dark-bg: #F5F5F7;
+  --color-glass-card: rgba(255,255,255,1.0);
+  --color-glass-border: rgba(0,0,0,0.04);
+  --color-dark-bg: #F0F2F5;
   --color-dark-surface: #FFFFFF;
-  --color-dark-elevated: #EAEAEC;
+  --color-dark-elevated: #F8F9FA;
   --font-sans: 'Inter', sans-serif;
 }
 
 @layer base {
   :root {
-    --glass-bg: rgba(255,255,255,0.60);
-    --glass-border: rgba(0,0,0,0.08);
-    --glass-blur: blur(24px) saturate(180%);
+    --glass-bg: rgba(255,255,255,1.0);
+    --glass-border: rgba(0,0,0,0.04);
+    --glass-blur: blur(0px) saturate(100%);
     --orange: #FF6B00;
     --orange-glow: 0 0 20px rgba(255,107,0,0.15);
   }
 
   body {
-    background-color: #F5F5F7;
-    color: #1C1C1E;
+    background-color: #eef0f4;
+    color: #1a1b1e;
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

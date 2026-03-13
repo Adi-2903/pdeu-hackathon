@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from './components/ui/Sidebar';
+import TopHeader from './components/layout/TopHeader';
 import Dashboard from './pages/Dashboard';
 import Candidates from './pages/Candidates';
 import AISearch from './pages/AISearch';
@@ -23,19 +24,22 @@ const AppContent = () => {
   }, [addToast]);
 
   return (
-    <div className="flex h-screen bg-[#F5F5F7] text-gray-900 font-sans overflow-hidden">
+    <div className="flex h-screen text-gray-900 font-sans overflow-hidden p-0 md:p-4 md:gap-6 bg-[var(--color-dark-bg)]">
       <Sidebar />
-      <main className="flex-1 overflow-x-hidden overflow-y-auto w-full pb-20 md:pb-0">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/candidates" element={<Candidates />} />
-          <Route path="/ai-search" element={<AISearch />} />
-          <Route path="/pipeline" element={<Pipeline />} />
-          <Route path="/sources" element={<Sources />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/analytics" element={<Navigate to="/" replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+      <main className="flex-1 overflow-hidden w-full flex flex-col pt-4 md:pt-0 pb-20 md:pb-0 pr-4 md:pr-0">
+        <TopHeader />
+        <div className="flex-1 overflow-x-hidden overflow-y-auto w-full custom-scrollbar rounded-3xl">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/candidates" element={<Candidates />} />
+            <Route path="/ai-search" element={<AISearch />} />
+            <Route path="/pipeline" element={<Pipeline />} />
+            <Route path="/sources" element={<Sources />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/analytics" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
       </main>
       <AIChatAssistant />
     </div>
