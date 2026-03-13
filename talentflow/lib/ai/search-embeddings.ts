@@ -1,5 +1,5 @@
-import { env } from "@/config/env";
-import { EMBEDDING_MODEL } from "@/config/constants";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+const EMBEDDING_MODEL = "text-embedding-3-small";
 
 /**
  * Generates a vector embedding for a given text using OpenAI (text-embedding-3-small)
@@ -17,7 +17,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${env.openai.apiKey}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: EMBEDDING_MODEL,
