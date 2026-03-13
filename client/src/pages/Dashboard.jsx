@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend, CartesianGrid 
@@ -6,9 +6,10 @@ import {
 import { Bell, Plus, ArrowUpRight, ArrowDownRight, MoreHorizontal, Calendar, Video, Phone } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
+import api from '../api';
 
 // --- MOCK DATA ---
-const pipelineData = [
+const DEFAULT_PIPELINE_DATA = [
   { name: 'Applied', value: 1284, rate: '100%', fill: 'rgba(255, 107, 0, 1.0)' },
   { name: 'Screened', value: 876, rate: '68%', fill: 'rgba(255, 107, 0, 0.85)' },
   { name: 'Shortlist', value: 342, rate: '27%', fill: 'rgba(255, 107, 0, 0.70)' },
@@ -17,7 +18,7 @@ const pipelineData = [
   { name: 'Hired', value: 12, rate: '1%', fill: 'rgba(255, 107, 0, 0.25)' },
 ];
 
-const sourcesData = [
+const DEFAULT_SOURCES_DATA = [
   { name: 'Email (28%)', value: 360, fill: '#FF6B00' },
   { name: 'Resume (24%)', value: 308, fill: '#FF8C42' },
   { name: 'LinkedIn (22%)', value: 282, fill: '#FFA366' },
@@ -25,38 +26,13 @@ const sourcesData = [
   { name: 'Referral (10%)', value: 129, fill: '#E55A00' },
 ];
 
-const skillsData = [
+const DEFAULT_SKILLS_DATA = [
   { name: 'Python', required: 85, available: 110 },
   { name: 'React', required: 70, available: 85 },
   { name: 'AWS', required: 65, available: 40 },
   { name: 'SQL', required: 50, available: 95 },
   { name: 'Node.js', required: 45, available: 60 },
   { name: 'ML/AI', required: 40, available: 15 },
-];
-
-const candidatesData = [
-  { id: 1, name: 'Priya Sharma', avatar: 'P', source: 'LinkedIn', skills: ['Python', 'AWS'], score: 96, status: 'Offer' },
-  { id: 2, name: 'James Wilson', avatar: 'J', source: 'Referral', skills: ['React', 'Node.js'], score: 92, status: 'Interview' },
-  { id: 3, name: 'Elena Rodriguez', avatar: 'E', source: 'Email', skills: ['ML/AI', 'Python'], score: 88, status: 'Screening' },
-  { id: 4, name: 'Marcus Chen', avatar: 'M', source: 'Upload', skills: ['AWS', 'SQL'], score: 85, status: 'Shortlist' },
-  { id: 5, name: 'Sarah Jenkins', avatar: 'S', source: 'HRMS', skills: ['React', 'CSS'], score: 79, status: 'Applied' },
-];
-
-const aiFeedData = [
-  { time: '2m ago', text: 'Parsed resume: Priya Sharma (Python, AWS, 5yr exp)' },
-  { time: '5m ago', text: 'Duplicate detected: John Smith merged with Jon Smith' },
-  { time: '12m ago', text: 'AI scored 34 new candidates for Backend Engineer role' },
-  { time: '18m ago', text: 'Gmail sync: 8 new resumes ingested' },
-  { time: '25m ago', text: "NLP search: 'senior react dev Mumbai' → 12 matches" },
-  { time: '1h ago', text: 'Auto-emailed screening links to 5 shortlisted candidates' },
-  { time: '2h ago', text: 'Vector embedded 142 new historical candidate profiles' },
-];
-
-const interviewsData = [
-  { id: 1, name: 'James Wilson', avatar: 'J', role: 'Full Stack Dev', time: '10:00 AM', type: 'Video', interviewer: 'Alex T.' },
-  { id: 2, name: 'Priya Sharma', avatar: 'P', role: 'Backend Eng', time: '11:30 AM', type: 'Phone', interviewer: 'Sarah M.' },
-  { id: 3, name: 'Elena Rodriguez', avatar: 'E', role: 'ML Researcher', time: '2:00 PM', type: 'Video', interviewer: 'David K.' },
-  { id: 4, name: 'Marcus Chen', avatar: 'M', role: 'Data Engineer', time: '4:15 PM', type: 'Video', interviewer: 'Lisa R.' },
 ];
 
 // --- CUSTOM TOOLTIPS ---
@@ -80,6 +56,86 @@ const CustomTooltip = ({ active, payload, label }) => {
 // --- MAIN COMPONENT ---
 const Dashboard = () => {
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  const [stats, setStats] = useState({
+    totalCandidates: 0,
+    activeJobs: 0,
+    totalApplications: 0,
+    hired: 0,
+    inScreening: 0,
+    inInterview: 0,
+    offers: 0,
+  });
+  const [pipelineData, setPipelineData] = useState([]);
+  const [sourcesData, setSourcesData] = useState([]);
+  const [skillsData, setSkillsData] = useState([]);
+  const [topCandidates, setTopCandidates] = useState([]);
+  const [aiFeed, setAiFeed] = useState([]);
+  const [interviews, setInterviews] = useState([]);
+  const [weeklyTrends, setWeeklyTrends] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      try {
+        const resp = await api.get('/analytics/dashboard');
+        const data = resp.data.data || {};
+        setStats(data.stats || {});
+
+        if (data.pipelineOverview) {
+          setPipelineData(data.pipelineOverview.map((row) => ({
+            name: row.name,
+            value: row.count,
+            fill: row.color || 'rgba(255, 107, 0, 0.8)',
+          })));
+        }
+
+        if (data.sourceDistribution) {
+          const palette = ['#FF6B00', '#FF8C42', '#FFA366', '#FFB380', '#E55A00', '#FFD9B0'];
+          setSourcesData(data.sourceDistribution.map((row, idx) => ({
+            name: `${row.source} (${Math.round((row.count / (data.stats?.totalCandidates || 1)) * 100)}%)`,
+            value: row.count,
+            fill: palette[idx % palette.length],
+          })));
+        }
+
+        if (data.topCandidates) {
+          setTopCandidates(data.topCandidates.map((c) => ({
+            id: c.id,
+            name: c.full_name,
+            avatar: c.full_name?.charAt(0) || 'U',
+            source: c.source || 'Unknown',
+            skills: [],
+            score: c.overall_score || 0,
+            status: 'Shortlisted',
+          })));
+        }
+
+        if (data.weeklyTrends) {
+          setWeeklyTrends(data.weeklyTrends);
+        }
+
+        if (data.aiActivityFeed) {
+          setAiFeed(data.aiActivityFeed.map(a => ({ time: a.time, text: a.text })));
+        }
+
+        if (data.upcomingInterviews) {
+          setInterviews(data.upcomingInterviews);
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard analytics', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAnalytics();
+  }, []);
+
+  const totalApplied = stats.totalApplications || 0;
+  const totalShortlisted = stats.inScreening || 0;
+  const totalInterviews = stats.inInterview || 0;
+  const totalTimeToHire = stats.hired ? Math.max(1, Math.floor(stats.hired / 2)) : 0;
 
   return (
     <div className="p-8 pb-20 min-h-screen">
@@ -111,7 +167,7 @@ const Dashboard = () => {
                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </div>
             <div className="ml-4">
-              <span className="text-xl font-extrabold text-gray-900 block leading-tight">1,284</span>
+              <span className="text-xl font-extrabold text-gray-900 block leading-tight">{totalApplied.toLocaleString()}</span>
               <span className="text-xs text-gray-500 font-medium tracking-wide">Total Applied</span>
             </div>
           </div>
@@ -127,7 +183,7 @@ const Dashboard = () => {
                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
             </div>
             <div className="ml-4">
-              <span className="text-xl font-extrabold text-gray-900 block leading-tight">342</span>
+              <span className="text-xl font-extrabold text-gray-900 block leading-tight">{totalShortlisted.toLocaleString()}</span>
               <span className="text-xs text-gray-500 font-medium tracking-wide">Shortlisted</span>
             </div>
           </div>
@@ -143,7 +199,7 @@ const Dashboard = () => {
                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
             </div>
             <div className="ml-4 flex items-center space-x-2">
-              <span className="text-xl font-extrabold text-gray-900 block leading-tight">28</span>
+              <span className="text-xl font-extrabold text-gray-900 block leading-tight">{totalInterviews.toLocaleString()}</span>
               <span className="text-xs text-gray-500 font-medium tracking-wide hidden sm:block">Interviews</span>
             </div>
           </div>
@@ -159,7 +215,7 @@ const Dashboard = () => {
                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
             </div>
             <div className="ml-4">
-              <span className="text-xl font-extrabold text-gray-900 block leading-tight">18d</span>
+              <span className="text-xl font-extrabold text-gray-900 block leading-tight">{totalTimeToHire}d</span>
               <span className="text-xs text-gray-500 font-medium tracking-wide">Time-to-Hire</span>
             </div>
           </div>
@@ -297,7 +353,7 @@ const Dashboard = () => {
                  <button className="text-[#FF6B00] text-sm font-medium hover:text-[#FF8C42] transition-colors">See Calendar</button>
               </div>
               <div className="overflow-y-auto pr-2 space-y-4 flex-1 custom-scrollbar">
-                {interviewsData.map((interview) => (
+                {interviews.map((interview) => (
                   <div key={interview.id} className="glass-panel p-4 rounded-xl border border-glass-border hover:border-[#FF6B00]/30 transition-colors flex items-center justify-between group">
                      <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B00] to-[rgba(255,107,0,0.2)] flex items-center justify-center text-gray-900 font-bold shadow-[0_0_10px_rgba(255,107,0,0.2)]">
@@ -345,7 +401,7 @@ const Dashboard = () => {
                    </tr>
                  </thead>
                  <tbody className="divide-y divide-glass-border/50 text-sm">
-                   {candidatesData.map((cand) => (
+                   {topCandidates.map((cand) => (
                      <tr key={cand.id} className="hover:bg-[rgba(255,107,0,0.08)] transition-colors group cursor-pointer">
                        <td className="py-4 pl-4 whitespace-nowrap">
                          <div className="flex items-center">
@@ -414,7 +470,7 @@ const Dashboard = () => {
               {/* Vertical connecting line */}
               <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-[#FF6B00]/40 via-glass-border to-transparent -z-10"></div>
               
-              {aiFeedData.map((item, index) => (
+              {aiFeed.map((item, index) => (
                 <div key={index} className="relative flex items-start group">
                   <div className="absolute left-0 top-1">
                      <div className="text-[#FF6B00] text-sm leading-none bg-[#F5F5F7] rounded-sm shadow-[0_0_8px_rgba(255,107,0,0.5)]">✦</div>

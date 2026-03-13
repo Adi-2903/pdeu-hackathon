@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import GlassCard from '../components/ui/GlassCard';
 import OrangeButton from '../components/ui/OrangeButton';
 import SearchBar from '../components/ui/SearchBar';
@@ -43,7 +43,7 @@ const AISearch = () => {
 
     try {
       // Connect to real backend
-      const response = await axios.post('/api/search/natural', { query });
+      const response = await api.post('/search/natural', { query });
       
       setTimeout(() => {
         setResults(response.data.data.results);

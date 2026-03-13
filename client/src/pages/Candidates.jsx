@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import GlassCard from '../components/ui/GlassCard';
 import OrangeButton from '../components/ui/OrangeButton';
 import Badge from '../components/ui/Badge';
@@ -14,7 +14,7 @@ import {
   Filter, MoreHorizontal, AlertCircle, Link
 } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import axios from 'axios';
+import api from '../api';
 
 // ... (Constants omitted for brevity, keeping existing implementation)
 const STATUS_COLORS = {
@@ -25,60 +25,7 @@ const STATUS_COLORS = {
   'Hired': 'bg-[#FF6B00]/80 text-gray-900 border-[#FF6B00]'
 };
 
-
-const MOCK_CANDIDATES = [
-  { 
-    id: 1, name: 'Alex Rivera', role: 'Sr. Frontend Engineer', company: 'Google', 
-    email: 'alex@example.com', phone: '+1 (555) 123-4567',
-    avatar: 'A', source: 'LinkedIn', experience: '8 yrs', score: 94, 
-    location: 'San Francisco, CA', status: 'Offer', lastActive: '2h ago',
-    skills: ['React', 'TypeScript', 'Next.js', 'UI/UX'],
-    education: [{ degree: 'BS Computer Science', school: 'Stanford', year: '2018' }],
-    timeline: [
-      { date: 'Oct 12', event: 'Offer Accepted', type: 'success' },
-      { date: 'Oct 10', event: 'Offer Extended', type: 'info' },
-      { date: 'Oct 05', event: 'Final Round Interview', type: 'action' },
-      { date: 'Sep 28', event: 'Resume parsed by AI', type: 'ai' }
-    ],
-    aiInsights: {
-       strengths: ['Deep React ecosystem knowledge', 'Strong performance optimization skills', 'Led teams of 5+ engineers'],
-       gaps: ['Limited backend Node.js experience', 'No recent cloud infrastructure hands-on'],
-       summary: "Alex is a highly qualified frontend specialist with exceptional React knowledge. His background at top-tier tech companies ensures an understanding of scale. He is an immediate fit for the Senior React Developer role, with slightly less backend overlap than ideal.",
-       questions: [
-         "Can you walk me through the most complex React rendering optimization you've implemented?",
-         "How do you approach mentoring junior developers when introducing new state management patterns?",
-         "Describe a time you had to push back on a design requirement due to technical constraints."
-       ],
-       cultureFit: "Highly collaborative, values documentation, proven remote capability.",
-       metrics: [{ name: 'Skills Match', value: 92 }, { name: 'Experience', value: 95 }, { name: 'Education', value: 85 }, { name: 'Culture', value: 90 }]
-    }
-  },
-  { 
-    id: 2, name: 'Sarah Chen', role: 'Product Manager', company: 'Stripe', 
-    email: 'sarah.c@example.com', phone: '+1 (555) 987-6543',
-    avatar: 'S', source: 'Upload', experience: '5 yrs', score: 88, 
-    location: 'New York, NY', status: 'Interviewing', lastActive: '1d ago',
-    skills: ['Agile', 'Jira', 'Data Analysis', 'Strategy'],
-    education: [{ degree: 'MBA', school: 'NYU Stern', year: '2021' }],
-    timeline: [], aiInsights: { strengths: [], gaps: [], metrics: [], summary: '', questions: [], cultureFit: '' }
-  },
-  { 
-    id: 3, name: 'Michael Scott', role: 'Sales Director', company: 'Dunder Mifflin', 
-    email: 'mscott@example.com', phone: '+1 (555) 555-0199',
-    avatar: 'M', source: 'Referral', experience: '15 yrs', score: 76, 
-    location: 'Scranton, PA', status: 'Shortlisted', lastActive: '3h ago',
-    skills: ['B2B Sales', 'Leadership', 'Negotiation'],
-    education: [], timeline: [], aiInsights: { strengths: [], gaps: [], metrics: [], summary: '', questions: [], cultureFit: '' }
-  },
-  { 
-    id: 4, name: 'Emma Watson', role: 'UX Designer', company: 'Spotify', 
-    email: 'emma.w@example.com', phone: '+1 (555) 234-5678',
-    avatar: 'E', source: 'Gmail', experience: '4 yrs', score: 98, 
-    location: 'Remote', status: 'New', lastActive: '5m ago',
-    skills: ['Figma', 'Prototyping', 'User Research'],
-    education: [], timeline: [], aiInsights: { strengths: [], gaps: [], metrics: [], summary: '', questions: [], cultureFit: '' }
-  },
-];
+const DEFAULT_PAGE_SIZE = 20;
 
 const CandidateModal = ({ candidate, onClose }) => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -373,6 +320,7 @@ const Candidates = () => {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [selectedCandidate, setSelectedCandidate] = useState(null);
   const [candidates, setCandidates] = useState([]);
+  const [totalCandidates, setTotalCandidates] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCandidateIds, setSelectedCandidateIds] = useState([]);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
@@ -381,22 +329,33 @@ const Candidates = () => {
 
   const filters = ['All', 'New', 'Shortlisted', 'Interviewing', 'Offer Extended'];
 
-  useEffect(() => {
-    fetchCandidates();
-  }, []);
-
-  const fetchCandidates = async () => {
+  const fetchCandidates = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('/api/candidates');
+      const response = await api.get('/candidates', {
+        params: {
+          search: searchTerm,
+          status: selectedFilter === 'All' ? undefined : selectedFilter,
+          page: 1,
+          limit: DEFAULT_PAGE_SIZE,
+        },
+      });
+
       setCandidates(response.data.data || []);
+      setTotalCandidates(response.data.pagination?.total || 0);
     } catch (error) {
       console.error('Error fetching candidates:', error);
-      setCandidates(MOCK_CANDIDATES);
+      setCandidates([]);
+      setTotalCandidates(0);
     } finally {
-      setTimeout(() => setIsLoading(false), 1500);
+      setTimeout(() => setIsLoading(false), 500);
     }
-  };
+  }, [searchTerm, selectedFilter]);
+
+  useEffect(() => {
+    fetchCandidates();
+  }, [fetchCandidates]);
+
 
   const handleSelectCandidate = (id) => {
     setSelectedCandidateIds(prev => 
@@ -416,6 +375,8 @@ const Candidates = () => {
     setIsCompareOpen(true);
   };
 
+  const selectedCandidates = candidates.filter(c => selectedCandidateIds.includes(c.id));
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'Offer': return <Badge className="bg-[#FF6B00] text-gray-900 border-none font-bold shadow-[0_0_10px_rgba(255,107,0,0.4)]">Offer Extended</Badge>;
@@ -434,7 +395,7 @@ const Candidates = () => {
           <div className="flex items-center mb-2">
             <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Candidate Database</h1>
             <span className="ml-4 bg-[#FF6B00]/20 text-[#FF6B00] px-3 py-1 rounded-full text-sm font-bold border border-[#FF6B00]/30 shadow-[0_0_10px_rgba(255,107,0,0.1)]">
-              {MOCK_CANDIDATES.length} Total
+              {totalCandidates} Total
             </span>
           </div>
           <p className="text-gray-500 font-medium">Manage, analyze, and track your talent pool.</p>
@@ -591,7 +552,7 @@ const Candidates = () => {
             {/* Pagination Placeholder */}
             {!isLoading && (
               <div className="border-t border-glass-border p-4 flex justify-between items-center bg-gray-50">
-                <span className="text-gray-500 text-sm">Showing 1 to {candidates.length} of {candidates.length} entries</span>
+                <span className="text-gray-500 text-sm">Showing 1 to {candidates.length} of {totalCandidates} entries</span>
                 <div className="flex space-x-2">
                   <button className="px-3 py-1 glass-panel rounded-lg text-gray-500 text-sm hover:text-gray-900 transition-colors">Prev</button>
                   <button className="px-3 py-1 bg-[#FF6B00] text-gray-900 rounded-lg text-sm font-bold shadow-[0_0_10px_rgba(255,107,0,0.3)]">1</button>
@@ -608,7 +569,7 @@ const Candidates = () => {
       <CandidateComparison 
         isOpen={isCompareOpen} 
         onClose={() => setIsCompareOpen(false)} 
-        candidateIds={selectedCandidateIds} 
+        candidates={selectedCandidates}
       />
 
     </div>

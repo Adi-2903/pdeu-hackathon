@@ -8,22 +8,7 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer } fro
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-// Hardcoded for presentation wow factor
-const MOCK_COMPARISON_DATA = [
-  { 
-    id: 1, name: 'Alex Rivera', role: 'Sr. Frontend', company: 'Google', 
-    avatar: 'A', score: 94, location: 'San Francisco, CA', experience: '8 yrs',
-    metrics: [{ name: 'React', value: 95 }, { name: 'Leadership', value: 85 }, { name: 'System Design', value: 90 }, { name: 'UX/UI', value: 80 }]
-  },
-  { 
-    id: 4, name: 'Emma Watson', role: 'UX Designer / Frontend', company: 'Spotify', 
-    avatar: 'E', score: 91, location: 'Remote', experience: '6 yrs',
-    metrics: [{ name: 'React', value: 80 }, { name: 'Leadership', value: 70 }, { name: 'System Design', value: 75 }, { name: 'UX/UI', value: 98 }]
-  }
-];
-
-const CandidateComparison = ({ isOpen, onClose }) => {
-  const [candidates] = useState(MOCK_COMPARISON_DATA);
+const CandidateComparison = ({ isOpen, onClose, candidates = [] }) => {
   const [isExporting, setIsExporting] = useState(false);
 
   if (!isOpen) return null;
@@ -148,7 +133,7 @@ const CandidateComparison = ({ isOpen, onClose }) => {
                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2 text-center">Competency Radar</h3>
                     <div className="flex-1 -mx-4">
                        <ResponsiveContainer width="100%" height="100%">
-                          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={cand.metrics}>
+                          <RadarChart cx="50%" cy="50%" outerRadius="70%" data={cand.metrics || cand.aiInsights?.metrics || []}>
                             <PolarGrid stroke="rgba(255,255,255,0.05)" />
                             <PolarAngleAxis dataKey="name" tick={{fill: '#AEAEB2', fontSize: 11, fontWeight: 'bold'}} />
                             <Radar name={cand.name} dataKey="value" stroke={idx === 0 ? "#FF6B00" : "#ffffff"} fill={idx === 0 ? "#FF6B00" : "#ffffff"} fillOpacity={idx === 0 ? 0.3 : 0.15} strokeWidth={2} />

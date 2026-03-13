@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, X, Minimize2, Send, Bot, User } from 'lucide-react';
-import axios from 'axios';
+import api from '../../api';
 
 const AIChatAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +30,7 @@ const AIChatAssistant = () => {
     setIsTyping(true);
 
     try {
-      const response = await axios.post('/api/chat', { message: userMessage });
+      const response = await api.post('/chat', { message: userMessage });
       
       // Simulate typewriter effect
       setIsTyping(false);
