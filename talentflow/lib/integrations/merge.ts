@@ -18,15 +18,16 @@ export async function fetchMergeCandidates() {
   try {
     while (nextUrl) {
       console.log(`[Merge.dev] Fetching candidates from: ${nextUrl}`);
-      const response = await axios.get(nextUrl, {
+      const response: any = await axios.get(nextUrl, {
         headers: {
           Authorization: `Bearer ${MERGE_API_KEY}`,
           "X-Account-Token": MERGE_ACCOUNT_TOKEN,
         },
       });
 
-      const { results, next } = response.data;
-      nextUrl = next; // Update for next iteration
+      const { results, next: nextLink } = response.data;
+      nextUrl = nextLink; // Update for next iteration
+
 
       for (const candidate of results) {
         const name = `${candidate.first_name || ""} ${candidate.last_name || ""}`.trim();
@@ -52,3 +53,4 @@ export async function fetchMergeCandidates() {
     throw error;
   }
 }
+

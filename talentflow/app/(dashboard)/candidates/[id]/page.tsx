@@ -94,10 +94,12 @@ interface Candidate {
 const supabase = createClient();
 
 export default function CandidateDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params.id as string;
   const router = useRouter();
   const [candidate, setCandidate] = useState<Candidate | null>(null);
-  const [applications, setApplications] = useState<Application[]>([]);
+  const [applications, setApplications] = useState<any[]>([]);
+
   const [availableJobs, setAvailableJobs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [scheduling, setScheduling] = useState(false);
@@ -121,7 +123,8 @@ export default function CandidateDetailPage() {
         .single();
       
       if (candErr) throw candErr;
-      setCandidate(cand as Candidate);
+      setCandidate(cand as unknown as Candidate);
+
 
       // 2. Fetch Applications
       const { data: apps } = await supabase
@@ -129,7 +132,8 @@ export default function CandidateDetailPage() {
         .select("*, job:jobs(id, title, status)")
         .eq("candidate_id", id);
       
-      setApplications(apps || []);
+      setApplications(apps as any[] || []);
+
 
       // 3. Fetch open jobs for the modal
       const { data: jobs } = await supabase
@@ -154,11 +158,14 @@ export default function CandidateDetailPage() {
     try {
       const gMeetUrl = `https://meet.google.com/${Math.random().toString(36).substring(2, 5)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 5)}`;
       
-      const existing = applications.find(a => a.job.id === selectedJob);
+      const existing = applications.find(a => a.job?.id === selectedJob);
       if (existing) {
         const { error } = await supabase
           .from("applications")
-          .update({ status: "interviewing", recruiter_notes: `Scheduled via dashboard. Meet: ${gMeetUrl}` })
+          .update({ 
+            status: "interviewing" as any, 
+            recruiter_notes: `Scheduled via dashboard. Meet: ${gMeetUrl}` 
+          })
           .eq("id", existing.id);
         if (error) throw error;
       } else {
@@ -167,11 +174,12 @@ export default function CandidateDetailPage() {
           .insert({ 
             candidate_id: id, 
             job_id: selectedJob, 
-            status: "interviewing", 
+            status: "interviewing" as any, 
             recruiter_notes: `Scheduled via dashboard. Meet: ${gMeetUrl}` 
           });
         if (error) throw error;
       }
+
 
       setMeetUrl(gMeetUrl);
       toast.success("Interview scheduled successfully!");
@@ -268,10 +276,16 @@ export default function CandidateDetailPage() {
 
             <div className="flex flex-col gap-2 w-full md:w-auto">
               <Dialog>
-                <DialogTrigger render={<Button className="bg-[#F97316] text-white rounded-lg hover:bg-[#EA6C0A] py-6 shadow-sm font-semibold" />}>
-                    <Calendar className="h-4 w-4 mr-2" />
-                    Schedule Interview
-                </DialogTrigger>
+                <DialogTrigger
+                  render={
+                    <Button className="bg-[#F97316] text-white rounded-lg hover:bg-[#EA6C0A] py-6 shadow-sm font-semibold h-auto">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      Schedule Interview
+                    </Button>
+                  }
+                />
+
+
                 <DialogContent className="bg-white border-0 shadow-2xl sm:max-w-[450px]">
                   <DialogHeader>
                     <DialogTitle className="text-xl font-bold text-gray-900">Schedule Interview</DialogTitle>

@@ -80,7 +80,8 @@ export default function CandidatesPage() {
         .eq("is_duplicate", false);
 
       if (selectedSource !== "all") {
-        query = query.eq("source", selectedSource);
+        query = query.eq("source", selectedSource as any);
+
       }
 
       if (expFilter !== "all") {
@@ -104,7 +105,7 @@ export default function CandidatesPage() {
         .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
       if (error) throw error;
-      setCandidates(data || []);
+      setCandidates(data as any[] || []);
       setTotalCount(count || 0);
     } catch (err) {
       console.error("Error fetching candidates:", err);

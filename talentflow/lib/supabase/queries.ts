@@ -46,10 +46,11 @@ export async function searchCandidatesByEmbedding(
   const { threshold = 0.7, limit = 20 } = options ?? {};
 
   const { data, error } = await client.rpc("match_candidates", {
-    query_embedding: queryEmbedding,
+    query_embedding: JSON.stringify(queryEmbedding),
     match_threshold: threshold,
     match_count: limit,
   });
+
 
   if (error) throw error;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

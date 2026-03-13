@@ -31,3 +31,6 @@ export const env = {
     authToken: process.env.MCP_AUTH_TOKEN || "",
   },
 };
+
+export default env;
+
