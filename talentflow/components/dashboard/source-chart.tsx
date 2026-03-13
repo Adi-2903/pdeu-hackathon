@@ -12,29 +12,35 @@ export function SourceBreakdownChart({ data }: { data: SourceData[] }) {
     <div className="h-[300px] w-full mt-4">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1e293b" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
           <XAxis 
             dataKey="name" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
+            tick={{ fill: '#6B7280', fontSize: 12 }}
             dy={10}
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#94a3b8', fontSize: 12 }}
+            tick={{ fill: '#6B7280', fontSize: 12 }}
           />
           <Tooltip 
-            cursor={{ fill: '#1e293b' }}
+            cursor={{ fill: '#FFF7F2' }}
             contentStyle={{ 
-                backgroundColor: '#0f172a', 
-                border: '1px solid #334155',
+                backgroundColor: '#FFFFFF', 
+                border: '1px solid #E5E7EB',
                 borderRadius: '8px',
-                color: '#f8fafc'
+                color: '#1A1A1A'
             }}
           />
-          <Bar dataKey="count" fill="#7F77DD" radius={[4, 4, 0, 0]} barSize={40} />
+          <Bar 
+            dataKey="count" 
+            fill="#F97316" 
+            activeBar={{ fill: '#EA6C0A' }}
+            radius={[4, 4, 0, 0]} 
+            barSize={40} 
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

@@ -1,12 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { 
+  ListFilter, 
+  Loader2, 
+  Sparkles, 
+  Trophy, 
+  CheckCircle2, 
+  XCircle, 
+  Calendar, 
+  User, 
+  ArrowRight,
+  Save,
+  Clock,
+  Briefcase
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ClipboardList, Loader2, Sparkles, CheckCircle, XCircle, Calendar, Users } from "lucide-react";
-import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { formatDistanceToNow } from "date-fns";
+import { createClient } from "@/lib/supabase/client";
 
 interface ShortlistResult {
   candidate_id: string;
@@ -17,212 +40,250 @@ interface ShortlistResult {
     full_name: string;
     headline: string;
     skills: string[];
-    experience_years: number;
   };
 }
 
-export default function ShortlistingPage() {
-  const [jd, setJd] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<ShortlistResult[]>([]);
+const supabase = createClient();
 
-  const handleShortlist = async () => {
+export default function ShortlistPage() {
+  const [jd, setJd] = useState("");
+  const [selectedJobId, setSelectedJobId] = useState<string>("");
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [isScoring, setIsScoring] = useState(false);
+  const [results, setResults] = useState<ShortlistResult[] | null>(null);
+  const [sortBy, setSortBy] = useState<"score" | "name">("score");
+  const [lastScoredAt, setLastScoredAt] = useState<Date | null>(null);
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const fetchJobs = async () => {
+    const { data } = await supabase
+      .from("jobs")
+      .select("id, title")
+      .eq("status", "open");
+    setJobs(data || []);
+  };
+
+  const handleScoreCandidates = async () => {
     if (jd.length < 50) {
-      toast.error("Detailed job description required (min 50 chars)");
+      toast.error("Job description must be at least 50 characters long");
       return;
     }
 
-    setLoading(true);
-    setResults([]);
-
+    setIsScoring(true);
+    setResults(null);
     try {
       const response = await fetch("/api/shortlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ job_description: jd }),
+        body: JSON.stringify({ 
+          job_description: jd,
+          job_id: selectedJobId || undefined 
+        }),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        setResults(data.results);
-        toast.success(`Analysis precision search complete: Ranked ${data.results.length} candidates.`);
-      } else {
-        toast.error(data.error || "Analysis engine failure");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Scoring failed");
       }
-    } catch (err) {
-      toast.error("Connection timeout: AI Shortlisting service unreachable");
-      console.error(err);
+
+      const data = await response.json();
+      setResults(data.results);
+      setLastScoredAt(new Date());
+      toast.success(`Successfully scored ${data.results.length} candidates!`);
+    } catch (err: any) {
+      toast.error(err.message || "Something went wrong during scoring");
     } finally {
-      setLoading(false);
+      setIsScoring(false);
     }
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 70) return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-    if (score >= 50) return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-    return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+    if (score >= 70) return "bg-green-100 text-green-700 border-green-200";
+    if (score >= 50) return "bg-amber-100 text-amber-700 border-amber-200";
+    return "bg-red-50 text-red-600 border-red-100";
   };
 
+  const sortedResults = results ? [...results].sort((a, b) => {
+    if (sortBy === "score") return b.score - a.score;
+    return a.candidate.full_name.localeCompare(b.candidate.full_name);
+  }) : [];
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex flex-col gap-3">
-        <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tighter flex items-center gap-4">
-          <Sparkles className="text-indigo-400 h-10 w-10 lg:h-12 lg:w-12 animate-pulse" />
-          AI Shortlisting
-        </h1>
-        <p className="text-slate-400 text-lg lg:text-xl font-medium leading-relaxed max-w-3xl">
-          Instantly rank your entire candidate database against specific requirements. 
-          Claude-3 analysis identifies the nuances that text-matching misses.
-        </p>
-      </div>
+    <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-6 items-start">
+      {/* LEFT PANEL: INPUTS */}
+      <Card className="bg-white rounded-xl border-gray-200 shadow-sm sticky top-6">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-orange-500" />
+            Score Candidates
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Assign to Job (Optional)</label>
+            <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+              <SelectTrigger className="w-full bg-white border-gray-200 rounded-lg">
+                <SelectValue placeholder="Select a job position..." />
+              </SelectTrigger>
+              <SelectContent>
+                {jobs.map(job => (
+                  <SelectItem key={job.id} value={job.id}>{job.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <div className="grid gap-8 lg:grid-cols-[400px_1fr]">
-        <div className="space-y-6">
-          <Card className="bg-slate-900/40 border-white/5 backdrop-blur-md sticky top-6 lg:top-10">
-            <CardHeader>
-              <CardTitle className="text-white text-xl font-bold flex items-center gap-2">
-                <ClipboardList className="h-5 w-5 text-indigo-400" />
-                Job Requirements
-              </CardTitle>
-              <CardDescription className="text-slate-500 font-medium">
-                Include skills, seniority, and specific tech stack for the best results.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <textarea
-                value={jd}
-                onChange={(e) => setJd(e.target.value)}
-                placeholder="Paste Job Description here... e.g. Senior Backend Engineer with Node.js and GCP experience..."
-                className="w-full min-h-[400px] p-5 bg-slate-950/50 border-white/5 text-slate-200 rounded-2xl focus:ring-indigo-500/20 focus:border-indigo-500/30 transition-all resize-none text-sm leading-relaxed font-mono"
-              />
-              <Button 
-                onClick={handleShortlist}
-                disabled={loading || jd.length < 50}
-                className="w-full h-14 bg-indigo-600 hover:bg-indigo-500 text-white text-lg font-black shadow-2xl shadow-indigo-900/30 rounded-2xl transition-all hover:scale-[1.02] active:scale-95"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-                    AI SCORING...
-                  </>
-                ) : (
-                  "RANK POOL"
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest">Job Description</label>
+            <Textarea 
+              placeholder="Paste job description here...&#10;&#10;Example: Senior Backend Engineer — Node.js, 5+ years, fintech preferred, remote"
+              className="min-h-64 bg-white border-gray-200 focus:border-orange-500 focus:ring-orange-500 rounded-xl text-sm leading-relaxed p-4"
+              value={jd}
+              onChange={(e) => setJd(e.target.value)}
+            />
+            <p className="text-[10px] text-gray-400 font-medium">Min 50 characters required for AI analysis.</p>
+          </div>
 
-        <div className="space-y-6">
-          {!loading && results.length === 0 && (
-            <div className="h-[600px] border-2 border-dashed border-white/5 rounded-[3rem] flex flex-col items-center justify-center text-center p-12 space-y-6 bg-slate-900/20">
-              <div className="bg-slate-900 p-8 rounded-[2rem] shadow-inner">
-                <Users className="h-16 w-16 text-slate-700 opacity-30" />
+          <div className="pt-2">
+            <Button 
+              className="w-full bg-[#F97316] hover:bg-[#EA6C0A] text-white py-6 h-auto rounded-xl font-bold text-base shadow-lg shadow-orange-100 transition-all active:scale-95 disabled:opacity-50"
+              onClick={handleScoreCandidates}
+              disabled={isScoring || jd.length < 50}
+            >
+              {isScoring ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  Analyzing Resumes...
+                </>
+              ) : (
+                "Score All Candidates"
+              )}
+            </Button>
+            
+            {isScoring && (
+              <div className="mt-4 space-y-2">
+                <Progress value={45} className="h-1 bg-orange-100 [&>div]:bg-orange-500" />
+                <p className="text-[10px] text-orange-500 font-bold uppercase tracking-widest text-center animate-pulse">
+                  Powered by Claude AI · ~10 seconds
+                </p>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl font-black text-white">Analysis Pipeline Ready</h3>
-                <p className="text-slate-500 max-w-sm mx-auto font-medium">
-                  Provide the job description on the left. The AI will cross-reference every candidate profile 
-                  and produce a ranked shortlist with reasoning.
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* RIGHT PANEL: RESULTS */}
+      <Card className="bg-white rounded-xl border-gray-200 shadow-sm min-h-[600px]">
+        <CardHeader className="border-b border-gray-50 pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CardTitle className="text-xl font-bold text-gray-900">Top Match Candidates</CardTitle>
+              {results && (
+                <Badge className="bg-[#F97316] text-white rounded-full px-2.5 py-0.5 text-xs font-bold border-none">
+                  {results.length}
+                </Badge>
+              )}
+            </div>
+            {results && lastScoredAt && (
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Clock className="h-3 w-3" />
+                Scored {formatDistanceToNow(lastScoredAt)} ago
+              </span>
+            )}
+          </div>
+          
+          {results && (
+            <div className="flex items-center gap-6 mt-6 border-b border-transparent">
+              <button 
+                onClick={() => setSortBy("score")}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-all border-b-2 ${sortBy === "score" ? "text-[#F97316] border-[#F97316]" : "text-gray-400 border-transparent hover:text-gray-600"}`}
+              >
+                By AI Score
+              </button>
+              <button 
+                onClick={() => setSortBy("name")}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-all border-b-2 ${sortBy === "name" ? "text-[#F97316] border-[#F97316]" : "text-gray-400 border-transparent hover:text-gray-600"}`}
+              >
+                By Name
+              </button>
+            </div>
+          )}
+        </CardHeader>
+        <CardContent className="p-0">
+          {!results && !isScoring ? (
+            <div className="flex flex-col items-center justify-center py-40 text-center space-y-4 px-10">
+              <div className="h-16 w-16 bg-orange-50 rounded-full flex items-center justify-center">
+                <ListFilter className="h-8 w-8 text-orange-200" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-gray-800">Ready to shortlist?</h3>
+                <p className="text-sm text-gray-400 max-w-xs font-medium">
+                  Paste a job description on the left to see which candidates from your pool fit the role best.
                 </p>
               </div>
             </div>
-          )}
-
-          {loading && (
-            <div className="space-y-6">
+          ) : isScoring ? (
+            <div className="space-y-4 p-6">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="h-40 bg-slate-900/40 border border-white/5 rounded-[2rem] animate-pulse p-8 flex gap-6">
-                   <div className="h-16 w-16 bg-white/5 rounded-2xl shrink-0" />
-                   <div className="space-y-4 flex-1">
-                      <div className="flex justify-between">
-                        <div className="h-6 w-1/3 bg-white/5 rounded" />
-                        <div className="h-8 w-16 bg-white/5 rounded-lg" />
-                      </div>
-                      <div className="h-4 w-1/2 bg-white/5 rounded" />
-                      <div className="h-16 w-full bg-white/5 rounded-xl" />
-                   </div>
+                <div key={i} className="h-32 bg-gray-50/50 rounded-2xl border border-gray-100 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {sortedResults.map((res, index) => (
+                <div key={res.candidate_id} className="p-6 flex flex-col md:flex-row items-start gap-6 hover:bg-orange-50/10 transition-colors">
+                  <div className="flex items-center gap-4 shrink-0">
+                    <span className="text-lg font-black text-orange-500 w-6 italic">#{index + 1}</span>
+                    <div className="h-12 w-12 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-sm ring-4 ring-orange-50">
+                      {res.candidate.full_name?.split(" ").map(n => n[0]).join("") || "C"}
+                    </div>
+                  </div>
+
+                  <div className="flex-1 space-y-3 min-w-0">
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-lg tracking-tight">{res.candidate.full_name}</h4>
+                      <p className="text-sm text-gray-500 font-medium truncate">{res.candidate.headline}</p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5">
+                      {res.candidate.skills.slice(0, 4).map(skill => (
+                        <Badge key={skill} className="bg-orange-50 text-orange-600 border border-orange-100 rounded-lg text-[10px] font-bold px-2 py-0">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    <p className="text-xs italic text-gray-500 font-medium leading-relaxed bg-[#FFF7F2] p-3 rounded-xl border border-orange-50/50">
+                      &ldquo;{res.reason}&rdquo;
+                    </p>
+                  </div>
+
+                  <div className="flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 w-full md:w-32 shrink-0 md:border-l border-gray-50 md:pl-6">
+                    <div className={`px-4 py-2 rounded-2xl border text-center w-full md:w-auto ${getScoreColor(res.score)}`}>
+                      <span className="text-xl font-black">{res.score}%</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 md:w-full">
+                       <Button variant="outline" className="h-8 text-[10px] font-bold uppercase border-green-500 text-green-600 hover:bg-green-50 rounded-lg px-2 flex-1 md:w-full">Approve</Button>
+                       <Button variant="outline" className="h-8 text-[10px] font-bold uppercase border-red-400 text-red-500 hover:bg-red-50 rounded-lg px-2 flex-1 md:w-full">Reject</Button>
+                       <Button className="h-8 text-[10px] font-bold uppercase bg-orange-500 text-white rounded-lg px-2 flex-1 md:w-full shadow-sm shadow-orange-100">Schedule</Button>
+                    </div>
+                  </div>
                 </div>
               ))}
-            </div>
-          )}
-
-          {results.length > 0 && (
-            <div className="space-y-6 animate-in slide-in-from-bottom-5 duration-500">
-              <div className="flex justify-between items-center px-4">
-                <h2 className="text-white font-black text-2xl tracking-tight">
-                  Ranked Shortlist ({results.length})
-                </h2>
-                <Badge className="bg-white/5 text-slate-400 border-white/10 font-black tracking-widest px-3 py-1">
-                  TOP MATCHES
-                </Badge>
+              
+              <div className="p-8 flex items-center justify-center">
+                <Button variant="outline" className="border-[#F97316] text-[#F97316] hover:bg-orange-50 rounded-xl px-10 py-6 h-auto font-bold text-sm transition-all shadow-sm">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Final Shortlist
+                </Button>
               </div>
-
-              {results.map((res) => (
-                <Card key={res.candidate_id} className="bg-slate-900/40 border-white/10 hover:border-indigo-500/30 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group overflow-hidden backdrop-blur-sm rounded-[2rem]">
-                  <CardContent className="p-8">
-                    <div className="flex flex-col xl:flex-row gap-8">
-                      <div className="flex-1 space-y-4">
-                        <div className="flex items-center justify-between gap-4">
-                          <div className="flex items-center gap-4">
-                            <div className="h-14 w-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl flex items-center justify-center text-slate-300 font-black text-lg border border-white/5 group-hover:from-indigo-900 transition-all">
-                              {res.candidate.full_name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-black text-white leading-tight group-hover:text-indigo-400 transition-colors tracking-tight">
-                                    {res.candidate.full_name}
-                                </h3>
-                                <p className="text-sm text-slate-400 font-bold mt-1 tracking-wide">{res.candidate.headline}</p>
-                            </div>
-                          </div>
-                          
-                          <div className={`${getScoreColor(res.score)} px-4 py-2 text-xl font-black rounded-xl border tabular-nums shadow-lg`}>
-                            {res.score}%
-                          </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          {res.candidate.skills.slice(0, 5).map(skill => (
-                            <Badge key={skill} className="bg-white/5 text-slate-400 text-[10px] font-black tracking-[0.15em] uppercase border-none px-2 py-1 rounded-md">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        <div className="bg-indigo-500/5 border-l-4 border-indigo-500/40 p-5 rounded-r-2xl mt-4 relative overflow-hidden group/reason">
-                          <div className="absolute top-0 right-0 p-2 opacity-5">
-                            <Sparkles className="h-10 w-10 text-indigo-400" />
-                          </div>
-                          <p className="text-sm text-indigo-100 font-medium leading-relaxed italic relative z-10 font-mono">
-                            AI Verdict: &quot;{res.reason}&quot;
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-row xl:flex-col gap-3 justify-center xl:border-l border-white/5 xl:pl-8 min-w-[180px]">
-                        <Button size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl w-full transition-all hover:scale-105">
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          SHORTLIST
-                        </Button>
-                        <Button size="lg" variant="outline" className="border-rose-500/20 text-rose-400 hover:bg-rose-500/10 font-black rounded-xl w-full transition-all">
-                          <XCircle className="h-4 w-4 mr-2" />
-                          DISMISS
-                        </Button>
-                        <Link href={`/candidates/${res.candidate_id}`} className="w-full">
-                            <Button size="lg" variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/10 font-black rounded-xl w-full transition-all">
-                            <Calendar className="h-4 w-4 mr-2" />
-                            INTERVIEW
-                            </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -118,7 +118,7 @@ export function mockSearchCandidates(query: string): SearchResult[] {
     )
     .map(c => ({
       candidate_id: c.id,
-      score: Math.random() * 0.3 + 0.7, // 0.7-1.0
+      score: Math.round(Math.random() * 30 + 70), // 70-100
       reason: `Matches query "${query}" in skills: ${c.skills.join(", ")}`,
       candidate: c,
     }))
@@ -145,7 +145,7 @@ export function mockScoreCandidates(
       const matchingSkills = c.skills.filter(s =>
         keywords.some(kw => s.toLowerCase().includes(kw))
       );
-      const score = Math.min(1, (matchingSkills.length / c.skills.length) * 0.8 + Math.random() * 0.2);
+      const score = Math.round(Math.min(1, (matchingSkills.length / c.skills.length) * 0.8 + Math.random() * 0.2) * 100);
       
       return {
         candidate_id: c.id,
