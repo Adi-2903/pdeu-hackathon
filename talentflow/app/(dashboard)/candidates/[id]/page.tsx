@@ -162,7 +162,7 @@ export default function CandidateProfilePage() {
       case "merge_ats":
       case "zoho": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
       case "resume_upload": return "bg-amber-500/10 text-amber-400 border-amber-500/20";
-      case "linkedin": return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+      case "linkedin": return "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
       default: return "bg-slate-500/10 text-slate-400 border-slate-500/20";
     }
   };

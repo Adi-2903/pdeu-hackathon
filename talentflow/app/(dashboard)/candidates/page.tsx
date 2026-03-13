@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, MapPin, Briefcase, Filter, ChevronRight, User } from "lucide-react";
+import { Search, MapPin, Briefcase, Filter, ChevronRight, User, AlertCircle, Users } from "lucide-react";
 import Link from "next/link";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -35,6 +35,7 @@ export default function CandidatesPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [sources, setSources] = useState<string[]>([]);
   const [expRange, setExpRange] = useState([0, 20]);
+  const [error, setError] = useState<string | null>(null);
   
   const PAGE_SIZE = 20;
 
@@ -44,6 +45,7 @@ export default function CandidatesPage() {
 
   const fetchCandidates = async () => {
     setLoading(true);
+    setError(null);
     try {
       let query = supabase
         .from("candidates")
@@ -65,6 +67,7 @@ export default function CandidatesPage() {
       setTotalCount(count || 0);
     } catch (err) {
       console.error("Error fetching candidates:", err);
+      setError("Failed to load candidates. Please refresh the page.");
     } finally {
       setLoading(false);
     }
@@ -88,7 +91,7 @@ export default function CandidatesPage() {
       case "resume_upload":
         return "bg-amber-500/10 text-amber-400 border-amber-500/20";
       case "linkedin":
-        return "bg-slate-500/10 text-slate-400 border-slate-500/20";
+        return "bg-indigo-500/10 text-indigo-400 border-indigo-500/20";
       default:
         return "bg-slate-500/10 text-slate-400 border-slate-500/20";
     }
@@ -99,42 +102,49 @@ export default function CandidatesPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-white">Talent Pool</h1>
-          <p className="text-slate-400">Managing {totalCount} unique candidates from all sources.</p>
+          <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tighter">Candidate Pool</h1>
+          <p className="text-slate-400 mt-2 text-lg">Managing <span className="text-white font-bold">{totalCount}</span> specialized candidates across your pipeline.</p>
         </div>
         <div className="flex items-center gap-3">
             <Link href="/search">
-                <Button variant="outline" className="bg-slate-900 border-white/10 text-white hover:bg-slate-800">
+                <Button className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl h-12 px-6 shadow-lg shadow-indigo-900/20 transition-all hover:scale-105 active:scale-95">
                     <Search className="h-4 w-4 mr-2" />
-                    AI Search
+                    AI Talent Search
                 </Button>
             </Link>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-[280px_1fr] gap-8">
+      <div className="grid lg:grid-cols-[300px_1fr] gap-8">
         {/* Sidebar Filters */}
-        <aside className="space-y-8">
-          <Card className="bg-slate-900/50 border-white/10 backdrop-blur-sm sticky top-8">
+        <aside className="space-y-6">
+          <Card className="bg-slate-900/40 border-white/5 backdrop-blur-md sticky top-6 lg:top-10">
             <CardContent className="p-6 space-y-8">
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold text-slate-200 flex items-center gap-2">
+              <div className="space-y-6">
+                <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2">
                     <Filter className="h-4 w-4 text-indigo-400" />
-                    Sources
+                    Filter by Source
                 </h4>
-                <div className="space-y-3">
+                <div className="grid grid-cols-2 lg:grid-cols-1 gap-3">
                   {["gmail", "indeed", "resume_upload", "linkedin", "merge_ats", "zoho"].map(src => (
-                    <div key={src} className="flex items-center space-x-2">
+                    <div 
+                      key={src} 
+                      className={`
+                        flex items-center space-x-3 p-3 rounded-xl border transition-all cursor-pointer
+                        ${sources.includes(src) ? 'bg-indigo-500/10 border-indigo-500/30 text-white' : 'bg-white/5 border-transparent text-slate-400 hover:bg-white/[0.08]'}
+                      `}
+                      onClick={() => toggleSource(src)}
+                    >
                       <Checkbox 
                         id={src} 
                         checked={sources.includes(src)}
                         onCheckedChange={() => toggleSource(src)}
-                        className="border-white/20 data-[state=checked]:bg-indigo-600"
+                        className="border-white/20 data-[state=checked]:bg-indigo-600 rounded-md"
                       />
-                      <label htmlFor={src} className="text-sm text-slate-400 capitalize cursor-pointer hover:text-white transition-colors">
+                      <label htmlFor={src} className="text-xs font-bold capitalize cursor-pointer">
                         {src.replace("_", " ")}
                       </label>
                     </div>
@@ -142,10 +152,10 @@ export default function CandidatesPage() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-bold text-slate-200">Experience</h4>
-                    <span className="text-xs text-indigo-400 font-mono">{expRange[0]}–{expRange[1]}y</span>
+                    <h4 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">Experience</h4>
+                    <span className="text-xs text-indigo-400 font-black px-2 py-1 bg-indigo-400/10 rounded-lg">{expRange[0]}–{expRange[1]}y</span>
                 </div>
                 <Slider
                   defaultValue={[0, 20]}
@@ -157,7 +167,7 @@ export default function CandidatesPage() {
                       setPage(1);
                     }
                   }}
-                  className="[&_[role=slider]]:bg-indigo-600"
+                  className="[&_[role=slider]]:h-5 [&_[role=slider]]:w-5 [&_[role=slider]]:bg-indigo-500 [&_[role=slider]]:border-4 [&_[role=slider]]:border-white"
                 />
               </div>
             </CardContent>
@@ -166,55 +176,83 @@ export default function CandidatesPage() {
 
         {/* Main Content */}
         <div className="space-y-6">
+          {error && (
+             <Card className="bg-rose-500/10 border-rose-500/20 p-8 text-center space-y-4">
+                <AlertCircle className="h-10 w-10 text-rose-500 mx-auto" />
+                <p className="text-rose-400 font-bold">{error}</p>
+                <Button onClick={fetchCandidates} variant="outline" className="border-rose-500/20 text-rose-400">Retry Fetch</Button>
+             </Card>
+          )}
+
           {loading && (
             <div className="grid gap-4">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="h-24 bg-slate-900/30 border border-white/5 rounded-2xl animate-pulse" />
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="h-32 bg-slate-900/40 border border-white/5 rounded-3xl animate-pulse flex items-center p-6 gap-6">
+                   <div className="h-14 w-14 rounded-2xl bg-white/5 shrink-0" />
+                   <div className="space-y-3 flex-1">
+                      <div className="h-5 w-1/4 bg-white/5 rounded" />
+                      <div className="h-3 w-1/2 bg-white/5 rounded" />
+                      <div className="flex gap-2">
+                        <div className="h-4 w-16 bg-white/5 rounded" />
+                        <div className="h-4 w-16 bg-white/5 rounded" />
+                      </div>
+                   </div>
+                </div>
               ))}
             </div>
           )}
 
-          {!loading && candidates.length === 0 && (
-            <div className="text-center py-20 border-2 border-dashed border-white/5 rounded-3xl">
-              <p className="text-slate-500">No candidates found with these filters.</p>
+          {!loading && !error && candidates.length === 0 && (
+            <div className="text-center py-32 border-2 border-dashed border-white/5 rounded-[2rem] space-y-6 bg-slate-900/20">
+              <div className="bg-slate-800/50 h-24 w-24 rounded-full flex items-center justify-center mx-auto scale-110">
+                <Users className="h-10 w-10 text-slate-600" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-black text-white">No candidates available</h3>
+                <p className="text-slate-500 max-w-sm mx-auto font-medium">
+                  We couldn't find any candidates matching your active filters. Try pulling data from a source or expanding the experience range.
+                </p>
+              </div>
             </div>
           )}
 
-          {!loading && candidates.length > 0 && (
+          {!loading && !error && candidates.length > 0 && (
             <div className="grid gap-4">
               {candidates.map((c) => (
                 <Link key={c.id} href={`/candidates/${c.id}`}>
-                  <Card className="bg-slate-900/40 border-white/5 hover:border-white/10 hover:bg-slate-900/60 transition-all group cursor-pointer overflow-hidden backdrop-blur-sm">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-slate-300 font-bold group-hover:from-indigo-900 group-hover:to-purple-900 transition-all">
+                  <Card className="bg-slate-900/40 border-white/5 hover:border-indigo-500/30 hover:bg-slate-900/60 transition-all group cursor-pointer overflow-hidden backdrop-blur-md rounded-3xl">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-6">
+                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10 flex items-center justify-center text-slate-300 font-extrabold text-xl group-hover:scale-110 group-hover:shadow-2xl group-hover:shadow-indigo-500/20 transition-all duration-300">
                           {getInitials(c.full_name)}
                         </div>
                         
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2">
-                             <h3 className="text-base font-bold text-white truncate group-hover:text-indigo-400 transition-colors">
-                                {c.full_name}
-                             </h3>
-                             <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                             <div>
+                                <h3 className="text-xl font-black text-white truncate group-hover:text-indigo-400 transition-colors">
+                                    {c.full_name}
+                                </h3>
+                                <p className="text-sm font-bold text-slate-400 truncate mt-0.5">{c.headline}</p>
+                             </div>
+                             <div className="flex gap-2 shrink-0">
                                {c.sources && c.sources.length > 1 && (
-                                 <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 text-[10px]">
-                                    Merged ({c.sources.length})
+                                 <Badge className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20 text-[10px] font-black tracking-widest uppercase">
+                                    Merged
                                  </Badge>
                                )}
-                               <Badge className={`${getSourceColor(c.source)} border text-[10px] capitalize`}>
+                               <Badge className={`${getSourceColor(c.source)} border text-[10px] font-black tracking-widest uppercase px-2 py-1`}>
                                  {c.source.replace("_", " ")}
                                </Badge>
                              </div>
                           </div>
-                          <p className="text-sm text-slate-400 truncate">{c.headline}</p>
                           
-                          <div className="flex items-center gap-4 mt-2 text-[11px] text-slate-500">
-                            <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {c.location || "N/A"}</span>
-                            <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" /> {c.experience_years}y Experience</span>
-                            <div className="flex gap-1">
+                          <div className="flex flex-wrap items-center gap-y-2 gap-x-6 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                            <span className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5 text-slate-600" /> {c.location || "N/A"}</span>
+                            <span className="flex items-center gap-2"><Briefcase className="h-3.5 w-3.5 text-slate-600" /> {c.experience_years}y Exp</span>
+                            <div className="flex flex-wrap gap-2">
                                 {c.skills.slice(0, 3).map(s => (
-                                    <span key={s} className="px-1.5 py-0.5 bg-white/5 rounded text-slate-400">
+                                    <span key={s} className="px-3 py-1 bg-white/5 rounded-full text-slate-400 group-hover:text-indigo-200 transition-colors border border-transparent group-hover:border-indigo-500/20">
                                         {s}
                                     </span>
                                 ))}
@@ -222,7 +260,9 @@ export default function CandidatesPage() {
                           </div>
                         </div>
                         
-                        <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-white transition-all transform group-hover:translate-x-1" />
+                        <div className="p-3 bg-white/5 rounded-xl text-slate-600 transition-all group-hover:bg-indigo-500/10 group-hover:text-white group-hover:translate-x-1">
+                          <ChevronRight className="h-6 w-6" />
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -232,28 +272,28 @@ export default function CandidatesPage() {
           )}
 
           {/* Pagination */}
-          {totalCount > PAGE_SIZE && (
-            <div className="flex items-center justify-center gap-2 pt-4">
+          {!loading && !error && totalCount > PAGE_SIZE && (
+            <div className="flex items-center justify-between pt-10 border-t border-white/5">
                 <Button 
-                    variant="outline" 
-                    size="sm" 
+                    variant="ghost" 
                     disabled={page === 1}
                     onClick={() => setPage(page - 1)}
-                    className="bg-slate-900 border-white/10 text-white"
+                    className="text-slate-400 hover:text-white hover:bg-white/5 font-bold gap-2"
                 >
+                    <ChevronRight className="h-4 w-4 rotate-180" />
                     Previous
                 </Button>
-                <div className="text-sm text-slate-500 px-4">
+                <div className="text-xs font-black text-slate-600 uppercase tracking-widest">
                     Page {page} of {Math.ceil(totalCount / PAGE_SIZE)}
                 </div>
                 <Button 
-                    variant="outline" 
-                    size="sm"
+                    variant="ghost"
                     disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
                     onClick={() => setPage(page + 1)}
-                    className="bg-slate-900 border-white/10 text-white"
+                    className="text-slate-400 hover:text-white hover:bg-white/5 font-bold gap-2"
                 >
                     Next
+                    <ChevronRight className="h-4 w-4" />
                 </Button>
             </div>
           )}
