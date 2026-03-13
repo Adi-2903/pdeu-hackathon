@@ -11,7 +11,9 @@ import {
   X
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Toaster } from "sonner";
 
 export default function DashboardLayout({
   children,
@@ -19,6 +21,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   const navItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -62,9 +65,13 @@ export default function DashboardLayout({
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="group flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+                className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  pathname === item.href
+                    ? 'text-white bg-white/10 shadow-lg shadow-indigo-500/5'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
               >
-                <item.icon className="h-5 w-5 group-hover:text-indigo-400 transition-colors" />
+                <item.icon className={`h-5 w-5 transition-colors ${pathname === item.href ? 'text-indigo-400' : 'group-hover:text-indigo-400'}`} />
                 <span className="font-semibold text-sm">{item.label}</span>
               </Link>
             ))}
@@ -91,6 +98,7 @@ export default function DashboardLayout({
           </div>
         </main>
       </div>
+      <Toaster theme="dark" position="bottom-right" richColors />
     </div>
   );
 }

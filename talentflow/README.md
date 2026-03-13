@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TalentFlow — Unified AI Recruitment Platform
+> 3-Day Hackathon · Antigravity Agent Manager · 12 Phases
 
-## Getting Started
+TalentFlow is a premium, AI-powered recruitment engine designed to ingest candidates from multiple sources (Gmail, Indeed, Zoho, LinkedIn), perform semantic search using **pgvector**, and automate candidate shortlisting and interview scheduling using **Claude 3.5 Sonnet**.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🏗️ Project Structure
+
+TalentFlow follows a modern monorepo-inspired architecture with Docker orchestration for local development.
+
+```text
+talentflow/
+├── app/                      # Next.js 14 (App Router)
+│   ├── (dashboard)/          # Authenticated dashboard views
+│   │   ├── candidates/       # Candidate listing and profiles
+│   │   ├── ingestion/        # Ingestion management UI
+│   │   ├── search/           # AI semantic search interface
+│   │   ├── shortlists/       # AI-scored shortlist views
+│   │   └── page.tsx          # Main Dashboard Home
+│   ├── api/                  # API Routes (Ingestion, Search, Scorer)
+│   ├── auth/                 # Authentication logic
+│   ├── globals.css           # Tailwind + Custom Global Styles
+│   └── layout.tsx            # Root Layout with Fonts & Providers
+├── components/               # React Components (shadcn/ui)
+│   ├── candidates/           # Candidate-specific cards & details
+│   ├── dashboard/            # Charts & Stats widgets
+│   ├── ui/                   # Reusable UI primitives (Buttons, Dialogs, etc.)
+│   └── layout/               # Sidebar, Header, and Shell
+├── lib/                      # Core Logic & Integrations
+│   ├── ai/                   # Claude (Resume parsing, Scoring, Search)
+│   ├── integrations/         # External APIs (Gmail, Indeed, Zoho, LinkedIn)
+│   └── supabase/             # DB Client & Vector utilities
+├── workers/                  # Background Job Processing (Bull Queue)
+│   ├── index.js              # Worker Entrypoint
+│   └── jobs/                 # Job Handlers (Resume parsing, Deduplication)
+├── mcp-bridge/               # MCP Server Adapter
+│   ├── server.js             # Express REST proxy for MCP tools
+│   └── package.json          # MCP SDK dependencies
+├── supabase/                 # Database Management
+│   └── migrations/           # SQL migration files (001-004)
+├── data/                     # Static Mock Data
+├── scripts/                  # Development & Seeding scripts
+├── Dockerfile                # API server container
+├── docker-compose.yml        # Orchestrates: API, Worker, MCP-Bridge, Redis
+└── .env.local                # Environment variables (Gitignored)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Technology Stack
+- **Frontend**: Next.js 14, Tailwind CSS, shadcn/ui, Framer Motion
+- **Database**: Supabase (PostgreSQL) + pgvector for semantic search
+- **AI**: Anthropic Claude 3.5 Sonnet (Parsing & Scoring), OpenAI (Embeddings)
+- **Infrastructure**: Docker, Railway (Services), Vercel (Frontend), Redis (Bull Queue)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Getting Started
 
-## Learn More
+1. **Environment Setup**:
+   Copy `.env.example` to `.env.local` and fill in your Supabase and AI keys.
 
-To learn more about Next.js, take a look at the following resources:
+2. **Docker Orchestration**:
+   ```bash
+   docker-compose up --build
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Database Migration**:
+   Use `npx supabase db push` or apply the migrations in the `supabase/migrations/` folder manually.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Develop**:
+   ```bash
+   npm run dev
+   ```

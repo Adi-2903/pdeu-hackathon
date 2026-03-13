@@ -167,7 +167,7 @@ export default function SearchPage() {
                             <Sparkles className="h-12 w-12 text-purple-500" />
                         </div>
                         <p className="text-sm text-indigo-100 font-medium leading-relaxed italic relative z-10 font-mono">
-                          Claude Intelligence: "{res.reason}"
+                          Claude Intelligence: &quot;{res.reason}&quot;
                         </p>
                       </div>
                     </div>
@@ -210,7 +210,7 @@ export default function SearchPage() {
                   onClick={() => { setQuery(q); handleSearch(); }}
                   className="px-6 py-3 text-xs font-black text-slate-400 border border-white/5 rounded-2xl hover:bg-indigo-600/10 hover:border-indigo-600/30 hover:text-white transition-all transform hover:-translate-y-1"
                 >
-                  "{q}"
+                  &quot;{q}&quot;
                 </button>
               ))}
             </div>

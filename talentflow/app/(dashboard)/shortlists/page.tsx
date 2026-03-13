@@ -194,7 +194,7 @@ export default function ShortlistingPage() {
                             <Sparkles className="h-10 w-10 text-indigo-400" />
                           </div>
                           <p className="text-sm text-indigo-100 font-medium leading-relaxed italic relative z-10 font-mono">
-                            AI Verdict: "{res.reason}"
+                            AI Verdict: &quot;{res.reason}&quot;
                           </p>
                         </div>
                       </div>

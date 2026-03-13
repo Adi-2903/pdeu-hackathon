@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { searchCandidates } from "@/lib/ai/candidate-search";
 
 const searchSchema = z.object({
   query: z.string().min(3, "Query must be at least 3 characters long"),
 });
+
+// Dynamically load mock or real implementation
+const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,6 +21,12 @@ export async function POST(req: NextRequest) {
     }
 
     const { query } = result.data;
+    
+    // Import the appropriate implementation
+    const { searchCandidates } = useMocks
+      ? await import("@/lib/ai/candidate-search.mock")
+      : await import("@/lib/ai/candidate-search");
+    
     const searchResults = await searchCandidates(query);
 
     return NextResponse.json({

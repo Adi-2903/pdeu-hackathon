@@ -4,13 +4,12 @@ import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { 
   Users, Briefcase, AlertCircle, TrendingUp, 
-  RefreshCw, Mail, Database, Zap, ExternalLink,
+  RefreshCw, Mail, Database, Zap,
   ChevronRight, Clock, CheckCircle2, XCircle
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { SourceBreakdownChart } from "@/components/dashboard/source-chart";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -169,7 +168,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-[2fr_1fr] gap-6 lg:gap-8">
+      <div className="grid lg:grid-cols-[2fr_1fr] gap-4 lg:gap-6">
         {/* Main Chart Column */}
         <div className="space-y-6 lg:space-y-8 min-w-0">
             <Card className="bg-slate-900/40 border-white/5 backdrop-blur-md overflow-hidden">

@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
     Dialog,
     DialogContent,
@@ -19,7 +18,7 @@ import {
 import { 
     ArrowLeft, MapPin, Briefcase, GraduationCap, 
     Calendar, Mail, Phone, History, Sparkles, 
-    ExternalLink, PlusCircle, ClipboardList, Loader2, Copy, Check
+    ExternalLink, PlusCircle, ClipboardList, Loader2, Copy, Check, AlertCircle
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -61,6 +60,7 @@ export default function CandidateProfilePage() {
   const { id } = useParams();
   const [candidate, setCandidate] = useState<Candidate | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [applications, setApplications] = useState<any[]>([]);
   
   // Scheduling States
@@ -79,17 +79,19 @@ export default function CandidateProfilePage() {
   }, [id]);
 
   const fetchCandidate = async () => {
+    setError(null);
     try {
-      const { data, error } = await supabase
+      const { data, error: fetchError } = await supabase
         .from("candidates")
         .select("*")
         .eq("id", id)
         .single();
 
-      if (error) throw error;
+      if (fetchError) throw fetchError;
       setCandidate(data);
     } catch (err) {
       console.error("Error fetching candidate:", err);
+      setError("Failed to load candidate profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -173,28 +175,71 @@ export default function CandidateProfilePage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto py-12 px-4 space-y-8 animate-pulse">
-        <div className="h-8 w-32 bg-slate-900 rounded" />
-        <div className="flex gap-8">
-            <div className="h-32 w-32 rounded-full bg-slate-900" />
-            <div className="flex-1 space-y-4">
-                <div className="h-10 w-2/3 bg-slate-900 rounded" />
-                <div className="h-4 w-1/3 bg-slate-900 rounded" />
+      <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-700">
+        <div className="h-5 w-32 bg-white/5 rounded animate-pulse" />
+        <div className="flex flex-col md:flex-row items-start gap-8">
+          <div className="h-32 w-32 rounded-3xl bg-white/5 animate-pulse shrink-0" />
+          <div className="flex-1 space-y-4 w-full">
+            <div className="h-10 w-2/3 bg-white/5 rounded animate-pulse" />
+            <div className="h-5 w-1/3 bg-white/5 rounded animate-pulse" />
+            <div className="flex gap-4 pt-2">
+              <div className="h-4 w-28 bg-white/5 rounded animate-pulse" />
+              <div className="h-4 w-36 bg-white/5 rounded animate-pulse" />
+              <div className="h-4 w-24 bg-white/5 rounded animate-pulse" />
             </div>
+          </div>
+        </div>
+        <div className="h-px w-full bg-white/5" />
+        <div className="grid lg:grid-cols-[2fr_1fr] gap-12">
+          <div className="space-y-8">
+            <div className="h-6 w-40 bg-white/5 rounded animate-pulse" />
+            <div className="flex flex-wrap gap-2">
+              {[1,2,3,4,5,6].map(i => <div key={i} className="h-7 w-20 bg-white/5 rounded-lg animate-pulse" />)}
+            </div>
+            <div className="h-6 w-32 bg-white/5 rounded animate-pulse" />
+            {[1,2,3].map(i => <div key={i} className="h-20 bg-white/5 rounded-xl animate-pulse" />)}
+          </div>
+          <div className="space-y-8">
+            {[1,2,3].map(i => <div key={i} className="h-16 bg-white/5 rounded-xl animate-pulse" />)}
+          </div>
         </div>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="max-w-5xl mx-auto">
+        <Link href="/candidates" className="text-slate-500 hover:text-white flex items-center gap-2 transition-colors mb-8">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Talent Pool
+        </Link>
+        <Card className="bg-rose-500/10 border-rose-500/20 p-8 text-center space-y-4">
+          <AlertCircle className="h-10 w-10 text-rose-500 mx-auto" />
+          <p className="text-rose-400 font-bold">{error}</p>
+          <Button onClick={fetchCandidate} variant="outline" className="border-rose-500/20 text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all">Retry</Button>
+        </Card>
+      </div>
+    );
+  }
+
   if (!candidate) {
-    return <div className="text-center py-20 text-slate-400">Candidate not found.</div>;
+    return (
+      <div className="max-w-5xl mx-auto">
+        <Link href="/candidates" className="text-slate-500 hover:text-white flex items-center gap-2 transition-colors mb-8">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Talent Pool
+        </Link>
+        <div className="text-center py-20 text-slate-400">Candidate not found.</div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-5xl mx-auto py-12 px-4 space-y-12">
+    <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in duration-700">
       {/* Top Nav */}
-      <Link href="/candidates" className="text-slate-500 hover:text-white flex items-center gap-2 transition-colors">
-        <ArrowLeft className="h-4 w-4" />
+      <Link href="/candidates" className="text-slate-500 hover:text-white flex items-center gap-2 transition-colors group">
+        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
         Back to Talent Pool
       </Link>
 
@@ -214,11 +259,11 @@ export default function CandidateProfilePage() {
             <div className="flex gap-2">
                 <Dialog>
                     <DialogTrigger render={
-                        <Button className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-900/40 flex items-center gap-2 h-auto">
+                        <Button className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-900/40 flex items-center gap-2 h-auto hover:scale-105 active:scale-95" />
+                    }>
                             <Calendar className="h-4 w-4" />
                             Interview
-                        </Button>
-                    } />
+                    </DialogTrigger>
                     <DialogContent className="bg-slate-950 border-white/10 text-white max-w-2xl">
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black flex items-center gap-2">
@@ -291,18 +336,18 @@ export default function CandidateProfilePage() {
                                         Schedule Another
                                     </Button>
                                     <Button className="bg-emerald-600 hover:bg-emerald-500 rounded-xl" render={
-                                        <a href={scheduleResult.event_link} target="_blank" rel="noreferrer">
+                                        <a href={scheduleResult.event_link} target="_blank" rel="noreferrer" />
+                                    }>
                                             View in Calendar
                                             <ExternalLink className="h-4 w-4 ml-2" />
-                                        </a>
-                                    } />
+                                    </Button>
                                 </DialogFooter>
                             </div>
                         )}
                     </DialogContent>
                 </Dialog>
 
-                <Button className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all border border-white/5 flex items-center gap-2 h-auto">
+                <Button className="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all border border-white/5 hover:border-white/10 flex items-center gap-2 h-auto hover:scale-105 active:scale-95">
                     <PlusCircle className="h-4 w-4" />
                     Shortlist
                 </Button>

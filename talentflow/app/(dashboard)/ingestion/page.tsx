@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Upload, Mail, Globe, Loader2, CheckCircle, AlertCircle, FileText } from "lucide-react";
+import { toast } from "sonner";
 
 export default function IngestionPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -25,12 +27,12 @@ export default function IngestionPage() {
       });
       const result = await response.json();
       if (response.ok) {
-        alert(result.message);
+        toast.success(result.message || `Successfully synced ${source}`);
       } else {
-        alert(`Error: ${result.error}`);
+        toast.error(`Error: ${result.error || "Ingestion failed"}`);
       }
     } catch (error) {
-      alert(`Failed to trigger ${source} ingestion.`);
+      toast.error(`Failed to trigger ${source} ingestion. Check your network connection.`);
       console.error(error);
     } finally {
       setIngesting(null);
@@ -53,13 +55,13 @@ export default function IngestionPage() {
       const result = await response.json();
 
       if (response.ok) {
-        alert(`Success! File uploaded and queued for processing.`);
+        toast.success("File uploaded and queued for AI processing.");
         setFile(null);
       } else {
-        alert(`Error: ${result.error}`);
+        toast.error(`Upload Error: ${result.error}`);
       }
     } catch (error) {
-      alert("Failed to upload. Check console.");
+      toast.error("Upload failed. Check your network connection and try again.");
       console.error(error);
     } finally {
       setUploading(false);
@@ -67,69 +69,117 @@ export default function IngestionPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight text-white">Ingestion</h1>
-        <p className="text-slate-400">Add candidates to TalentFlow via resume upload or MCP sources.</p>
+    <div className="space-y-8 animate-in fade-in duration-700">
+      <div className="flex flex-col gap-3">
+        <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tighter flex items-center gap-4">
+          <Upload className="h-10 w-10 lg:h-12 lg:w-12 text-indigo-400" />
+          Ingestion
+        </h1>
+        <p className="text-slate-400 text-lg font-medium max-w-3xl">
+          Add candidates to TalentFlow via resume upload or MCP sources. All files are AI-parsed and indexed for semantic search.
+        </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-slate-900 border-white/10">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="bg-slate-900/40 border-white/5 backdrop-blur-md overflow-hidden rounded-3xl group hover:border-indigo-500/20 transition-all">
           <CardHeader>
-            <CardTitle className="text-white">Resume Upload</CardTitle>
-            <CardDescription className="text-slate-400">
+            <div className="p-3 bg-indigo-500/10 rounded-2xl w-fit mb-3 group-hover:bg-indigo-500/20 transition-colors">
+              <FileText className="h-6 w-6 text-indigo-400" />
+            </div>
+            <CardTitle className="text-white text-xl font-bold">Resume Upload</CardTitle>
+            <CardDescription className="text-slate-500 font-medium">
               Upload a PDF resume to parse with Claude and index for search.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="resume" className="text-slate-200">PDF File</Label>
-              <Input 
-                id="resume" 
-                type="file" 
-                accept="application/pdf"
-                onChange={handleFileChange}
-                className="bg-slate-950 border-white/10 text-slate-200"
-              />
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <Label htmlFor="resume" className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">PDF File</Label>
+              <div className={`
+                relative border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer
+                ${file ? 'border-indigo-500/30 bg-indigo-500/5' : 'border-white/5 hover:border-white/10 hover:bg-white/[0.02]'}
+              `}>
+                <Input 
+                  id="resume" 
+                  type="file" 
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+                {file ? (
+                  <div className="space-y-2">
+                    <CheckCircle className="h-8 w-8 text-indigo-400 mx-auto" />
+                    <p className="text-sm font-bold text-indigo-300 truncate">{file.name}</p>
+                    <p className="text-xs text-slate-500">{(file.size / 1024).toFixed(1)} KB</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Upload className="h-8 w-8 text-slate-600 mx-auto" />
+                    <p className="text-sm text-slate-500 font-medium">Click or drag to upload a PDF</p>
+                  </div>
+                )}
+              </div>
             </div>
             <Button 
               onClick={handleUpload} 
               disabled={!file || uploading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500"
+              className="w-full h-12 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-900/20 hover:scale-[1.02] active:scale-95"
             >
-              {uploading ? "Processing..." : "Upload & Queue"}
+              {uploading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  Processing...
+                </>
+              ) : (
+                "Upload & Queue"
+              )}
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900 border-white/10">
+        <Card className="bg-slate-900/40 border-white/5 backdrop-blur-md overflow-hidden rounded-3xl group hover:border-purple-500/20 transition-all">
           <CardHeader>
-            <CardTitle className="text-white">External Sources</CardTitle>
-            <CardDescription className="text-slate-400">
+            <div className="p-3 bg-purple-500/10 rounded-2xl w-fit mb-3 group-hover:bg-purple-500/20 transition-colors">
+              <Globe className="h-6 w-6 text-purple-400" />
+            </div>
+            <CardTitle className="text-white text-xl font-bold">External Sources</CardTitle>
+            <CardDescription className="text-slate-500 font-medium">
               Trigger background sync from connected MCP integrations.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+          <CardContent className="space-y-6">
+            <div className="grid gap-4">
               <Button 
                 variant="outline"
                 onClick={() => handleExternalIngest("gmail")}
                 disabled={!!ingesting}
-                className="bg-slate-950 border-white/10 text-white hover:bg-slate-800"
+                className="w-full h-14 bg-white/5 border-white/5 text-white hover:bg-indigo-500/10 hover:border-indigo-500/30 hover:text-indigo-300 rounded-2xl transition-all font-bold text-sm"
               >
-                {ingesting === "gmail" ? "Syncing Gmail..." : "Sync Gmail"}
+                {ingesting === "gmail" ? (
+                  <><Loader2 className="h-5 w-5 animate-spin mr-2" /> Syncing Gmail...</>
+                ) : (
+                  <><Mail className="h-5 w-5 mr-2 text-indigo-400" /> Sync Gmail</>
+                )}
               </Button>
               <Button 
                 variant="outline"
                 onClick={() => handleExternalIngest("indeed")}
                 disabled={!!ingesting}
-                className="bg-slate-950 border-white/10 text-white hover:bg-slate-800"
+                className="w-full h-14 bg-white/5 border-white/5 text-white hover:bg-purple-500/10 hover:border-purple-500/30 hover:text-purple-300 rounded-2xl transition-all font-bold text-sm"
               >
-                {ingesting === "indeed" ? "Syncing Indeed..." : "Sync Indeed"}
+                {ingesting === "indeed" ? (
+                  <><Loader2 className="h-5 w-5 animate-spin mr-2" /> Syncing Indeed...</>
+                ) : (
+                  <><Globe className="h-5 w-5 mr-2 text-purple-400" /> Sync Indeed</>
+                )}
               </Button>
             </div>
-            <div className="text-xs text-slate-500 italic text-center">
-              Requires configured MCP Bridge with valid tokens in env.
+            <div className="p-4 bg-white/5 border border-white/5 rounded-2xl">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-4 w-4 text-slate-500 mt-0.5 shrink-0" />
+                <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                  Requires configured MCP Bridge with valid tokens in your environment variables.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>

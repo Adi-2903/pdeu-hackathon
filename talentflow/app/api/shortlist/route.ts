@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { scoreCandidates } from "@/lib/ai/shortlist-scorer";
 
 const shortlistSchema = z.object({
   job_description: z.string().min(50, "Job description must be at least 50 characters long"),
   job_id: z.string().uuid().optional(),
   candidate_ids: z.array(z.string().uuid()).optional(),
 });
+
+// Dynamically load mock or real implementation
+const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS === "true";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,6 +23,12 @@ export async function POST(req: NextRequest) {
     }
 
     const { job_description, job_id, candidate_ids } = result.data;
+    
+    // Import the appropriate implementation
+    const { scoreCandidates } = useMocks
+      ? await import("@/lib/ai/shortlist-scorer.mock")
+      : await import("@/lib/ai/shortlist-scorer");
+    
     const rankedCandidates = await scoreCandidates(job_description, job_id, candidate_ids);
 
     return NextResponse.json({

@@ -5,11 +5,9 @@ import { createClient } from "@supabase/supabase-js";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Search, MapPin, Briefcase, Filter, ChevronRight, User, AlertCircle, Users } from "lucide-react";
+import { Search, MapPin, Briefcase, Filter, ChevronRight, AlertCircle, Users } from "lucide-react";
 import Link from "next/link";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -210,7 +208,7 @@ export default function CandidatesPage() {
               <div className="space-y-2">
                 <h3 className="text-2xl font-black text-white">No candidates available</h3>
                 <p className="text-slate-500 max-w-sm mx-auto font-medium">
-                  We couldn't find any candidates matching your active filters. Try pulling data from a source or expanding the experience range.
+                  We couldn&apos;t find any candidates matching your active filters. Try pulling data from a source or expanding the experience range.
                 </p>
               </div>
             </div>
