@@ -1,0 +1,40 @@
+import { NextResponse } from "next/server";
+import { fetchGmailCandidates } from "@/lib/integrations/gmail";
+import { createClient } from "@supabase/supabase-js";
+
+export async function POST() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  try {
+    const result = await fetchGmailCandidates();
+
+    // Log to ingestion_logs
+    await supabase.from("ingestion_logs").insert({
+      source: "gmail",
+      status: "completed",
+      total_fetched: result.queued,
+      total_inserted: result.queued, // Assuming they will be processed
+      started_at: new Date().toISOString(),
+      finished_at: new Date().toISOString()
+    });
+
+    return NextResponse.json({ 
+      queued: result.queued, 
+      message: `Successfully queued ${result.queued} candidates from Gmail.` 
+    });
+  } catch (error) {
+    console.error("[Gmail API] Error:", error);
+    
+    await supabase.from("ingestion_logs").insert({
+      source: "gmail",
+      status: "failed",
+      error_message: error instanceof Error ? error.message : "Unknown error",
+      started_at: new Date().toISOString(),
+      finished_at: new Date().toISOString()
+    });
+
+    return NextResponse.json({ error: "Failed to fetch from Gmail" }, { status: 500 });
+  }
+}
