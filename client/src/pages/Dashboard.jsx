@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend, CartesianGrid 
 } from 'recharts';
-import { Bell, Plus, ArrowUpRight, ArrowDownRight, MoreHorizontal, Calendar, Video, Phone } from 'lucide-react';
+import { Bell, Plus, ArrowUpRight, ArrowDownRight, MoreHorizontal, Calendar, Video, Phone, Target } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
+import FocusModeModal from '../components/ui/FocusModeModal';
 
 // --- MOCK DATA ---
 const pipelineData = [
@@ -80,6 +81,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 // --- MAIN COMPONENT ---
 const Dashboard = () => {
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
 
   return (
     <div className="p-8 pb-20 min-h-screen">
@@ -87,10 +89,19 @@ const Dashboard = () => {
       {/* ━━━ HEADER SECTION ━━━ */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Recruitment Overview</h1>
-        <button className="bg-[#FF6B00] text-white px-5 py-2.5 rounded-xl font-semibold shadow-[0_4px_12px_rgba(255,107,0,0.25)] hover:bg-[#FF8C42] hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit">
-          <Plus size={18} className="mr-2" />
-          Post New Job
-        </button>
+        <div className="flex items-center space-x-3">
+           <button 
+             onClick={() => setIsFocusModalOpen(true)}
+             className="glass-panel text-gray-900 border-[#FF6B00]/40 px-5 py-2.5 rounded-xl font-bold hover:bg-white/10 hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit"
+           >
+             <Target size={18} className="mr-2 text-[#FF6B00]" />
+             Hire by Friday
+           </button>
+           <button className="bg-[#FF6B00] text-white px-5 py-2.5 rounded-xl font-semibold shadow-[0_4px_12px_rgba(255,107,0,0.25)] hover:bg-[#FF8C42] hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit">
+             <Plus size={18} className="mr-2" />
+             Post New Job
+           </button>
+        </div>
       </div>
 
       {/* ━━━ TABS ROW ━━━ */}
@@ -479,6 +490,10 @@ const Dashboard = () => {
           animation: spin 3s linear infinite;
         }
       `}} />
+      <FocusModeModal 
+        isOpen={isFocusModalOpen} 
+        onClose={() => setIsFocusModalOpen(false)} 
+      />
     </div>
   );
 };

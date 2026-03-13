@@ -16,6 +16,40 @@ const upload = multer({
   }
 });
 
+// Store active SSE connections
+const activeStreams = new Map();
+
+// GET /api/upload/resume-stream
+// Initiates an SSE connection
+router.get('/resume-stream', (req, res) => {
+  const { sessionId } = req.query;
+  if (!sessionId) {
+    return res.status(400).json({ status: 'error', message: 'sessionId required' });
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  // Send initial connected event
+  res.write(`data: ${JSON.stringify({ type: 'connected', message: 'Stream active' })}\n\n`);
+
+  activeStreams.set(sessionId, res);
+
+  req.on('close', () => {
+    activeStreams.delete(sessionId);
+  });
+});
+
+// Helper function to emit events to a specific session
+const emitToStream = (sessionId, data) => {
+  const stream = activeStreams.get(sessionId);
+  if (stream) {
+    stream.write(`data: ${JSON.stringify(data)}\n\n`);
+  }
+};
+
 // Helper for generic error message
 const sendError = (res, statusCode, message) => {
   return res.status(statusCode).json({ status: 'error', message });
@@ -51,6 +85,36 @@ router.post('/resume', upload.single('resume'), async (req, res) => {
         { date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), event: 'Resume parsed by AI', type: 'ai' }
       ]
     };
+
+    const sessionId = req.query.sessionId;
+
+    if (sessionId && activeStreams.has(sessionId)) {
+      // Stream is active, let's simulate a staggered extraction process for UI wow-factor
+      const delay = ms => new Promise(res => setTimeout(res, ms));
+      
+      emitToStream(sessionId, { type: 'field', category: 'Identity', name: 'Name', value: parsedData.name });
+      await delay(400);
+      emitToStream(sessionId, { type: 'field', category: 'Contact', name: 'Email', value: parsedData.email });
+      await delay(300);
+      emitToStream(sessionId, { type: 'field', category: 'Contact', name: 'Phone', value: parsedData.phone });
+      await delay(500);
+      emitToStream(sessionId, { type: 'field', category: 'Professional', name: 'Role', value: parsedData.currentRole });
+      await delay(450);
+      
+      if (parsedData.skills && parsedData.skills.length > 0) {
+        emitToStream(sessionId, { type: 'field', category: 'Technical', name: 'Top Skills', value: parsedData.skills.slice(0, 3).join(', ') });
+        await delay(500);
+      }
+      
+      emitToStream(sessionId, { type: 'field', category: 'AI Metrics', name: 'Match Score', value: `${newCandidate.score}%` });
+      await delay(600);
+      
+      emitToStream(sessionId, { type: 'complete', data: newCandidate });
+      
+      // We don't need to return data in the HTTP POST response if SSE is handling it,
+      // but we return a generic success for the fetch call.
+      return res.status(200).json({ status: 'success', message: 'Streaming to client' });
+    }
 
     // 3. (Mock) Save to Database / Check for duplicates
     // In a real app we would query DB by email/phone to merge records

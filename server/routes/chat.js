@@ -16,15 +16,26 @@ const candidatesContext = `Available Candidates:
 
 router.post('/', async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, context } = req.body;
     
     if (!message) {
       return res.status(400).json({ error: 'Message required' });
     }
 
     if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_api_key_here') {
-       // Mock response
-       return res.json({ reply: `Hi! I received: "${message}". I am operating in Mock mode since no API key is set. I found 3 engineers matching your query.` });
+       // Context-aware Mock response
+       let contextIntro = "";
+       if (context && context.path) {
+         if (context.path.includes('/candidates')) {
+           contextIntro = "**[Context: Candidate Database]**\nI see you are looking at the Candidates pool. ";
+         } else if (context.path.includes('/dashboard') || context.path === '/') {
+           contextIntro = "**[Context: Dashboard]**\nI'm analyzing your high-level pipeline metrics. ";
+         } else if (context.path.includes('/pipeline')) {
+           contextIntro = "**[Context: Pipeline Board]**\nI see the current stage progressions. ";
+         }
+       }
+
+       return res.json({ reply: `${contextIntro}\nI received: "${message}".\n\n*(Note: Operating in Mock mode since no API key is set. I found 3 engineers matching your query.)*` });
     }
 
     const response = await anthropic.messages.create({

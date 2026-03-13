@@ -10,7 +10,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
-import { Mail, Calendar, StickyNote, MoreHorizontal, Filter, Search, Sparkles, Clock } from 'lucide-react';
+import Modal from '../components/ui/Modal';
+import OrangeButton from '../components/ui/OrangeButton';
+import { Mail, Calendar, StickyNote, MoreHorizontal, Filter, Search, Sparkles, Clock, Archive, RefreshCw } from 'lucide-react';
 
 const COLUMNS = [
   { id: 'applied', title: 'APPLIED' },
@@ -28,6 +30,11 @@ const INITIAL_CANDIDATES = [
   { id: 'c3', name: 'Michael Scott', role: 'Sales Director', avatar: 'M', score: 76, daysInStage: 1, stage: 'shortlisted' },
   { id: 'c4', name: 'Emma Watson', role: 'UX Designer', avatar: 'E', score: 98, daysInStage: 8, stage: 'interview' },
   { id: 'c5', name: 'David Lee', role: 'Sr. Frontend', avatar: 'D', score: 91, daysInStage: 3, stage: 'offer' },
+];
+
+const PASSIVE_POOL = [
+  { id: 'p1', name: 'Nina Williams', role: 'Frontend Eng.', score: 89, reason: 'Great cultural fit, runner-up for previous role.' },
+  { id: 'p2', name: 'James Holden', role: 'React Developer', score: 85, reason: 'Strong technical skills, previously too junior but now aged.' }
 ];
 
 const CandidateCard = ({ candidate, isDragging }) => {
@@ -121,6 +128,11 @@ const PipelineColumn = ({ column, candidates }) => {
 const Pipeline = () => {
   const [candidates, setCandidates] = useState(INITIAL_CANDIDATES);
   const [activeCandidate, setActiveCandidate] = useState(null);
+  
+  // Passive Pool state
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [pendingRejectCandidate, setPendingRejectCandidate] = useState(null);
+  const [passivePool, setPassivePool] = useState(PASSIVE_POOL);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -181,11 +193,45 @@ const Pipeline = () => {
     if (!over) return;
     
     const isOverColumn = over.data.current?.type === 'Column';
-    if(isOverColumn && active.data.current?.candidate?.stage !== over.id) {
-       // Example side effect:
-       console.log(`Moved ${active.data.current.candidate.name} to ${over.id}`);
-       // Trigger auto email / DB save here
+    const isOverCandidate = over.data.current?.type === 'Candidate';
+    
+    // Determine the actual destination column ID
+    let destColumnId = null;
+    if (isOverColumn) destColumnId = over.id;
+    else if (isOverCandidate) destColumnId = over.data.current.candidate.stage;
+
+    // We check if the destination is 'rejected' and the original wasn't (so they just got dropped in rejected)
+    if (destColumnId === 'rejected' && active.data.current?.candidate?.stage !== 'rejected') {
+       // Intercept the drop! Revert the candidate back to previous state visually (by forcing a re-render or letting the modal handle confirmation).
+       // Actually, react-dnd already mutated state in handleDragOver for smoothness.
+       // So we just pop the modal now.
+       setPendingRejectCandidate(active.data.current.candidate);
+       setIsRejectModalOpen(true);
     }
+  };
+
+  const handleConfirmReject = (action) => {
+    if (!pendingRejectCandidate) return;
+
+    if (action === 'pool') {
+       // Add to passive pool
+       setPassivePool(prev => [{
+         id: pendingRejectCandidate.id,
+         name: pendingRejectCandidate.name,
+         role: pendingRejectCandidate.role,
+         score: pendingRejectCandidate.score,
+         reason: 'Automatically moved from Pipeline by recruiter.'
+       }, ...prev]);
+       
+       // Remove from candidates (since they are no longer actively tracking in the kanban)
+       setCandidates(prev => prev.filter(c => c.id !== pendingRejectCandidate.id));
+    } else {
+       // Just let them stay in the rejected column (default behavior already applied in handleDragOver)
+       console.log("Archived entirely.");
+    }
+    
+    setIsRejectModalOpen(false);
+    setPendingRejectCandidate(null);
   };
 
   const dropAnimation = {
@@ -217,6 +263,35 @@ const Pipeline = () => {
         </GlassCard>
       </div>
 
+      {/* ━━━ PASSIVE TALENT POOL SUGGESTIONS ━━━ */}
+      {passivePool.length > 0 && (
+         <div className="mb-6 animate-in slide-in-from-top-4 fade-in duration-500">
+           <h3 className="text-gray-900 font-bold mb-3 flex items-center text-sm">
+             <Sparkles size={16} className="text-[#FF6B00] mr-2" /> AI Suggested from Passive Pool
+             <span className="ml-2 text-xs font-normal text-gray-500 bg-white px-2 py-0.5 rounded-full border border-glass-border">Matches for open roles</span>
+           </h3>
+           <div className="flex space-x-4 overflow-x-auto pb-2 custom-scrollbar">
+             {passivePool.map((p, i) => (
+                <GlassCard key={i} className="min-w-[300px] max-w-[300px] p-4 flex flex-col justify-between border-[#FF6B00]/20 hover:border-[#FF6B00] transition-colors relative group">
+                   <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="font-bold text-gray-900 text-sm">{p.name}</h4>
+                        <p className="text-[#FF6B00] text-xs font-semibold">{p.role}</p>
+                      </div>
+                      <Badge className="!bg-[#FF6B00]/10 !text-[#FF6B00] font-bold shadow-none !border-[#FF6B00]/20">
+                        {p.score}%
+                      </Badge>
+                   </div>
+                   <p className="text-gray-500 text-xs italic mb-4 leading-relaxed line-clamp-2">"{p.reason}"</p>
+                   <button className="flex items-center justify-center w-full py-1.5 glass-panel text-[#FF6B00] hover:bg-[#FF6B00] hover:text-white font-bold text-xs rounded-lg transition-all border border-[#FF6B00]/30 shadow-none hover:shadow-[0_4px_10px_rgba(255,107,0,0.3)]">
+                     <RefreshCw size={12} className="mr-1.5" /> Re-activate Candidate
+                   </button>
+                </GlassCard>
+             ))}
+           </div>
+         </div>
+      )}
+
       {/* ━━━ KANBAN BOARD ━━━ */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden pb-4 custom-scrollbar">
         <DndContext 
@@ -243,6 +318,28 @@ const Pipeline = () => {
           </DragOverlay>
         </DndContext>
       </div>
+      
+      {/* ━━━ REJECT ACTION MODAL ━━━ */}
+      <Modal isOpen={isRejectModalOpen} onClose={() => handleConfirmReject('archive')} title="Review Rejection">
+         <div className="p-6 text-center">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#FF6B00]/20 to-[#FF6B00]/5 flex items-center justify-center rounded-2xl mb-4 border border-[#FF6B00]/20">
+               <Archive size={32} className="text-[#FF6B00]" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Move to Talent Pool?</h3>
+            <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+               You just rejected <span className="font-bold text-gray-900">{pendingRejectCandidate?.name}</span>. 
+               Would you like to archive them entirely, or move them to the AI Passive Talent Pool for future matching?
+            </p>
+            <div className="flex flex-col space-y-3">
+               <OrangeButton onClick={() => handleConfirmReject('pool')} className="w-full py-3">
+                 <Sparkles size={16} className="mr-2" /> Move to AI Talent Pool
+               </OrangeButton>
+               <button onClick={() => handleConfirmReject('archive')} className="w-full py-3 glass-panel text-gray-500 hover:text-red-500 hover:border-red-500/30 transition-colors font-bold rounded-xl text-sm">
+                 Archive Entirely
+               </button>
+            </div>
+         </div>
+      </Modal>
 
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { height: 8px; width: 8px; }

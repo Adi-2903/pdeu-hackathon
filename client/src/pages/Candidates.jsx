@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import axios from 'axios';
+import ResumeUploadModal from '../components/ui/ResumeUploadModal';
 
 // ... (Constants omitted for brevity, keeping existing implementation)
 const STATUS_COLORS = {
@@ -50,7 +51,13 @@ const MOCK_CANDIDATES = [
          "Describe a time you had to push back on a design requirement due to technical constraints."
        ],
        cultureFit: "Highly collaborative, values documentation, proven remote capability.",
-       metrics: [{ name: 'Skills Match', value: 92 }, { name: 'Experience', value: 95 }, { name: 'Education', value: 85 }, { name: 'Culture', value: 90 }]
+       metrics: [
+         { name: 'Skills Match', value: 92, reason: "Deep overlap in modern React patterns and performance tuning." }, 
+         { name: 'Experience', value: 95, reason: "8 years at strictly top-tier engineering orgs (Google)." }, 
+         { name: 'Education', value: 85, reason: "Solid foundational BS from Stanford, but no advanced degrees." }, 
+         { name: 'Culture', value: 90, reason: "Strong indicator of remote success based on GitHub activity." },
+         { name: 'Leadership', value: 88, reason: "Mentored 5+ engineers, leading frontend architecture." }
+       ]
     }
   },
   { 
@@ -80,9 +87,35 @@ const MOCK_CANDIDATES = [
   },
 ];
 
+const CustomRadarTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="glass-panel p-3 max-w-[200px] border border-[#FF6B00]/30 shadow-[0_4px_20px_rgba(255,107,0,0.15)] rounded-xl bg-white/95 backdrop-blur-md z-50">
+        <p className="font-bold text-gray-900 mb-1 flex items-center justify-between border-b border-glass-border pb-1">
+          {data.name} <span className="text-[#FF6B00]">{data.value}%</span>
+        </p>
+        <p className="text-xs text-gray-600 leading-tight mt-1">
+          {data.reason || 'AI evaluated based on resume keywords and historical trajectory.'}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const CandidateModal = ({ candidate, onClose }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [isReengageOpen, setIsReengageOpen] = useState(false);
+  const { addToast } = useToast();
   if (!candidate) return null;
+
+  const isGhost = candidate.id === 2 || (candidate.status === 'Interviewing' || candidate.status === 'Offer') && (candidate.lastActive && candidate.lastActive.includes('d') && parseInt(candidate.lastActive) >= 1);
+
+  const handleReengage = () => {
+    setIsReengageOpen(false);
+    addToast('Re-engagement sequence started', 'success');
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-hidden">
@@ -163,7 +196,13 @@ const CandidateModal = ({ candidate, onClose }) => {
 
            {/* Quick Actions */}
            <div className="mt-auto space-y-3 pt-4 border-t border-glass-border">
-             <OrangeButton className="w-full py-3 shadow-[0_4px_16px_rgba(255,107,0,0.3)]">Shortlist Candidate</OrangeButton>
+             {isGhost ? (
+               <OrangeButton onClick={() => setIsReengageOpen(true)} className="w-full py-3 shadow-[0_4px_16px_rgba(255,107,0,0.3)] !bg-red-500 hover:!bg-red-600 !shadow-red-500/30">
+                 <Sparkles size={16} className="mr-2" /> AI Re-engage
+               </OrangeButton>
+             ) : (
+               <OrangeButton className="w-full py-3 shadow-[0_4px_16px_rgba(255,107,0,0.3)]">Shortlist Candidate</OrangeButton>
+             )}
              <div className="grid grid-cols-2 gap-3">
                <button className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center">
                  <Calendar size={14} className="mr-1.5"/> Schedule
@@ -238,11 +277,18 @@ const CandidateModal = ({ candidate, onClose }) => {
                 <div>
                    <h3 className="text-lg font-bold text-gray-900 mb-4">Competency Radar</h3>
                    <GlassCard className="h-64 flex items-center justify-center p-2">
-                     <ResponsiveContainer width="100%" height="100%">
-                        <RadarChart cx="50%" cy="50%" outerRadius="70%" data={candidate.aiInsights?.metrics || []}>
-                          <PolarGrid stroke="rgba(255,255,255,0.1)" />
-                          <PolarAngleAxis dataKey="name" tick={{fill: '#AEAEB2', fontSize: 10}} />
-                          <Radar name="Candidate" dataKey="value" stroke="#FF6B00" fill="#FF6B00" fillOpacity={0.4} />
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RadarChart cx="50%" cy="50%" outerRadius="65%" data={candidate.aiInsights?.metrics || []}>
+                          <PolarGrid stroke="rgba(0,0,0,0.05)" />
+                          <PolarAngleAxis dataKey="name" tick={{fill: '#636366', fontSize: 11, fontWeight: 600}} />
+                          <Tooltip content={<CustomRadarTooltip />} cursor={{ stroke: 'rgba(255,107,0,0.2)', strokeWidth: 1 }} />
+                          <Radar name="Candidate" dataKey="value" stroke="#FF6B00" strokeWidth={2} fill="url(#colorOrange)" fillOpacity={0.5} activeDot={{ r: 4, fill: '#FF6B00', stroke: '#fff', strokeWidth: 2 }} />
+                          <defs>
+                            <linearGradient id="colorOrange" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#FF6B00" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="#FF6B00" stopOpacity={0.1}/>
+                            </linearGradient>
+                          </defs>
                         </RadarChart>
                      </ResponsiveContainer>
                    </GlassCard>
@@ -356,6 +402,23 @@ const CandidateModal = ({ candidate, onClose }) => {
         </div>
       </div>
       
+      {/* RE-ENGAGE MODAL */}
+      <Modal isOpen={isReengageOpen} onClose={() => setIsReengageOpen(false)} title="🤖 AI Re-engagement">
+        <div className="p-4 bg-[#F5F5F7] rounded-xl border border-glass-border mb-6">
+          <p className="text-sm text-gray-900 font-bold mb-2">Drafted Message (Auto-generated)</p>
+          <div className="bg-white p-4 rounded-lg border border-glass-border text-sm text-gray-600 font-mono shadow-sm">
+            Hi {candidate.name.split(' ')[0]},<br/><br/>
+            I noticed we haven't heard back since your last {candidate.status.toLowerCase()} step for the {candidate.role} role.<br/><br/>
+            Are you still exploring opportunities? We'd love to keep the conversation going if so.<br/><br/>
+            Best,<br/>TalentOS Team
+          </div>
+        </div>
+        <div className="flex justify-end space-x-3">
+          <button onClick={() => setIsReengageOpen(false)} className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">Cancel</button>
+          <OrangeButton onClick={handleReengage}>Send Sequence</OrangeButton>
+        </div>
+      </Modal>
+
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -379,7 +442,7 @@ const Candidates = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const filters = ['All', 'New', 'Shortlisted', 'Interviewing', 'Offer Extended'];
+  const filters = ['All', 'New', 'Screening', 'Shortlisted', 'Interview', 'Offer', 'Hired', '👻 Ghosts'];
 
   useEffect(() => {
     fetchCandidates();
@@ -440,7 +503,10 @@ const Candidates = () => {
           <p className="text-gray-500 font-medium">Manage, analyze, and track your talent pool.</p>
         </div>
         <div className="flex space-x-3">
-          <button className="glass-panel text-gray-900 font-semibold flex items-center px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors">
+          <button 
+             onClick={() => setIsUploadModalOpen(true)}
+             className="glass-panel text-gray-900 font-semibold flex items-center px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors"
+          >
             <Upload size={18} className="mr-2" /> Bulk Upload
           </button>
           <OrangeButton icon={<UserPlus size={18} />} className="shadow-[0_4px_16px_rgba(255,107,0,0.3)] font-bold px-5">
@@ -468,13 +534,15 @@ const Candidates = () => {
             </div>
             
             <div className="flex items-center space-x-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
-              {['All', 'New', 'Screening', 'Shortlisted', 'Interview', 'Hired'].map(filter => (
+              {filters.map(filter => (
                 <button 
                   key={filter}
                   onClick={() => setSelectedFilter(filter)}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap border ${
                     selectedFilter === filter 
-                      ? 'bg-[#FF6B00]/20 text-[#FF6B00] border-[#FF6B00]/30 shadow-[inset_0_0_10px_rgba(255,107,0,0.1)]' 
+                      ? filter === '👻 Ghosts'
+                        ? 'bg-red-500/10 text-red-600 border-red-500/30'
+                        : 'bg-[#FF6B00]/20 text-[#FF6B00] border-[#FF6B00]/30 shadow-[inset_0_0_10px_rgba(255,107,0,0.1)]' 
                       : 'bg-white text-gray-500 border-glass-border hover:text-gray-900 hover:border-[#FF6B00]/50'
                   }`}
                 >
@@ -520,10 +588,25 @@ const Candidates = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-glass-border/40 text-sm">
-              {candidates.map((cand) => (
+              {candidates.filter(c => {
+                 if (selectedFilter === 'All') return true;
+                 if (selectedFilter === '👻 Ghosts') {
+                   // Ghost logic: In Interview/Offer + Last active > 5 days ago (Mock check: handles 'd' layout)
+                   const isGhostableStage = c.status === 'Interviewing' || c.status === 'Offer';
+                   const isStale = c.lastActive && (c.lastActive.includes('d ago') && parseInt(c.lastActive) > 2);
+                   // Hardcode Alex (id:1) as Offer but not ghost, and Sarah (id:2) as ghost for demo purposes
+                   if (c.id === 2) return true;
+                   return isGhostableStage && isStale;
+                 }
+                 // Simple mapping for mock statuses
+                 const map = { 'Screening': 'Screening', 'Interview': 'Interviewing', 'Offer': 'Offer' };
+                 return c.status === (map[selectedFilter] || selectedFilter);
+              }).map((cand) => {
+                 const isGhost = cand.id === 2 || (cand.status === 'Interviewing' || cand.status === 'Offer') && (cand.lastActive && cand.lastActive.includes('d') && parseInt(cand.lastActive) >= 1);
+                 return (
                 <tr 
                   key={cand.id} 
-                  className="hover:bg-[rgba(255,107,0,0.05)] transition-colors group"
+                  className={`hover:bg-[rgba(255,107,0,0.05)] transition-colors group ${isGhost ? 'bg-red-50/30' : ''}`}
                 >
                   <td className="px-6 py-4">
                      <div className="w-4 h-4 rounded border border-glass-border group-hover:border-[#FF6B00]/50 transition-colors cursor-pointer bg-white/50"></div>
@@ -537,12 +620,15 @@ const Candidates = () => {
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B00]/80 to-[#E55A00]/80 flex items-center justify-center text-gray-900 font-bold text-sm shadow-[0_2px_8px_rgba(255,107,0,0.2)]">
                           {cand.avatar}
                         </div>
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#F5F5F7] border border-glass-border flex items-center justify-center text-[#FF6B00]">
-                           {cand.source === 'LinkedIn' ? <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg> : cand.source === 'Upload' ? <Upload size={10} /> : <Mail size={10} />}
+                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-glass-border flex items-center justify-center ${isGhost ? 'bg-red-100 text-red-600' : 'bg-[#F5F5F7] text-[#FF6B00]'}`}>
+                           {isGhost ? <AlertCircle size={10} /> : cand.source === 'LinkedIn' ? <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg> : cand.source === 'Upload' ? <Upload size={10} /> : <Mail size={10} />}
                         </div>
                       </div>
                       <div>
-                        <span className="font-bold text-gray-900 group-hover:text-[#FF6B00] transition-colors">{cand.name}</span>
+                        <span className="font-bold text-gray-900 group-hover:text-[#FF6B00] transition-colors flex items-center">
+                          {cand.name}
+                          {isGhost && <Badge className="ml-2 !bg-red-500/10 !text-red-600 !border-red-500/30 !px-1.5 !py-0 !text-[10px]">Ghost Risk</Badge>}
+                        </span>
                         <p className="text-gray-500 text-xs font-medium mt-0.5">{cand.role} • <span className="text-gray-400">{cand.company}</span></p>
                       </div>
                     </div>
@@ -565,24 +651,28 @@ const Candidates = () => {
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 font-medium">{cand.experience}</div>
-                    <div className="text-xs text-gray-400">{cand.location}</div>
+                    <p className="font-semibold text-gray-900 text-sm">{cand.experience}</p>
+                    <p className="text-gray-500 text-xs flex items-center mt-0.5">
+                       <MapPin size={10} className="mr-1 text-[#FF6B00]" /> {cand.location}
+                    </p>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                      {getStatusBadge(cand.status)}
+                     <p className={`text-[10px] mt-1 font-semibold ${isGhost ? 'text-red-500 flex items-center' : 'text-gray-400'}`}>
+                       {isGhost && <Clock size={10} className="mr-1" />} Last active {cand.lastActive}
+                     </p>
                   </td>
                   <td className="px-6 py-4 text-right whitespace-nowrap">
-                    <div className="flex items-center justify-end space-x-2">
-                       <button onClick={() => setSelectedCandidate(cand)} className="glass-panel text-gray-900 hover:bg-white/10 hover:text-[#FF6B00] px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-glass-border opacity-0 group-hover:opacity-100">
-                         View Profile
-                       </button>
-                       <button className="text-gray-400 hover:text-[#FF6B00] transition-colors p-1.5 rounded-md hover:bg-[#F5F5F7] opacity-0 group-hover:opacity-100">
-                         <MoreHorizontal size={18} />
-                       </button>
-                    </div>
+                    <button className="text-gray-400 hover:text-[#FF6B00] p-1.5 rounded-lg hover:bg-[#FF6B00]/10 transition-colors mr-1">
+                      <Mail size={16} />
+                    </button>
+                    <button className="text-gray-400 hover:text-gray-900 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                      <MoreHorizontal size={16} />
+                    </button>
                   </td>
                 </tr>
-              ))}
+                 );
+              })}
             </tbody>
           </table>
         </div>
@@ -594,7 +684,7 @@ const Candidates = () => {
                 <span className="text-gray-500 text-sm">Showing 1 to {candidates.length} of {candidates.length} entries</span>
                 <div className="flex space-x-2">
                   <button className="px-3 py-1 glass-panel rounded-lg text-gray-500 text-sm hover:text-gray-900 transition-colors">Prev</button>
-                  <button className="px-3 py-1 bg-[#FF6B00] text-gray-900 rounded-lg text-sm font-bold shadow-[0_0_10px_rgba(255,107,0,0.3)]">1</button>
+                  <button className="px-3 py-1 bg-[#FF6B00] text-gray-900 shadow-[0_2px_8px_rgba(255,107,0,0.3)] rounded-lg text-sm font-bold">1</button>
                   <button className="px-3 py-1 glass-panel rounded-lg text-gray-500 text-sm hover:text-gray-900 transition-colors">Next</button>
                 </div>
               </div>
@@ -611,6 +701,15 @@ const Candidates = () => {
         candidateIds={selectedCandidateIds} 
       />
 
+      {/* RESUME UPLOAD MODAL */}
+      <ResumeUploadModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)}
+        onUploadComplete={(newCand) => {
+          setCandidates(prev => [newCand, ...prev]);
+          addToast("Candidate added successfully!", "success");
+        }}
+      />
     </div>
   );
 };
