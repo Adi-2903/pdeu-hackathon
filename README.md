@@ -252,10 +252,10 @@ Risk Score = (Pipeline Depth Score × 0.4) + (Inactivity Score × 0.35) + (Stage
 ## 📸 Screenshots
 
 ### 📊 AI Dashboard
-![TalentOS Dashboard](./screenshots/dashboard.png)
+![TalentOS Dashboard](./screenshots/dashboard.jpeg)
 
 ### 🔍 Search & Pipeline Views
-![TalentOS Pages](./screenshots/pages.png)
+![TalentOS Pages](./screenshots/pages.jpeg)
 
 ---
 
