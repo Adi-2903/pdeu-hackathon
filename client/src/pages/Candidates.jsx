@@ -180,12 +180,30 @@ const CandidateModal = ({ candidate, onClose }) => {
             ) : (
               <OrangeButton className="w-full py-3 shadow-[0_4px_16px_rgba(255,107,0,0.3)]">Shortlist Candidate</OrangeButton>
             )}
-            <div className="grid grid-cols-2 gap-3">
-              <button className="glass-panel text-gray-900 text-xs font-semibold hover:bg-gray-50 py-2.5 rounded-xl transition-all flex items-center justify-center border border-glass-border">
-                <Calendar size={14} className="mr-1.5" /> Schedule
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => onOpenEmail(candidate, 'outreach')}
+                className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center"
+              >
+                <Mail size={13} className="mr-1.5" /> Email
               </button>
-              <button className="glass-panel text-gray-900 text-xs font-semibold hover:bg-gray-50 py-2.5 rounded-xl transition-all flex items-center justify-center border border-glass-border">
-                <Download size={14} className="mr-1.5" /> Resume
+              <button
+                onClick={() => onOpenEmail(candidate, 'offer')}
+                className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center"
+              >
+                <FileText size={13} className="mr-1.5" /> Send Offer
+              </button>
+              <button
+                onClick={() => window.open(`/api/v1/company/offer-letter/${candidate.id}`, '_blank')}
+                className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center"
+              >
+                <FileText size={13} className="mr-1.5" /> Offer Letter
+              </button>
+              <button
+                onClick={() => window.open(`/api/v1/candidates/${candidate.id}/resume`, '_blank')}
+                className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center"
+              >
+                <Download size={13} className="mr-1.5" /> Resume
               </button>
             </div>
           </div>
@@ -442,6 +460,101 @@ const Candidates = () => {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
+// Email Modal State
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailConfig, setEmailConfig] = useState({ to: '', subject: '', body: '', type: '', includeAttachment: false });
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const filters = ['All', 'New', 'Shortlisted', 'Interviewing', 'Offer Extended'];
+
+  const fetchCandidates = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      let response;
+      if (isSmartSearch && searchTerm) {
+        response = await api.get('/candidates/semantic-search', {
+          params: { query: searchTerm, limit: DEFAULT_PAGE_SIZE }
+        });
+        setCandidates(response.data.data || []);
+        setTotalCandidates(response.data.data?.length || 0);
+      } else {
+        response = await api.get('/candidates', {
+          params: {
+            search: searchTerm,
+            status: selectedFilter === 'All' ? undefined : selectedFilter,
+            page: 1,
+            limit: DEFAULT_PAGE_SIZE,
+          },
+        });
+        setCandidates(response.data.data || []);
+        setTotalCandidates(response.data.pagination?.total || 0);
+      }
+    } catch (error) {
+      console.error('Error fetching candidates:', error);
+      setCandidates([]);
+      setTotalCandidates(0);
+    } finally {
+      setTimeout(() => setIsLoading(false), 500);
+    }
+  }, [searchTerm, selectedFilter, isSmartSearch]);
+
+  const handleOpenEmailModal = async (candidate, type) => {
+    try {
+      const res = await fetch(`/api/v1/company/email-compose/${candidate.id}?type=${type}`);
+      const d = await res.json();
+      if (d.data) {
+        setEmailConfig({
+          candidateId: candidate.id,
+          to: d.data.to,
+          subject: d.data.subject,
+          body: d.data.body,
+          type: type,
+          includeAttachment: type === 'offer'
+        });
+        setIsEmailModalOpen(true);
+      }
+    } catch (err) {
+      addToast('Failed to load email template', 'error');
+    }
+  };
+
+  const handleSendEmail = async () => {
+    setIsSendingEmail(true);
+    try {
+      if (emailConfig.includeAttachment) {
+        addToast('Generating PDF attachment...', 'info');
+        const res = await fetch('/api/v1/company/generate-offer-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailConfig)
+        });
+        if (!res.ok) throw new Error('Failed to generate PDF');
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Offer_Letter.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        setTimeout(() => addToast('PDF downloaded! Please drag & drop it into the Gmail window.', 'success'), 500);
+      }
+
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailConfig.to)}&su=${encodeURIComponent(emailConfig.subject)}&body=${encodeURIComponent(emailConfig.body)}`;
+      window.open(gmailUrl, '_blank');
+
+      setIsEmailModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      addToast(err.message || 'Failed to prepare email', 'error');
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
+  
   const filters = ['All', 'New', 'Screening', 'Shortlisted', 'Interview', 'Offer', 'Hired', '👻 Ghosts'];
 
   const fetchCandidates = useCallback(async () => {

@@ -9,7 +9,10 @@ function getDefaultData() {
     certifications: [], jobs: [], pipeline_stages: [], applications: [],
     sources: [], notes: [], activity_log: [], email_threads: [],
     duplicate_groups: [], search_queries: [], passive_pool: [],
-    company_values: [], interview_feedback: [], talent_radar_scores: []
+    company_values: [], interview_feedback: [], talent_radar_scores: [],
+    company_profile: {},
+    offer_letters: [],
+    candidate_embeddings: []
   };
 }
 
