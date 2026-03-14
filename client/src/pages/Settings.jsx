@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GlassCard from '../components/ui/GlassCard';
 import OrangeButton from '../components/ui/OrangeButton';
+import api from '../api';
 import {
   Cpu, Webhook, Users, Bell, Palette, Shield, Download, Trash2, Key, ChevronRight, Building2, Save, CheckCircle
 } from 'lucide-react';
@@ -15,26 +16,22 @@ const Settings = () => {
 
   // Load company profile on mount
   useEffect(() => {
-    fetch('/api/v1/company/profile')
-      .then(r => r.json())
-      .then(d => { if (d.data) setCompany(prev => ({ ...prev, ...d.data })); })
+    api.get('/company/profile')
+      .then(r => { if (r.data.data) setCompany(prev => ({ ...prev, ...r.data.data })); })
       .catch(() => { });
   }, []);
 
   const saveCompanyProfile = async () => {
     setSaveStatus('saving');
     try {
-      const res = await fetch('/api/v1/company/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(company)
-      });
-      if (res.ok) {
+      const res = await api.put('/company/profile', company);
+      if (res.status === 200) {
         setSaveStatus('saved');
         setTimeout(() => setSaveStatus(''), 2500);
       }
     } catch { setSaveStatus(''); }
   };
+
 
   const TABS = [
     { id: 'company', icon: <Building2 size={18} />, label: 'Company Profile' },

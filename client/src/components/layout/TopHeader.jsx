@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell, LogOut, ChevronRight, Menu } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const navLabels = {
   '/': 'Dashboard',
@@ -14,6 +15,7 @@ const navLabels = {
 const TopHeader = () => {
   const location = useLocation();
   const currentPathLabel = navLabels[location.pathname] || 'Dashboard';
+  const { logout } = useAuth();
 
   return (
     <div className="bg-white rounded-3xl h-16 px-6 flex items-center justify-between shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100 mb-6">
@@ -42,13 +44,16 @@ const TopHeader = () => {
         {/* Profile */}
         <div className="flex items-center pl-4 border-l border-gray-100">
           <div className="w-8 h-8 rounded-full bg-[#FF6B00] flex items-center justify-center text-white font-bold text-sm shadow-[0_2px_8px_rgba(255,107,0,0.3)]">
-            A
+            H
           </div>
-          <span className="ml-2.5 text-sm font-bold text-gray-700 hidden sm:block">Admin</span>
+          <span className="ml-2.5 text-sm font-bold text-gray-700 hidden sm:block">Hr</span>
         </div>
 
         {/* Logout */}
-        <button className="text-gray-400 hover:text-gray-600 transition-colors hidden sm:block">
+        <button 
+          onClick={logout}
+          className="text-gray-400 hover:text-gray-600 transition-colors hidden sm:block"
+        >
           <LogOut size={18} />
         </button>
 

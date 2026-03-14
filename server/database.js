@@ -12,6 +12,7 @@ function getDefaultData() {
     company_values: [], interview_feedback: [], talent_radar_scores: [],
     company_profile: {},
     offer_letters: [],
+    email_logs: [],
     candidate_embeddings: []
   };
 }

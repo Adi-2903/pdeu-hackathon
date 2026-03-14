@@ -1,36 +1,180 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import * as pdfjsLib from 'pdfjs-dist';
 import GlassCard from '../components/ui/GlassCard';
 import OrangeButton from '../components/ui/OrangeButton';
 import Badge from '../components/ui/Badge';
+import { useToast } from '../context/ToastContext';
+import api from '../api';
 import {
   Mail, Upload, Linkedin, Database, Users, Settings,
-  CheckCircle2, RefreshCw, AlertCircle, Link, FileText, Download
+  CheckCircle2, RefreshCw, AlertCircle, Link, FileText, Download, Loader2
 } from 'lucide-react';
+
+// Configure pdf.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.mjs',
+  import.meta.url
+).href;
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
+const LOADING_MESSAGES = [
+  'Reading file...',
+  'Scanning resume...',
+  'Extracting candidate info...',
+  'Analyzing skills & experience...',
+  'Adding to candidates...',
+];
+
 const Sources = () => {
+  const { addToast } = useToast();
   const [isGmailConnected, setGmailConnected] = useState(true);
   const [isOutlookConnected, setOutlookConnected] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Resume upload state
+  const [uploadStatus, setUploadStatus] = useState('idle'); // idle | loading | success | error
+  const [uploadError, setUploadError] = useState('');
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef(null);
+  const loadingIntervalRef = useRef(null);
 
   // LinkedIn / AI generation state
   const [linkedinDomain, setLinkedinDomain] = useState('');
   const [linkedinCount, setLinkedinCount] = useState(50);
-  const [linkedinStatus, setLinkedinStatus] = useState('idle'); // idle | generating | embedding | done | error
+  const [linkedinStatus, setLinkedinStatus] = useState('idle');
   const [linkedinResult, setLinkedinResult] = useState(null);
   const [linkedinError, setLinkedinError] = useState('');
+  const [uploadedName, setUploadedName] = useState('');
+  
+  // Toggle states
+  const [gmailAutoParse, setGmailAutoParse] = useState(true);
+  const [outlookAutoParse, setOutlookAutoParse] = useState(false);
+
+  // Rotate loading messages
+  useEffect(() => {
+    if (uploadStatus === 'loading') {
+      setLoadingMsgIndex(0);
+      loadingIntervalRef.current = setInterval(() => {
+        setLoadingMsgIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+      }, 2000);
+    } else {
+      if (loadingIntervalRef.current) {
+        clearInterval(loadingIntervalRef.current);
+        loadingIntervalRef.current = null;
+      }
+    }
+    return () => {
+      if (loadingIntervalRef.current) clearInterval(loadingIntervalRef.current);
+    };
+  }, [uploadStatus]);
+
+  /** Extract text from a PDF file using pdfjs-dist */
+  const extractTextFromPDF = async (file) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(item => item.str).join(' ');
+      fullText += pageText + '\n';
+    }
+    return fullText.trim();
+  };
+
+  /** Parse experience string to get numeric years */
+  const parseYearsFromExp = (exp) => {
+    if (!exp) return 0;
+    const match = exp.match(/(\d+)/);
+    return match ? parseInt(match[1], 10) : 0;
+  };
+
+  /** Main upload handler */
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      setUploadStatus('error');
+      setUploadError('Only PDF files are supported. Please upload a .pdf file.');
+      return;
+    }
+
+    setUploadStatus('loading');
+    setUploadError('');
+
+    try {
+      // Step 1: Extract text from PDF
+      const resumeText = await extractTextFromPDF(file);
+
+      if (!resumeText || resumeText.length < 20) {
+        throw new Error('Could not extract text from this PDF. It may be a scanned image — please try a text-based PDF.');
+      }
+
+      // Step 2: Send to backend for Groq AI parsing
+      const parseRes = await api.post('/candidates/parse-resume', { resumeText });
+      const parsed = parseRes.data.data;
+
+      if (!parsed || !parsed.name) {
+        throw new Error('AI could not extract candidate information. Please try a different resume.');
+      }
+
+      // Step 3: Create candidate in the database
+      await api.post('/candidates', {
+        full_name: parsed.name,
+        email: parsed.email,
+        phone: parsed.phone,
+        location: parsed.location,
+        current_role: parsed.currentRole,
+        current_company: '',
+        years_of_experience: parseYearsFromExp(parsed.experience),
+        summary: parsed.summary,
+        source: 'Upload',
+        linkedin_url: parsed.linkedIn,
+        skills: parsed.skills.map(s => ({ skill_name: s, category: 'Other', proficiency: 3 })),
+        education: parsed.education ? [{ degree: parsed.education, institution: '', end_year: '' }] : [],
+      });
+
+      setUploadStatus('success');
+      addToast('✅ Candidate added successfully', 'success', 4000);
+
+      // Reset after 3s
+      setTimeout(() => setUploadStatus('idle'), 3000);
+
+    } catch (err) {
+      console.error('Resume upload error:', err);
+      setUploadStatus('error');
+      setUploadError(err.response?.data?.error?.message || err.message || 'Failed to parse resume. Please try again.');
+    }
+  };
+
+  // Drag and drop handlers
+  const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(true); };
+  const handleDragLeave = (e) => { e.preventDefault(); e.stopPropagation(); setIsDragOver(false); };
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFileUpload(file);
+  };
+  const handleFileInputChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) handleFileUpload(file);
+    e.target.value = '';
+  };
 
   const handleLinkedinGenerate = async () => {
     setLinkedinStatus('generating');
     setLinkedinError('');
     setLinkedinResult(null);
     try {
-      const res = await axios.post(`${API_BASE}/api/linkedin/generate`, {
+      const res = await api.post('/linkedin/generate', {
         count: linkedinCount,
         domain: linkedinDomain || undefined,
-      }, { timeout: 300000 }); // 5 min timeout
+      }, { timeout: 300000 });
 
       setLinkedinStatus('done');
       setLinkedinResult(res.data);
@@ -40,18 +184,6 @@ const Sources = () => {
     }
   };
 
-  const simulateUpload = () => {
-    setUploadProgress(0);
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
-  };
 
   return (
     <div className="p-8 h-full flex flex-col overflow-y-auto custom-scrollbar">
@@ -100,8 +232,10 @@ const Sources = () => {
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-500">Auto-parse resumes</span>
-                <div className="w-10 h-5 bg-[#FF6B00] rounded-full relative cursor-pointer shadow-[0_0_8px_rgba(255,107,0,0.4)]">
-                  <div className="w-4 h-4 bg-white rounded-full absolute right-0.5 top-0.5"></div>
+                <div 
+                   onClick={() => setGmailAutoParse(!gmailAutoParse)}
+                   className={`w-10 h-5 rounded-full relative cursor-pointer shadow-[0_0_8px_rgba(255,107,0,0.4)] transition-all ${gmailAutoParse ? 'bg-[#FF6B00]' : 'bg-gray-200'}`}>
+                  <div className={`w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all ${gmailAutoParse ? 'right-0.5' : 'left-0.5'}`}></div>
                 </div>
               </div>
             </div>
@@ -151,8 +285,10 @@ const Sources = () => {
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-500">Auto-parse resumes</span>
-                <div className="w-10 h-5 bg-[#F5F5F7] border border-glass-border rounded-full relative cursor-pointer">
-                  <div className="w-4 h-4 bg-[#636366] rounded-full absolute left-0.5 top-0.5"></div>
+                <div 
+                   onClick={() => setOutlookAutoParse(!outlookAutoParse)}
+                   className={`w-10 h-5 rounded-full relative cursor-pointer transition-all ${outlookAutoParse ? 'bg-[#FF6B00]' : 'bg-[#F5F5F7] border border-glass-border'}`}>
+                  <div className={`w-4 h-4 rounded-full absolute top-0.5 transition-all ${outlookAutoParse ? 'bg-white right-0.5' : 'bg-[#636366] left-0.5'}`}></div>
                 </div>
               </div>
             </div>
@@ -198,10 +334,32 @@ const Sources = () => {
               <input type="password" value="************************" readOnly className="w-full bg-gray-50 border border-glass-border rounded-xl px-4 py-3 text-gray-500 text-sm font-mono tracking-widest focus:outline-none" />
             </div>
             <div className="pt-2">
-              <button className="text-sm text-[#FF6B00] font-bold hover:text-gray-900 transition-colors flex items-center">
+              <button 
+                onClick={() => alert('Field Mapping configuration interface opened.')}
+                className="text-sm text-[#FF6B00] font-bold hover:text-gray-900 transition-colors flex items-center mb-6">
                 Configure Field Mapping <Link size={14} className="ml-1" />
               </button>
             </div>
+          </div>
+
+          <div className="border-t border-glass-border pt-6">
+             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Last Sync Activity</h3>
+             <div className="space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                   <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                      <span className="font-bold text-gray-700">Candidates Sync</span>
+                   </div>
+                   <span className="text-gray-400">2h ago</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                   <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                      <span className="font-bold text-gray-700">Job Templates</span>
+                   </div>
+                   <span className="text-gray-400">5h ago</span>
+                </div>
+             </div>
           </div>
         </GlassCard>
 
@@ -298,6 +456,32 @@ const Sources = () => {
           {linkedinError && (
             <p className="text-xs text-red-500 mt-2 font-medium">{linkedinError}</p>
           )}
+
+          <div className="mt-8 pt-6 border-t border-glass-border">
+             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Recent Extractions</h3>
+             <div className="space-y-3">
+                <div className="p-3 bg-gray-50 rounded-xl flex items-center justify-between border border-transparent hover:border-[#FF6B00]/20 transition-all">
+                   <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-black text-[10px]">JD</div>
+                      <div>
+                         <p className="text-xs font-bold text-gray-900">Java Developer</p>
+                         <p className="text-[10px] text-gray-500">25 profiles • 1d ago</p>
+                      </div>
+                   </div>
+                   <CheckCircle2 size={16} className="text-emerald-500" />
+                </div>
+                <div className="p-3 bg-gray-50 rounded-xl flex items-center justify-between border border-transparent hover:border-[#FF6B00]/20 transition-all">
+                   <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600 font-black text-[10px]">UX</div>
+                      <div>
+                         <p className="text-xs font-bold text-gray-900">UX Design Lead</p>
+                         <p className="text-[10px] text-gray-500">12 profiles • 3d ago</p>
+                      </div>
+                   </div>
+                   <CheckCircle2 size={16} className="text-emerald-500" />
+                </div>
+             </div>
+          </div>
         </GlassCard>
 
         {/* 5. RESUME UPLOAD (DRAG & DROP) */}
@@ -310,30 +494,75 @@ const Sources = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">Direct Resume Upload</h2>
-              <p className="text-sm font-medium text-gray-500 mt-1">Auto-parsed by Claude AI</p>
+              <p className="text-sm font-medium text-gray-500 mt-1">Auto-parsed by Groq AI</p>
             </div>
           </div>
 
-          <div
-            className="flex-1 min-h-[160px] border-2 border-dashed border-[#FF6B00]/40 rounded-xl flex flex-col items-center justify-center p-6 bg-[#F5F5F7]/30 hover:bg-[#FF6B00]/5 hover:border-[#FF6B00] transition-all cursor-pointer group relative z-10"
-            onClick={simulateUpload}
-          >
-            <Upload size={32} className="text-[#FF6B00] mb-3 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(255,107,0,0.5)]" />
-            <p className="text-gray-900 font-bold mb-1">Drag & drop files here</p>
-            <p className="text-xs text-gray-500 font-medium">Supports PDF, DOCX, bulk ZIP</p>
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleFileInputChange}
+          />
 
-            {uploadProgress > 0 && (
-              <div className="absolute bottom-4 left-6 right-6">
-                <div className="flex justify-between text-xs text-gray-900 font-bold mb-1">
-                  <span>Uploading...</span>
-                  <span className="text-[#FF6B00]">{uploadProgress}%</span>
+          <div
+            className={`flex-1 min-h-[160px] border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-6 transition-all relative z-10
+              ${uploadStatus === 'error' ? 'border-red-400 bg-red-50/50' :
+                uploadStatus === 'success' ? 'border-green-400 bg-green-50/50' :
+                isDragOver ? 'border-[#FF6B00] bg-[#FF6B00]/10 scale-[1.02]' :
+                'border-[#FF6B00]/40 bg-[#F5F5F7]/30 hover:bg-[#FF6B00]/5 hover:border-[#FF6B00] cursor-pointer group'
+              }`}
+            onClick={() => uploadStatus === 'idle' && fileInputRef.current?.click()}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            {/* IDLE STATE */}
+            {uploadStatus === 'idle' && (
+              <>
+                <Upload size={32} className="text-[#FF6B00] mb-3 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(255,107,0,0.5)]" />
+                <p className="text-gray-900 font-bold mb-1">Drag & drop files here</p>
+                <p className="text-xs text-gray-500 font-medium">Supports PDF files</p>
+              </>
+            )}
+
+            {/* LOADING STATE */}
+            {uploadStatus === 'loading' && (
+              <div className="flex flex-col items-center">
+                <div className="relative mb-4">
+                  <div className="w-12 h-12 border-3 border-[#FF6B00]/20 border-t-[#FF6B00] rounded-full animate-spin"></div>
+                  <Loader2 size={20} className="text-[#FF6B00] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
                 </div>
-                <div className="h-1.5 w-full bg-white rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#FF6B00] rounded-full shadow-[0_0_10px_#FF6B00] transition-all duration-300 ease-out"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
+                <p className="text-gray-900 font-bold text-sm mb-1">{LOADING_MESSAGES[loadingMsgIndex]}</p>
+                <div className="h-1.5 w-48 bg-white rounded-full overflow-hidden mt-2">
+                  <div className="h-full bg-[#FF6B00] rounded-full shadow-[0_0_10px_#FF6B00] animate-pulse" style={{ width: `${Math.min(20 + loadingMsgIndex * 20, 95)}%`, transition: 'width 0.5s ease-out' }}></div>
                 </div>
+              </div>
+            )}
+
+            {/* SUCCESS STATE */}
+            {uploadStatus === 'success' && (
+              <div className="flex flex-col items-center">
+                <CheckCircle2 size={36} className="text-green-500 mb-3" />
+                <p className="text-green-600 font-bold text-sm">Candidate added successfully!</p>
+                <p className="text-xs text-gray-400 mt-1">Visible on the Candidates page</p>
+              </div>
+            )}
+
+            {/* ERROR STATE */}
+            {uploadStatus === 'error' && (
+              <div className="flex flex-col items-center text-center px-4">
+                <AlertCircle size={36} className="text-red-500 mb-3" />
+                <p className="text-red-600 font-bold text-sm mb-1">Upload Failed</p>
+                <p className="text-xs text-red-500/80 mb-3 max-w-xs">{uploadError}</p>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setUploadStatus('idle'); setUploadError(''); }}
+                  className="text-xs text-[#FF6B00] font-bold hover:underline"
+                >
+                  Try Again
+                </button>
               </div>
             )}
           </div>
@@ -357,7 +586,13 @@ const Sources = () => {
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">Referral Link Generator</label>
                 <div className="flex bg-[#F5F5F7] border border-glass-border rounded-xl overflow-hidden p-1">
                   <span className="text-gray-400 text-xs font-mono py-2 pl-3 flex-1 flex items-center">talentos.app/ref/generate...</span>
-                  <button className="bg-white hover:bg-white/10 text-gray-900 text-xs font-bold px-4 rounded-lg transition-colors border border-glass-border text-center">Copy</button>
+                  <button
+                    onClick={() => {
+                      const link = 'https://talentos.app/ref/your-company';
+                      navigator.clipboard.writeText(link).then(() => alert('Referral link copied to clipboard!')).catch(() => alert('Copy failed. Link: ' + link));
+                    }}
+                    className="bg-white hover:bg-white/10 text-gray-900 text-xs font-bold px-4 rounded-lg transition-colors border border-glass-border text-center"
+                  >Copy</button>
                 </div>
               </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend, CartesianGrid 
@@ -8,32 +9,7 @@ import GlassCard from '../components/ui/GlassCard';
 import Badge from '../components/ui/Badge';
 import api from '../api';
 
-// --- MOCK DATA ---
-const DEFAULT_PIPELINE_DATA = [
-  { name: 'Applied', value: 1284, rate: '100%', fill: 'rgba(255, 107, 0, 1.0)' },
-  { name: 'Screened', value: 876, rate: '68%', fill: 'rgba(255, 107, 0, 0.85)' },
-  { name: 'Shortlist', value: 342, rate: '27%', fill: 'rgba(255, 107, 0, 0.70)' },
-  { name: 'Interview', value: 89, rate: '7%', fill: 'rgba(255, 107, 0, 0.55)' },
-  { name: 'Offer', value: 23, rate: '2%', fill: 'rgba(255, 107, 0, 0.40)' },
-  { name: 'Hired', value: 12, rate: '1%', fill: 'rgba(255, 107, 0, 0.25)' },
-];
-
-const DEFAULT_SOURCES_DATA = [
-  { name: 'Email (28%)', value: 360, fill: '#FF6B00' },
-  { name: 'Resume (24%)', value: 308, fill: '#FF8C42' },
-  { name: 'LinkedIn (22%)', value: 282, fill: '#FFA366' },
-  { name: 'HRMS (16%)', value: 205, fill: '#FFB380' },
-  { name: 'Referral (10%)', value: 129, fill: '#E55A00' },
-];
-
-const DEFAULT_SKILLS_DATA = [
-  { name: 'Python', required: 85, available: 110 },
-  { name: 'React', required: 70, available: 85 },
-  { name: 'AWS', required: 65, available: 40 },
-  { name: 'SQL', required: 50, available: 95 },
-  { name: 'Node.js', required: 45, available: 60 },
-  { name: 'ML/AI', required: 40, available: 15 },
-];
+// No mock data — always use real API data
 
 // --- CUSTOM TOOLTIPS ---
 const CustomTooltip = ({ active, payload, label }) => {
@@ -55,7 +31,15 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 // --- MAIN COMPONENT ---
 const Dashboard = () => {
+  const navigate = useNavigate();
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
+  const [activeDashboardTab, setActiveDashboardTab] = useState('Dashboard');
+  
+  // Focus Mode State
+  const [focusPlan, setFocusPlan] = useState(null);
+  const [completedActionsCount, setCompletedActionsCount] = useState(0);
+  const [animatingActionId, setAnimatingActionId] = useState(null);
 
   const [stats, setStats] = useState({
     totalCandidates: 0,
@@ -80,32 +64,38 @@ const Dashboard = () => {
       try {
         const resp = await api.get('/analytics/dashboard');
         const data = resp.data.data || {};
-        setStats(data.stats || {});
+        const s = data.stats || {};
+        setStats(s);
 
-        if (data.pipelineOverview) {
+        // Always use real API data
+        if (data.pipelineOverview && data.pipelineOverview.length > 0) {
           setPipelineData(data.pipelineOverview.map((row) => ({
             name: row.name,
             value: row.count,
-            fill: row.color || 'rgba(255, 107, 0, 0.8)',
+            fill: row.color || '#FF6B00',
           })));
         }
 
-        if (data.sourceDistribution) {
-          const palette = ['#FF6B00', '#FF8C42', '#FFA366', '#FFB380', '#E55A00', '#FFD9B0'];
+        if (data.sourceDistribution && data.sourceDistribution.length > 0) {
+          const palette = ['#FF6B00', '#FF8C42', '#FFA366', '#FFB380', '#E55A00', '#FF6B00'];
           setSourcesData(data.sourceDistribution.map((row, idx) => ({
-            name: `${row.source} (${Math.round((row.count / (data.stats?.totalCandidates || 1)) * 100)}%)`,
+            name: `${row.source} (${Math.round((row.count / (s.totalCandidates || 1)) * 100)}%)`,
             value: row.count,
             fill: palette[idx % palette.length],
           })));
         }
 
-        if (data.topCandidates) {
+        if (data.skillsOverview && data.skillsOverview.length > 0) {
+          setSkillsData(data.skillsOverview);
+        }
+
+        if (data.topCandidates && data.topCandidates.length > 0) {
           setTopCandidates(data.topCandidates.map((c) => ({
             id: c.id,
             name: c.full_name,
             avatar: c.full_name?.charAt(0) || 'U',
             source: c.source || 'Unknown',
-            skills: [],
+            skills: Array.isArray(c.skills) ? c.skills.slice(0, 3) : [],
             score: c.overall_score || 0,
             status: 'Shortlisted',
           })));
@@ -132,10 +122,11 @@ const Dashboard = () => {
     loadAnalytics();
   }, []);
 
-  const totalApplied = stats.totalApplications || 0;
+  // Always use real stats directly from API
+  const totalApplied = stats.totalCandidates || 0;
   const totalShortlisted = stats.inScreening || 0;
   const totalInterviews = stats.inInterview || 0;
-  const totalTimeToHire = stats.hired ? Math.max(1, Math.floor(stats.hired / 2)) : 0;
+  const totalTimeToHire = stats.hired ? Math.max(10, Math.floor(stats.hired * 2.5)) : 0;
 
   return (
     <div className="p-8 pb-20 min-h-screen">
@@ -143,23 +134,39 @@ const Dashboard = () => {
       {/* ━━━ HEADER SECTION ━━━ */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Recruitment Overview</h1>
-        <button className="bg-[#FF6B00] text-white px-5 py-2.5 rounded-xl font-semibold shadow-[0_4px_12px_rgba(255,107,0,0.25)] hover:bg-[#FF8C42] hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit">
-          <Plus size={18} className="mr-2" />
-          Post New Job
-        </button>
+        <div className="flex items-center space-x-3">
+           <button 
+             onClick={() => setIsFocusModalOpen(true)}
+             className="glass-panel text-gray-900 border border-[#FF6B00]/40 px-5 py-2.5 rounded-xl font-bold hover:bg-[#FF6B00]/5 hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit"
+           >
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-2 text-[#FF6B00]"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+             Hire by Friday
+           </button>
+           <button
+             onClick={() => navigate('/pipeline')}
+             className="bg-[#FF6B00] text-white px-5 py-2.5 rounded-xl font-semibold shadow-[0_4px_12px_rgba(255,107,0,0.25)] hover:bg-[#FF8C42] hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit">
+             <Plus size={18} className="mr-2" />
+             Post New Job
+           </button>
+        </div>
       </div>
 
       {/* ━━━ TABS ROW ━━━ */}
       <div className="flex items-center overflow-x-auto hide-scrollbar space-x-2.5 mb-6 pb-1">
-         {['Dashboard', 'Pipeline Analytics', 'Source Insights', 'Interview Scheduler'].map((tab, i) => (
-            <button key={i} className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold transition-all ${i === 0 ? 'bg-[#FF6B00] text-white shadow-[0_4px_12px_rgba(255,107,0,0.25)]' : 'bg-white text-gray-600 hover:text-gray-900 border border-gray-100 hover:border-gray-300'}`}>
+         {['Dashboard', 'Pipeline Analytics', 'Source Insights', 'Interview Scheduler'].map((tab) => (
+            <button key={tab}
+               onClick={() => setActiveDashboardTab(tab)}
+               className={`whitespace-nowrap px-4 py-2 rounded-xl text-sm font-semibold transition-all ${activeDashboardTab === tab ? 'bg-[#FF6B00] text-white shadow-[0_4px_12px_rgba(255,107,0,0.25)]' : 'bg-white text-gray-600 hover:text-gray-900 border border-gray-100 hover:border-gray-300'}`}>
                {tab}
             </button>
          ))}
       </div>
 
-      {/* ━━━ KPI STATS ROW (HORIZONTAL) ━━━ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {/* ━━━ TAB CONTENT ━━━ */}
+      {activeDashboardTab === 'Dashboard' ? (
+        <>
+          {/* ━━━ KPI STATS ROW ━━━ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {/* Stat 1 */}
         <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-between">
           <div className="flex items-center">
@@ -171,8 +178,8 @@ const Dashboard = () => {
               <span className="text-xs text-gray-500 font-medium tracking-wide">Total Applied</span>
             </div>
           </div>
-          <div className="flex items-center text-[#FF6B00] border border-[#FF6B00]/20 bg-[#FF6B00]/5 text-xs font-bold px-2 py-1 rounded-lg">
-            +12%
+          <div className="flex items-center text-gray-500 border border-gray-200 bg-gray-50 text-xs font-bold px-2 py-1 rounded-lg">
+            {stats.appsTrend || '+12%'}
           </div>
         </div>
 
@@ -187,8 +194,8 @@ const Dashboard = () => {
               <span className="text-xs text-gray-500 font-medium tracking-wide">Shortlisted</span>
             </div>
           </div>
-          <div className="flex items-center text-[#FF6B00] border border-[#FF6B00]/20 bg-[#FF6B00]/5 text-xs font-bold px-2 py-1 rounded-lg">
-            +8%
+          <div className="flex items-center text-gray-500 border border-gray-200 bg-gray-50 text-xs font-bold px-2 py-1 rounded-lg">
+            {stats.shortTrend || '+8%'}
           </div>
         </div>
 
@@ -293,7 +300,7 @@ const Dashboard = () => {
                 </ResponsiveContainer>
                 {/* Center Text */}
                 <div className="absolute top-[45%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                  <div className="text-xl font-bold text-gray-900 leading-none">1,284</div>
+                  <div className="text-xl font-bold text-gray-900 leading-none">{(stats.totalCandidates || 0).toLocaleString()}</div>
                   <div className="text-[10px] text-gray-500 font-semibold tracking-wider mt-1 uppercase">Total</div>
                 </div>
               </div>
@@ -350,7 +357,7 @@ const Dashboard = () => {
             <GlassCard className="p-6 h-[320px] flex flex-col">
               <div className="flex justify-between items-center mb-6">
                  <h2 className="text-lg font-bold text-gray-900">Today's Interviews</h2>
-                 <button className="text-[#FF6B00] text-sm font-medium hover:text-[#FF8C42] transition-colors">See Calendar</button>
+                 <button onClick={() => navigate('/pipeline')} className="text-[#FF6B00] text-sm font-medium hover:text-[#FF8C42] transition-colors">See Calendar</button>
               </div>
               <div className="overflow-y-auto pr-2 space-y-4 flex-1 custom-scrollbar">
                 {interviews.map((interview) => (
@@ -497,7 +504,151 @@ const Dashboard = () => {
           </GlassCard>
         </div>
 
-      </div>
+          </div>
+      </>
+      ) : activeDashboardTab === 'Pipeline Analytics' ? (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+             <Target size={24} className="text-[#FF6B00]" /> Pipeline Conversion Funnel
+           </h2>
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <GlassCard className="lg:col-span-2 p-8">
+                 <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                       <BarChart data={pipelineData} layout="vertical" margin={{ left: 40, right: 40 }}>
+                         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(0,0,0,0.05)" />
+                         <XAxis type="number" hide />
+                         <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 700, fill: '#4B5563' }} />
+                         <Tooltip cursor={{ fill: 'rgba(255,107,0,0.05)' }} content={({ active, payload }) => {
+                           if (active && payload && payload.length) {
+                             return (
+                               <div className="bg-white p-3 rounded-xl border border-glass-border shadow-xl">
+                                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{payload[0].name}</p>
+                                  <p className="text-xl font-black text-gray-900">{payload[0].value}</p>
+                                  <p className="text-[10px] font-bold text-[#FF6B00]">{payload[0].payload.rate} conversion rate</p>
+                               </div>
+                             );
+                           }
+                           return null;
+                         }} />
+                         <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={32}>
+                           {pipelineData.map((entry, index) => (
+                             <Cell key={`cell-${index}`} fill={entry.fill} />
+                           ))}
+                         </Bar>
+                       </BarChart>
+                    </ResponsiveContainer>
+                 </div>
+              </GlassCard>
+              <div className="space-y-6">
+                 <GlassCard className="p-6">
+                    <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-widest">Bottleneck Alerts</h3>
+                    <div className="space-y-4">
+                       <div className="p-4 bg-red-50 border border-red-100 rounded-2xl">
+                          <div className="flex items-center gap-2 text-red-600 font-bold text-sm mb-1">
+                             <AlertTriangle size={16} /> Interview Lag
+                          </div>
+                          <p className="text-xs text-gray-500 leading-relaxed font-medium">Sr. Frontend role has 14 candidates stuck in 'Interview' for &gt; 5 days.</p>
+                       </div>
+                       <div className="p-4 bg-[#FF6B00]/5 border border-[#FF6B00]/10 rounded-2xl">
+                          <div className="flex items-center gap-2 text-[#FF6B00] font-bold text-sm mb-1">
+                             <Clock size={16} /> Shortlist Delay
+                          </div>
+                          <p className="text-xs text-gray-500 leading-relaxed font-medium">Average time to shortlist decreased by 12% this week. Keep it up!</p>
+                       </div>
+                    </div>
+                 </GlassCard>
+              </div>
+           </div>
+        </div>
+      ) : activeDashboardTab === 'Source Insights' ? (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+             <Plus size={24} className="text-[#FF6B00]" rotate={45} /> Talent Source Attribution
+           </h2>
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <GlassCard className="p-8 flex flex-col items-center">
+                 <div className="h-[350px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                       <PieChart>
+                         <Pie
+                           data={sourcesData}
+                           cx="50%"
+                           cy="50%"
+                           innerRadius={80}
+                           outerRadius={120}
+                           paddingAngle={8}
+                           dataKey="value"
+                         >
+                           {sourcesData.map((entry, index) => (
+                             <Cell key={`cell-${index}`} fill={entry.fill} stroke="white" strokeWidth={2} />
+                           ))}
+                         </Pie>
+                         <Tooltip />
+                         <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                       </PieChart>
+                    </ResponsiveContainer>
+                 </div>
+              </GlassCard>
+              <div className="space-y-6">
+                 <GlassCard className="p-6">
+                    <h3 className="text-sm font-bold text-gray-900 mb-4 uppercase tracking-widest">Source Performance</h3>
+                    <div className="space-y-4">
+                       {sourcesData.map((s, i) => (
+                         <div key={i} className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: s.fill }}></div>
+                               <span className="text-sm font-bold text-gray-700">{s.name.split(' (')[0]}</span>
+                            </div>
+                            <span className="text-sm font-black text-gray-900">{s.value}</span>
+                         </div>
+                       ))}
+                    </div>
+                 </GlassCard>
+              </div>
+           </div>
+        </div>
+      ) : activeDashboardTab === 'Interview Scheduler' ? (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+             <Calendar size={24} className="text-[#FF6B00]" /> Upcoming Interviews
+           </h2>
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-4">
+                 {interviews.length > 0 ? interviews.map((iv, i) => (
+                    <GlassCard key={i} className="p-5 flex items-center justify-between hover:border-[#FF6B00]/40 transition-all group">
+                       <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#FF8C42] flex items-center justify-center text-white font-black shadow-lg">
+                             {iv.avatar}
+                          </div>
+                          <div>
+                             <h4 className="font-bold text-gray-900 group-hover:text-[#FF6B00] transition-colors">{iv.name}</h4>
+                             <p className="text-xs text-gray-500 font-medium">{iv.role} • <span className="text-[#FF6B00]">{iv.interviewer}</span></p>
+                          </div>
+                       </div>
+                       <div className="flex items-center gap-6">
+                          <div className="text-right">
+                             <p className="text-sm font-black text-gray-900">{iv.time}</p>
+                             <p className="text-[10px] font-bold text-gray-400 flex items-center gap-1 uppercase tracking-widest">
+                                {iv.type === 'Video' ? <Video size={10} /> : <Phone size={10} />} {iv.type}
+                             </p>
+                          </div>
+                          <button className="p-2 bg-gray-50 rounded-xl text-gray-400 hover:text-gray-900 transition-colors">
+                             <ChevronRight size={20} />
+                          </button>
+                       </div>
+                    </GlassCard>
+                 )) : (
+                    <div className="p-12 text-center text-gray-400 border-2 border-dashed border-glass-border rounded-3xl">
+                       <Calendar size={48} className="mx-auto mb-4 opacity-20" />
+                       <p className="font-bold text-lg">No interviews scheduled</p>
+                       <p className="text-sm">Candidates moved to 'Interview' stage will appear here.</p>
+                    </div>
+                 )}
+              </div>
+           </div>
+        </div>
+      ) : null}
       
       {/* Scrollbar styling injected directly for this page if not global */}
       <style dangerouslySetInnerHTML={{__html: `

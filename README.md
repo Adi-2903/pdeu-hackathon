@@ -1,16 +1,17 @@
 # 🚀 TalentOS - The AI-Powered Unified Recruitment Platform
 
-**TalentOS** is a premium, blazing-fast, and deeply intelligent recruitment platform built for modern HR teams. Winning design aesthetics combined with powerful LLM integrations (Claude 3.5 Sonnet) makes evaluating candidates seamless.
+**TalentOS** is a premium, blazing-fast, and deeply intelligent recruitment platform built for modern HR teams. Winning design aesthetics combined with powerful local AI integrations (using `@xenova/transformers`) makes evaluating candidates seamless, even without external API keys.
 
 ---
 
-## 🔥 Key Features
+## 🔥 Key Features (No-API Required)
 
-- **Semantic AI Search ("The Crown Jewel")**: Search 10,000+ candidates using plain English (e.g., *"Find me a Senior Python dev in Mumbai with Fintech experience"*). Claude automatically structures the query and ranks vectors.
-- **Intelligent Resume Parsing**: Drag-and-drop PDFs. `pdf-parse` extracts raw details while Claude intelligently formats experience, education, strengths, and suggests interview questions.
-- **Data Integrations Board**: 1-click ingest interfaces connecting Gmail, Outlook, LinkedIn exports, and direct HRMS API syncs (Greenhouse/Workday).
+- **Semantic AI Search ("Local Intelligence")**: Search 10,000+ candidates using conceptual similarity (e.g., *"Frontend experts"*). Powered by a local **all-MiniLM-L6-v2** vector engine.
+- **Instant Resume Generation**: Generate professional, print-ready HTML resumes for candidates with a single click.
+- **ATS Match Scoring**: Automatically calculate how well a candidate fits a job description using local keyword and skill matching algorithms.
+- **Intelligent Deduplication**: Multi-stage candidate matching using exact field checks and local vector similarity. Flag potential matches for manual review via the dedicated "Duplicates" dashboard.
 - **Kanban Pipeline**: Pure `@dnd-kit` powered drag-and-drop recruitment pipeline visually tracking candidate lifecycles.
-- **Jaw-Dropping Aesthetics**: Pixel-perfect implementation of Apple Vision Pro glassmorphism elements, constrained exclusively to `#FF6B00` (Orange) and `#1C1C1E` (Dark Surface) palettes.
+- **Jaw-Dropping Aesthetics**: Pixel-perfect implementation of glassmorphism elements, constrained exclusively to `#FF6B00` (Orange) and `#1C1C1E` (Dark Surface) palettes.
 
 ---
 
@@ -19,54 +20,62 @@
 ```text
 CLIENT (Vite + React)                       SERVER (Express.js)                        DATA & JOBS
 -----------------------                      ---------------------                      ----------------
-   [ Dashboard ]             REST / JSON        [ search.js ]   ---> Claude AI           [ Postgres db ]
-   [ Candidates ]   <=======================>   [ candidates.js]                         with pgvector
-   [ AI Search ]             (Axios)            [ upload.js ]   <--- pdf-parse
-   [ Pipeline  ]                                                                         [ Redis cache ]
-   [ Sources   ]                                [ emailService ] --> Gmail API             queue manager
+   [ Dashboard ]             REST / JSON        [ search.js ]   ---> Local Transformers  [ JSON DB ]
+   [ Candidates ]   <=======================>   [ candidates.js]                         with Embeddings
+   [ AI Search ]             (Axios)            [ resumeGen.js ]
+   [ Pipeline  ]                                                                         [ data.json ]
+   [ Sources   ]                                [ aiSimulator.js ]                       local storage
 ```
 
 ---
 
 ## 💻 Tech Stack
 
-- **Frontend**: React 18, Vite, TailwindCSS v3 (Custom Utility Config), Recharts, Lucide Icons, `@dnd-kit/core`.
-- **Backend**: Node.js 20, Express, `@anthropic-ai/sdk`, `multer`, `pdf-parse`.
-- **Infrastructure**: Docker Compose, PostgreSQL (pgvector extension ready), Redis Alpine.
+- **Frontend**: React 18, Vite, TailwindCSS v3, Recharts, Lucide Icons, `@dnd-kit/core`.
+- **Backend**: Node.js 20+, Express, `@xenova/transformers`, `puppeteer`, `sharp`.
 
 ---
 
-## 🚀 Setup Instructions (Docker)
+## 🚀 Native Setup (Recommended)
 
-To run the full stack locally with simulated AI responses:
+To run the platform natively on your machine:
 
+### 1. Backend Setup
 ```bash
-# 1. Clone & Enter Directory
-cd talentos
-
-# 2. Configure Environment (Optional: add your real Anthropic Key inside)
-cp .env.example .env
-
-# 3. Build & Run
-docker-compose up --build
+cd server
+npm install --ignore-scripts
+# Critical: Explicitly install sharp for local vector engine support
+npm install sharp 
+node server.js
 ```
+*Backend runs at: [http://localhost:5000](http://localhost:5000)*
 
-**Services automatically run at:**
-- 🖥 **Frontend App**: [http://localhost:3000](http://localhost:3000)
-- 🔌 **Backend API**: [http://localhost:5000](http://localhost:5000)
-
-_Note: If Docker is unavailable, you can manually run `npm install && npm run dev` inside both `/client` and `/server` folders natively._
+### 2. Frontend Setup
+```bash
+cd client
+npm install --ignore-scripts
+npm run dev -- --port 3000
+```
+*Frontend runs at: [http://localhost:3000](http://localhost:3000)*
 
 ---
 
-## 🔑 Available API Documentation
+## 🔑 AI Features Initialization
 
-| Endpoint                  | Method | Description                                                |
-| ------------------------- | :----: | ---------------------------------------------------------- |
-| `/api/candidates`         | `GET`  | Fetches paginated DB candidate pool                        |
-| `/api/search/natural`     | `POST` | Primary logic pinging Anthropic semantic search            |
-| `/api/upload/resume`      | `POST` | `multipart/form-data` ingest executing `pdf-parse`         |
-| `/api/upload/bulk`        | `POST` | Max 10 attached resumes parsed sequentially in memory      |
+To enable Semantic Search on your local data:
+1. Ensure the server is running.
+2. Trigger the local indexing:
+   ```bash
+   curl -X POST http://localhost:5000/api/v1/candidates/index
+   ```
+This will generate embeddings using the local transformer model and save them to `data.json`.
+
+---
+
+## 🛠 Troubleshooting
+
+- **Sharp Module Error**: If the backend crashes with a "sharp" error, run `npm install sharp` in the `/server` directory. This is required for the `@xenova/transformers` library to function on Windows/Linux environments.
+- **Port Conflicts**: Ensure ports `3000` and `5000` are free.
 
 ---
 

@@ -13,6 +13,8 @@ const analyticsRouter = require('./routes/analytics');
 const webhooksRouter = require('./routes/webhooks');
 const linkedinRouter = require('./routes/linkedin');
 const companyRouter = require('./routes/company');
+const authRouter = require('./routes/auth');
+const authenticateJWT = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -29,14 +31,28 @@ app.get(['/api/health', '/api/v1/health'], (req, res) => {
   res.json({ status: 'ok', version: '2.0.0', name: 'HireX API' });
 });
 
-// Compatibility routes for frontend expecting /api/*
-app.use(['/api/candidates', '/api/v1/candidates'], candidatesRouter);
-app.use(['/api/jobs', '/api/v1/jobs'], jobsRouter);
-app.use(['/api/ai', '/api/v1/ai'], aiRouter);
-app.use(['/api/analytics', '/api/v1/analytics'], analyticsRouter);
-app.use(['/api/webhooks', '/api/v1/webhooks'], webhooksRouter);
-app.use(['/api/linkedin', '/api/v1/linkedin'], linkedinRouter);
-app.use(['/api/company', '/api/v1/company'], companyRouter);
+// Auth route
+app.use(['/api/auth', '/api/v1/auth'], authRouter);
+
+// Compatibility routes for frontend expecting /api/* (Protected)
+app.use(['/api/candidates', '/api/v1/candidates'], authenticateJWT, candidatesRouter);
+app.use(['/api/jobs', '/api/v1/jobs'], authenticateJWT, jobsRouter);
+app.use(['/api/ai', '/api/v1/ai'], authenticateJWT, aiRouter);
+app.use(['/api/analytics', '/api/v1/analytics'], authenticateJWT, analyticsRouter);
+app.use(['/api/webhooks', '/api/v1/webhooks'], authenticateJWT, webhooksRouter);
+app.use(['/api/linkedin', '/api/v1/linkedin'], authenticateJWT, linkedinRouter);
+app.use(['/api/company', '/api/v1/company'], authenticateJWT, companyRouter);
+
+// AI Feature Routes
+const uploadRoutes = require('./routes/upload');
+const chatRoutes = require('./routes/chat');
+const focusRoutes = require('./routes/focus');
+const hireByFridayRoutes = require('./routes/hire-by-friday');
+
+app.use(['/api/upload', '/api/v1/upload'], uploadRoutes);
+app.use(['/api/chat', '/api/v1/chat'], chatRoutes);
+app.use(['/api/focus', '/api/v1/focus'], focusRoutes);
+app.use(['/api/hire-by-friday', '/api/v1/hire-by-friday'], hireByFridayRoutes);
 
 // Legacy endpoints used by Jenil frontend
 app.post(['/api/search/natural', '/api/v1/search/natural'], (req, res) => {
@@ -105,6 +121,15 @@ app.use((err, req, res, next) => {
     error: { message: err.message || 'Internal server error', code: err.code || 'INTERNAL_ERROR' }
   });
 });
+
+// Serve the frontend build
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Catch-all for React Router to prevent "Cannot GET /route"
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
 
 // Initialize DB, seed it (if needed), and start server
 initializeDatabase();
