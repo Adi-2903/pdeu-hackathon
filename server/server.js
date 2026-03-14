@@ -38,6 +38,17 @@ app.use(['/api/webhooks', '/api/v1/webhooks'], webhooksRouter);
 app.use(['/api/linkedin', '/api/v1/linkedin'], linkedinRouter);
 app.use(['/api/company', '/api/v1/company'], companyRouter);
 
+// AI Feature Routes
+const uploadRoutes = require('./routes/upload');
+const chatRoutes = require('./routes/chat');
+const focusRoutes = require('./routes/focus');
+const hireByFridayRoutes = require('./routes/hire-by-friday');
+
+app.use(['/api/upload', '/api/v1/upload'], uploadRoutes);
+app.use(['/api/chat', '/api/v1/chat'], chatRoutes);
+app.use(['/api/focus', '/api/v1/focus'], focusRoutes);
+app.use(['/api/hire-by-friday', '/api/v1/hire-by-friday'], hireByFridayRoutes);
+
 // Legacy endpoints used by Jenil frontend
 app.post(['/api/search/natural', '/api/v1/search/natural'], (req, res) => {
   try {

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X, Minimize2, Send, Bot, User } from 'lucide-react';
+import { Sparkles, X, Minimize2, Send, Bot, User, Copy, CheckCircle2 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import api from '../../api';
 
 const AIChatAssistant = () => {
@@ -10,7 +11,15 @@ const AIChatAssistant = () => {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
   const messagesEndRef = useRef(null);
+  const location = useLocation();
+
+  const handleCopy = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -30,8 +39,10 @@ const AIChatAssistant = () => {
     setIsTyping(true);
 
     try {
-      const response = await api.post('/chat', { message: userMessage });
-
+      const response = await api.post('/chat', { 
+        message: userMessage,
+        context: { path: location.pathname } 
+      });
       // Simulate typewriter effect
       setIsTyping(false);
       const reply = response.data.reply;
@@ -126,12 +137,21 @@ const AIChatAssistant = () => {
                   key={idx}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${msg.role === 'user'
+                  <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm group relative ${
+                    msg.role === 'user' 
                       ? 'bg-[#FF6B00] text-gray-900 rounded-br-sm shadow-[0_4px_12px_rgba(255,107,0,0.2)]'
                       : 'bg-white border border-glass-border text-gray-500 rounded-bl-sm'
                     }`}>
                     {msg.role === 'assistant' && !msg.isTyping ? (
-                      <div dangerouslySetInnerHTML={{ __html: msg.text.replace(/\n/g, '<br/>') }} />
+                       <>
+                         <div dangerouslySetInnerHTML={{__html: msg.text.replace(/\n/g, '<br/>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}} />
+                         <button 
+                           onClick={() => handleCopy(msg.text, idx)}
+                           className="absolute -right-8 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-[#FF6B00] bg-white border border-glass-border rounded-lg shadow-sm opacity-0 group-hover:opacity-100 transition-all"
+                         >
+                           {copiedId === idx ? <CheckCircle2 size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                         </button>
+                       </>
                     ) : (
                       msg.text
                     )}
