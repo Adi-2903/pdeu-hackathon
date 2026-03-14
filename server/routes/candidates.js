@@ -4,6 +4,8 @@ const { getDb } = require('../database');
 const { v4: uuidv4 } = require('uuid');
 const puppeteer = require('puppeteer');
 const aiSimulator = require('../utils/aiSimulator');
+const vectorEngine = require('../utils/vector-engine');
+const { runDedup, mergeCandidates, buildCandidateText, getEmbedding } = require('../dedup');
 
 function getLastActiveString(candidateId, db) {
   const logs = (db.data.activity_log || []).filter(a => a.candidate_id === candidateId);
@@ -114,6 +116,98 @@ function buildFrontendCandidate(c, db) {
   };
 }
 
+// ── Semantic Search & Indexing ──
+// NOTE: These must be BEFORE any generic GET routes to avoid being shadowed
+
+/**
+ * Compiles a rich text representation of a candidate for embedding.
+ */
+function getCandidateSearchText(c, db) {
+  const skills = (db.data.candidate_skills || []).filter(s => s.candidate_id === c.id).map(s => s.skill_name).join(', ');
+  const exp = (db.data.work_experience || []).filter(w => w.candidate_id === c.id).map(w => `${w.title} at ${w.company}: ${w.description}`).join('. ');
+  return `${c.full_name}. ${c.current_role} at ${c.current_company}. Skills: ${skills}. Summary: ${c.summary}. Exp: ${exp}`.substring(0, 5000);
+}
+
+/**
+ * Index all candidates: Generate and store embeddings.
+ */
+router.post('/index', async (req, res) => {
+  try {
+    const db = getDb();
+    const candidates = db.data.candidates || [];
+    console.log(`Indexing ${candidates.length} candidates...`);
+
+    if (!db.data.candidate_embeddings) db.data.candidate_embeddings = [];
+
+    for (const c of candidates) {
+      const text = getCandidateSearchText(c, db);
+      const embedding = await vectorEngine.generateEmbedding(text);
+
+      // Store in separate table (legacy support)
+      const idx = db.data.candidate_embeddings.findIndex(e => e.candidate_id === c.id);
+      if (idx >= 0) {
+        db.data.candidate_embeddings[idx].vector = embedding;
+        db.data.candidate_embeddings[idx].updated_at = new Date().toISOString();
+      } else {
+        db.data.candidate_embeddings.push({
+          candidate_id: c.id,
+          vector: embedding,
+          created_at: new Date().toISOString()
+        });
+      }
+
+      // ALSO store directly on candidate for dedup engine as requested
+      const cIdx = db.data.candidates.findIndex(xc => xc.id === c.id);
+      if (cIdx >= 0) {
+        db.data.candidates[cIdx].embedding = embedding;
+      }
+    }
+
+    db.save();
+    res.json({ status: 'success', message: `Indexed ${candidates.length} candidates.` });
+  } catch (err) {
+    console.error('Indexing Error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
+
+/**
+ * Semantic Search: Find candidates by conceptual similarity.
+ */
+router.get('/semantic-search', async (req, res) => {
+  try {
+    const { query, limit = 10 } = req.query;
+    if (!query) return res.status(400).json({ error: { message: 'Query is required' } });
+
+    const db = getDb();
+    const queryEmbedding = await vectorEngine.generateEmbedding(query);
+    const embeddings = db.data.candidate_embeddings || [];
+
+    const results = embeddings.map(e => {
+      const similarity = vectorEngine.cosineSimilarity(queryEmbedding, e.vector);
+      return { candidate_id: e.candidate_id, score: similarity };
+    });
+
+    // Sort by similarity score descending
+    results.sort((a, b) => b.score - a.score);
+
+    const topResults = results.slice(0, parseInt(limit));
+    const enriched = topResults.map(r => {
+      const c = db.data.candidates.find(x => x.id === r.candidate_id);
+      if (!c) return null;
+      return {
+        ...buildFrontendCandidate(c, db),
+        match_score: Math.round(r.score * 100)
+      };
+    }).filter(Boolean);
+
+    res.json({ status: 'success', data: enriched });
+  } catch (err) {
+    console.error('Semantic Search Error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
+
 // GET /candidates — list with filters
 router.get('/', (req, res) => {
   try {
@@ -158,6 +252,56 @@ router.get('/', (req, res) => {
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
 
+// ── Duplicate Management ──
+
+router.get('/duplicates', (req, res) => {
+  try {
+    const db = getDb();
+    const flagged = db.data.candidates.filter(c => c.needsReview === true);
+    const result = flagged.map(c => {
+      const potentialMatch = db.data.candidates.find(x => x.id === c.reviewMatchId);
+      return {
+        candidate: buildFrontendCandidate(c, db),
+        potentialMatch: potentialMatch ? buildFrontendCandidate(potentialMatch, db) : null,
+        score: c.reviewScore,
+        rawId: c.id
+      };
+    });
+    res.json({ count: result.length, items: result });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/duplicates/:id/resolve', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action } = req.body;
+    const db = getDb();
+    
+    // Use raw array for removal/mutation
+    const candidateIdx = db.data.candidates.findIndex(c => c.id === id);
+    if (candidateIdx === -1) return res.status(404).json({ error: 'Candidate not found' });
+    const candidate = db.data.candidates[candidateIdx];
+
+    if (action === 'merge' && candidate.reviewMatchId) {
+      const existing = db.data.candidates.find(c => c.id === candidate.reviewMatchId);
+      if (existing) {
+        mergeCandidates(existing, candidate, candidate.reviewScore, 'manual_review');
+        // Remove the flagged duplicate
+        db.data.candidates.splice(candidateIdx, 1);
+        db.save();
+        return res.json({ result: 'merged', survivingId: existing.id });
+      }
+    }
+
+    // keep_separate — just clear the review flag
+    candidate.needsReview = false;
+    candidate.reviewMatchId = null;
+    candidate.reviewScore = null;
+    db.save();
+    res.json({ result: 'kept_separate', candidateId: id });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // GET /candidates/passive-pool
 router.get('/passive-pool', (req, res) => {
   try {
@@ -178,8 +322,6 @@ router.get('/passive-pool', (req, res) => {
     res.json({ data: enriched });
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
-
-// GET /candidates/compare/multi
 router.get('/compare/multi', (req, res) => {
   try {
     const db = getDb();
@@ -214,22 +356,180 @@ router.get('/:id', (req, res) => {
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
 
+// ── AI Resume Parsing via Groq ──
+router.post('/parse-resume', async (req, res) => {
+  try {
+    const { resumeText } = req.body;
+    if (!resumeText || resumeText.trim().length < 20) {
+      return res.status(400).json({ error: { message: 'Resume text is too short or empty. Please upload a valid PDF.' } });
+    }
+
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: { message: 'Groq API key not configured on server.' } });
+    }
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a resume parser. Given the text content of a resume, extract structured information and return ONLY a raw JSON object with no markdown, no backticks, no explanation — just the JSON object. Use these exact fields:
+{
+  "name": "Full Name",
+  "email": "email@example.com",
+  "phone": "+1234567890",
+  "location": "City, State/Country",
+  "currentRole": "Current Job Title",
+  "experience": "X years",
+  "skills": ["skill1", "skill2", "skill3", "skill4", "skill5", "skill6"],
+  "education": "Degree, University",
+  "summary": "A 1-2 sentence professional summary.",
+  "linkedIn": "LinkedIn URL or empty string"
+}
+Rules:
+- skills array must have at most 6 items
+- summary must be at most 2 sentences
+- If a field cannot be determined, use an empty string
+- For experience, estimate from work history if not explicitly stated
+- Return ONLY the JSON object, nothing else`
+          },
+          {
+            role: 'user',
+            content: `Parse this resume:\n\n${resumeText.substring(0, 8000)}`
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      console.error('Groq API error:', response.status, errBody);
+      return res.status(502).json({ error: { message: `Groq API error: ${response.status}` } });
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || '';
+
+    // Try to parse JSON from response (handle potential markdown wrapping)
+    let parsed;
+    try {
+      // Remove potential markdown code fences
+      const cleaned = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+      parsed = JSON.parse(cleaned);
+    } catch (parseErr) {
+      console.error('Failed to parse Groq response:', content);
+      return res.status(502).json({ error: { message: 'AI returned invalid JSON. Please try again.' } });
+    }
+
+    // Validate and normalize
+    const result = {
+      name: parsed.name || '',
+      email: parsed.email || '',
+      phone: parsed.phone || '',
+      location: parsed.location || '',
+      currentRole: parsed.currentRole || '',
+      experience: parsed.experience || '',
+      skills: Array.isArray(parsed.skills) ? parsed.skills.slice(0, 6) : [],
+      education: parsed.education || '',
+      summary: parsed.summary || '',
+      linkedIn: parsed.linkedIn || '',
+    };
+
+    res.json({ data: result });
+  } catch (err) {
+    console.error('Resume parse error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
+
 // POST /candidates
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const db = getDb();
-    const id = uuidv4();
     const { full_name, email, phone, location, linkedin_url, github_url, portfolio_url, summary, seniority_level, years_of_experience, current_role, current_company, source, skills, work_experience, education, resume_text, cover_letter } = req.body;
-    const candidate = { id, full_name, email, phone, location, linkedin_url, github_url, portfolio_url, summary, seniority_level, years_of_experience: years_of_experience || 0, current_role, current_company, source: source || 'Upload', status: 'Active', overall_score: 0, ghost_status: 0, in_passive_pool: 0, resume_text, cover_letter, avatar_url: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
-    db.insert('candidates', candidate);
-    if (skills) skills.forEach(s => db.insert('candidate_skills', { id: uuidv4(), candidate_id: id, skill_name: s.name || s.skill_name, category: s.category || 'Other', proficiency_level: s.proficiency || 3 }));
-    if (work_experience) work_experience.forEach(w => db.insert('work_experience', { id: uuidv4(), candidate_id: id, ...w }));
-    if (education) education.forEach(e => db.insert('education', { id: uuidv4(), candidate_id: id, ...e }));
-    db.insert('activity_log', { id: uuidv4(), candidate_id: id, action: 'Candidate Created', details: `${full_name} added via ${source || 'Upload'}`, actor: 'System', created_at: new Date().toISOString() });
+    
+    const newCand = { 
+      full_name, 
+      email, 
+      phone, 
+      location, 
+      linkedin_url, 
+      github_url, 
+      portfolio_url, 
+      summary, 
+      seniority_level, 
+      years_of_experience: years_of_experience || 0, 
+      current_role, 
+      current_company, 
+      source: source || 'Upload', 
+      status: 'Active', 
+      overall_score: 0, 
+      ghost_status: 0, 
+      in_passive_pool: 0, 
+      resume_text, 
+      cover_letter, 
+      avatar_url: null, 
+      created_at: new Date().toISOString(), 
+      updated_at: new Date().toISOString() 
+    };
+
+    // 1. Generate embedding for new candidate
+    newCand.embedding = await getEmbedding(buildCandidateText(newCand));
+
+    // 2. Run dedup (enrich candidates with skills/companies for better vector matching)
+    const enrichedCandidates = db.data.candidates.map(c => ({
+      ...c,
+      skills: (db.data.candidate_skills || []).filter(s => s.candidate_id === c.id).map(s => s.skill_name),
+      companies: (db.data.work_experience || []).filter(w => w.candidate_id === c.id).map(w => w.company_name)
+    }));
+    
+    const { action, matchedId, score, reason } = await runDedup(newCand, enrichedCandidates);
+
+    // 3. Branch on action
+    if (action === 'merge') {
+      const existing = db.data.candidates.find(c => c.id === matchedId);
+      mergeCandidates(existing, newCand, score, reason);
+      db.save();
+      return res.json({ result: 'merged', candidateId: existing.id, score, reason });
+    }
+    
+    if (action === 'review') {
+      newCand.needsReview = true;
+      newCand.reviewMatchId = matchedId;
+      newCand.reviewScore = score;
+      newCand.id = uuidv4();
+      db.insert('candidates', newCand);
+      db.save();
+      return res.json({ result: 'flagged_review', candidateId: newCand.id, score, reason });
+    }
+
+    // action === 'create'
+    newCand.id = uuidv4();
+    db.insert('candidates', newCand);
+    
+    if (skills) skills.forEach(s => db.insert('candidate_skills', { id: uuidv4(), candidate_id: newCand.id, skill_name: s.name || s.skill_name, category: s.category || 'Other', proficiency_level: s.proficiency || 3 }));
+    if (work_experience) work_experience.forEach(w => db.insert('work_experience', { id: uuidv4(), candidate_id: newCand.id, ...w }));
+    if (education) education.forEach(e => db.insert('education', { id: uuidv4(), candidate_id: newCand.id, ...e }));
+    
+    db.insert('activity_log', { id: uuidv4(), candidate_id: newCand.id, action: 'Candidate Created', details: `${full_name} added via ${source || 'Upload'}`, actor: 'System', created_at: new Date().toISOString() });
     db.save();
-    res.status(201).json({ data: { id, full_name, email }, message: 'Candidate created' });
-  } catch (err) { res.status(500).json({ error: { message: err.message } }); }
+    
+    res.status(201).json({ result: 'created', data: { id: newCand.id, full_name, email }, message: 'Candidate created', score, reason });
+  } catch (err) { 
+    console.error('Post Candidate Error:', err);
+    res.status(500).json({ error: { message: err.message } }); 
+  }
 });
+
 
 // POST /candidates/:id/passive-pool — add a candidate to passive pool
 router.post('/:id/passive-pool', (req, res) => {
@@ -594,7 +894,8 @@ router.get('/:id/ats-score', (req, res) => {
 
 // Duplicate bulk/action removed — the canonical definition is above at line ~314
 
-// ΓöÇΓöÇ Semantic Search & Indexing ΓöÇΓöÇ
+
+// ── Semantic Search & Indexing ──
 
 /**
  * Compiles a rich text representation of a candidate for embedding.
@@ -667,6 +968,151 @@ router.get('/semantic-search', async (req, res) => {
   }
 });
 
+// ── GET /candidates/:id/email-templates ──────────────────────────────────────
+router.get('/:id/email-templates', (req, res) => {
+  try {
+    const db = getDb();
+    const c = db.data.candidates.find(x => x.id === req.params.id);
+    if (!c) return res.status(404).json({ error: { message: 'Candidate not found' } });
+
+    const company = db.data.company_profile || {};
+    const hrName = company.hr_name || 'Talent Team';
+    const companyName = company.name || 'TalentFlow';
+    const firstName = (c.full_name || 'there').split(' ')[0];
+
+    // Find the role applied for (most recent application)
+    const application = (db.data.applications || [])
+      .filter(a => a.candidate_id === c.id)
+      .sort((a, b) => (b.applied_at || '').localeCompare(a.applied_at || ''))[0];
+    const job = application ? (db.data.jobs || []).find(j => j.id === application.job_id) : null;
+    const role = job?.title || c.current_role || 'the position';
+
+    const templates = {
+      offer: {
+        subject: `Congratulations — Offer of Employment at ${companyName}`,
+        body: `Dear ${firstName},\n\nWe are thrilled to extend this formal offer of employment for the position of ${role} at ${companyName}.\n\nAfter a thorough evaluation of your qualifications and the insights gained throughout our interview process, we are confident you will be an outstanding addition to our team.\n\nPlease review the attached offer letter which outlines all the terms of employment in full. We kindly request that you reply confirming your acceptance at your earliest convenience.\n\nWe are genuinely excited about the journey ahead with you and look forward to welcoming you aboard.\n\nWarm regards,\n${hrName}\n${companyName}`
+      },
+      rejection: {
+        subject: `Your Application Update — ${companyName}`,
+        body: `Dear ${firstName},\n\nThank you sincerely for taking the time to interview for the ${role} role at ${companyName}. We appreciated the opportunity to learn about your background and experience.\n\nOur team was genuinely impressed by your strengths. However, after careful deliberation, we have decided to move forward with another candidate whose profile more closely matches our current needs.\n\nThis was a difficult decision and we encourage you to apply for future opportunities with us — your profile will remain on file. We wish you every success in your career ahead.\n\nWith warm regards,\n${hrName}\n${companyName}`
+      },
+      interview_invite: {
+        subject: `Interview Invitation — ${role} at ${companyName}`,
+        body: `Dear ${firstName},\n\nWe are pleased to invite you to the next round of interviews for the ${role} position at ${companyName}.\n\nWe have been thoroughly impressed with your background and are eager to continue the conversation. Could you please reply with your availability for a 45-minute session over the next three to five business days?\n\nWe look forward to speaking with you and learning more about what you'd bring to the team.\n\nBest regards,\n${hrName}\n${companyName}`
+      },
+      follow_up: {
+        subject: `Following Up on Your Application — ${role}`,
+        body: `Dear ${firstName},\n\nI hope you are doing well. I wanted to follow up regarding your application for the ${role} role at ${companyName}.\n\nWe are still actively reviewing candidates and wanted to check whether you remain interested in the opportunity and if you have any questions we can answer for you.\n\nPlease feel free to reply to this email — we'd love to hear from you.\n\nBest regards,\n${hrName}\n${companyName}`
+      },
+      custom: {
+        subject: `Message from ${companyName}`,
+        body: `Dear ${firstName},\n\n\n\nBest regards,\n${hrName}\n${companyName}`
+      }
+    };
+
+    res.json({ status: 'success', data: templates });
+  } catch (err) { res.status(500).json({ error: { message: err.message } }); }
+});
+
+// ── POST /candidates/:id/send-email ───────────────────────────────────────────
+const nodemailer = require('nodemailer');
+
+router.post('/:id/send-email', async (req, res) => {
+  try {
+    const db = getDb();
+    const c = db.data.candidates.find(x => x.id === req.params.id);
+    if (!c) return res.status(404).json({ error: { message: 'Candidate not found' } });
+
+    const { to, subject, body, email_type } = req.body;
+    if (!to || !subject || !body) {
+      return res.status(400).json({ error: { message: 'to, subject, and body are required' } });
+    }
+
+    // Build transporter — prefer Gmail env vars, then generic SMTP, then Ethereal test
+    let transporter;
+    if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+      transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS }
+      });
+    } else if (process.env.SMTP_HOST) {
+      transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false,
+        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
+      });
+    } else {
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: { user: testAccount.user, pass: testAccount.pass }
+      });
+    }
+
+    const fromName = process.env.SMTP_FROM_NAME || (db.data.company_profile?.name || 'TalentFlow');
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.GMAIL_USER || 'noreply@talentflow.ai';
+
+    const info = await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to,
+      subject,
+      text: body,
+      html: body.replace(/\n/g, '<br>')
+    });
+
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    const sentAt = new Date().toISOString();
+
+    // Log to email_logs
+    if (!db.data.email_logs) db.data.email_logs = [];
+    const logEntry = {
+      id: uuidv4(),
+      candidate_id: c.id,
+      email_type: email_type || 'custom',
+      subject,
+      to,
+      sent_at: sentAt,
+      sent_by: 'Recruiter',
+      status: 'sent',
+      message_id: info.messageId,
+      preview_url: previewUrl || null
+    };
+    db.data.email_logs.push(logEntry);
+
+    // Log to activity_log
+    db.insert('activity_log', {
+      id: uuidv4(),
+      candidate_id: c.id,
+      job_id: null,
+      action: `Email Sent — ${email_type || 'custom'}`,
+      details: `Subject: ${subject}`,
+      actor: 'Recruiter',
+      created_at: sentAt
+    });
+
+    db.save();
+
+    console.log('Email sent:', info.messageId);
+    if (previewUrl) console.log('Preview URL:', previewUrl);
+
+    res.json({
+      status: 'success',
+      data: {
+        messageId: info.messageId,
+        sentAt,
+        previewUrl: previewUrl || null
+      }
+    });
+  } catch (err) {
+    console.error('Send Email Error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
 
 // Email Templates
 router.get('/:id/email-templates', (req, res) => {

@@ -45,7 +45,11 @@ const CustomRadarTooltip = ({ active, payload }) => {
   return null;
 };
 
+<<<<<<< HEAD
 const CandidateModal = ({ candidate, onClose, onOpenEmail, onShortlist }) => {
+=======
+const CandidateModal = ({ candidate, onClose, onOpenEmail }) => {
+>>>>>>> origin/god
   const [activeTab, setActiveTab] = useState('overview');
   const [isReengageOpen, setIsReengageOpen] = useState(false);
   const { addToast } = useToast();
@@ -463,13 +467,89 @@ const Candidates = () => {
 
   const [emailModal, setEmailModal] = useState({ isOpen: false, candidate: null, type: 'outreach' });
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [emailType, setEmailType] = useState('outreach');
 
 
+<<<<<<< HEAD
 
   const handleOpenEmailModal = (candidate, type = 'outreach') => {
     setEmailModal({ isOpen: true, candidate, type });
   };
 
+=======
+  const handleOpenEmailModal = (candidate, type = 'outreach') => {
+    setEmailType(type);
+    setSelectedCandidate(candidate); // Ensure state is synced
+    setEmailConfig(prev => ({ ...prev, candidateId: candidate.id, type }));
+    setIsEmailModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (isEmailModalOpen && selectedCandidate) {
+      const loadTemplate = async () => {
+        try {
+          const response = await api.get(`/company/email-compose/${selectedCandidate.id}`, { params: { type: emailType } });
+          const d = response.data;
+          if (d.data) {
+            setEmailConfig({
+              candidateId: selectedCandidate.id,
+              to: d.data.to,
+              subject: d.data.subject,
+              body: d.data.body,
+              type: emailType,
+              role: selectedCandidate.role || selectedCandidate.current_role,
+              includeAttachment: emailType === 'offer',
+              salary: '120,000',
+              startDate: new Date(Date.now() + 14 * 86400000).toLocaleDateString()
+            });
+          }
+        } catch (err) {
+          addToast('Failed to load email template', 'error');
+        }
+      };
+      loadTemplate();
+    }
+  }, [isEmailModalOpen, emailType, selectedCandidate]);
+
+  const handleSendEmail = async () => {
+    const candidateName = selectedCandidate?.name || 'Candidate';
+    setIsSendingEmail(true);
+    try {
+      if (emailConfig.includeAttachment) {
+        addToast('Generating Premium PDF...', 'info');
+        const res = await api.post('/company/generate-offer-pdf', emailConfig, { responseType: 'blob' });
+        
+        // Validate if it's actually a PDF
+        if (res.data.type !== 'application/pdf') {
+          // It might be a JSON error hidden in a blob
+          const text = await res.data.text();
+          const error = JSON.parse(text);
+          throw new Error(error.error?.message || 'Server failed to generate PDF');
+        }
+
+        const blob = res.data;
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Offer_Letter_${candidateName.replace(/\s+/g, '_')}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        addToast('PDF ready! Please attach it to the Gmail draft.', 'success');
+      }
+
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailConfig.to)}&su=${encodeURIComponent(emailConfig.subject)}&body=${encodeURIComponent(emailConfig.body)}`;
+      window.open(gmailUrl, '_blank');
+
+      setIsEmailModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      addToast(err.message || 'Failed to prepare email', 'error');
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+>>>>>>> origin/god
 
   
   const filters = ['All', 'New', 'Screening', 'Shortlisted', 'Interview', 'Offer', 'Hired', '👻 Ghosts'];
@@ -739,10 +819,17 @@ const Candidates = () => {
                         </p>
                       </td>
                       <td className="px-6 py-4 text-right whitespace-nowrap">
+<<<<<<< HEAD
                         <button
                           onClick={(e) => { e.stopPropagation(); handleOpenEmailModal(cand, 'outreach'); }}
                           title="Send Email"
                           className="text-gray-400 hover:text-[#FF6B00] p-1.5 rounded-lg hover:bg-[#FF6B00]/10 transition-colors mr-1">
+=======
+                        <button 
+                          onClick={() => handleOpenEmailModal(cand, 'outreach')}
+                          className="text-gray-400 hover:text-[#FF6B00] p-1.5 rounded-lg hover:bg-[#FF6B00]/10 transition-colors mr-1"
+                        >
+>>>>>>> origin/god
                           <Mail size={16} />
                         </button>
                         <button
@@ -774,6 +861,7 @@ const Candidates = () => {
       </GlassCard>
 
       {/* CANDIDATE DETAIL MODAL */}
+<<<<<<< HEAD
       <CandidateModal
         candidate={selectedCandidate}
         onClose={() => setSelectedCandidate(null)}
@@ -787,6 +875,99 @@ const Candidates = () => {
           } catch { addToast('Failed to shortlist candidate', 'error'); }
         }}
       />
+=======
+      <CandidateModal candidate={selectedCandidate} onClose={() => setSelectedCandidate(null)} onOpenEmail={handleOpenEmailModal} />
+
+      {/* EMAIL MODAL */}
+      <Modal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)} title="📧 Draft Communication">
+        <div className="space-y-4">
+          <div className="flex gap-2 p-1 bg-gray-100 rounded-xl mb-4 overflow-x-auto hide-scrollbar">
+            {['outreach', 'interview', 'offer', 'rejection'].map(type => (
+              <button
+                key={type}
+                onClick={() => setEmailType(type)}
+                className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all whitespace-nowrap ${emailType === type ? 'bg-white text-[#FF6B00] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">To</label>
+              <input 
+                type="text" 
+                value={emailConfig.to}
+                onChange={(e) => setEmailConfig({...emailConfig, to: e.target.value})}
+                className="w-full bg-gray-50 border border-glass-border rounded-xl px-3 py-2 text-sm text-gray-900 font-medium focus:outline-none focus:border-[#FF6B00]/50"
+              />
+            </div>
+            {emailType === 'offer' && (
+              <>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Salary (USD)</label>
+                  <input 
+                    type="text" 
+                    value={emailConfig.salary}
+                    onChange={(e) => setEmailConfig({...emailConfig, salary: e.target.value})}
+                    className="w-full bg-white border border-glass-border rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-[#FF6B00]/50"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Start Date</label>
+                  <input 
+                    type="text" 
+                    value={emailConfig.startDate}
+                    onChange={(e) => setEmailConfig({...emailConfig, startDate: e.target.value})}
+                    className="w-full bg-white border border-glass-border rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-[#FF6B00]/50"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Subject</label>
+            <input 
+              type="text" 
+              value={emailConfig.subject}
+              onChange={(e) => setEmailConfig({...emailConfig, subject: e.target.value})}
+              className="w-full bg-white border border-glass-border rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-[#FF6B00]/50"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Message Body</label>
+            <textarea 
+              rows={emailType === 'offer' ? 5 : 8}
+              value={emailConfig.body}
+              onChange={(e) => setEmailConfig({...emailConfig, body: e.target.value})}
+              className="w-full bg-white border border-glass-border rounded-xl px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-[#FF6B00]/50 resize-none custom-scrollbar"
+            />
+          </div>
+
+          {emailConfig.includeAttachment && (
+            <div className="bg-[#FF6B00]/5 border border-[#FF6B00]/20 p-3 rounded-xl flex items-center">
+              <div className="p-2 bg-[#FF6B00]/10 text-[#FF6B00] rounded-lg mr-3">
+                <FileText size={18} />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-gray-900">Premium Offer Letter PDF</p>
+                <p className="text-xs text-gray-500">Will be generated with official HireX letterhead.</p>
+              </div>
+              <div className="w-8 h-8 rounded-full border-2 border-[#FF6B00]/30 border-t-[#FF6B00] animate-spin hidden"></div>
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-3 pt-4 border-t border-glass-border">
+            <button onClick={() => setIsEmailModalOpen(false)} className="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-900 transition-colors">Discard</button>
+            <OrangeButton onClick={handleSendEmail} isLoading={isSendingEmail}>
+              {emailType === 'offer' ? 'Generate PDF & Draft' : 'Draft in Gmail'}
+            </OrangeButton>
+          </div>
+        </div>
+      </Modal>
+>>>>>>> origin/god
 
       {/* CANDIDATE COMPARISON MODAL */}
       <CandidateComparison

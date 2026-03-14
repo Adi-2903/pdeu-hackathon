@@ -10,8 +10,12 @@ talentflow/out/
 talentflow/build/
 
 # local env files
+.env
 .env*.local
+talentflow/.env
 talentflow/.env*.local
+server/.env
+client/.env
 
 # misc
 .DS_Store

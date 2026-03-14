@@ -43,7 +43,16 @@ function cosineSimilarity(vecA, vecB) {
     return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
+/**
+ * Returns the underlying extractor tool.
+ * @returns {Promise<any>}
+ */
+async function getExtractor() {
+    return await initEngine();
+}
+
 module.exports = {
     generateEmbedding,
-    cosineSimilarity
+    cosineSimilarity,
+    getExtractor
 };

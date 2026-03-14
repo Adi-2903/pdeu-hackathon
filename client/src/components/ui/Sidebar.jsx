@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Users, UserSearch, Target, Link as LinkIcon, BarChart3, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, UserSearch, Target, Link as LinkIcon, BarChart3, Settings, GitMerge } from 'lucide-react';
 import Badge from './Badge';
 
 const navGroups = [
@@ -15,6 +15,7 @@ const navGroups = [
     items: [
       { id: 'candidates', path: '/candidates', label: 'Candidates', icon: <Users size={18} /> },
       { id: 'ai-search', path: '/ai-search', label: 'AI Search', icon: <UserSearch size={18} /> },
+      { id: 'duplicates', path: '/duplicates', label: 'Duplicates', icon: <GitMerge size={18} /> },
       { id: 'pipeline', path: '/pipeline', label: 'Pipeline', icon: <Target size={18} />, badge: '3' },
       { id: 'sources', path: '/sources', label: 'Sources', icon: <LinkIcon size={18} /> },
     ]
@@ -22,7 +23,6 @@ const navGroups = [
   {
     label: 'SYSTEM',
     items: [
-      { id: 'analytics', path: '/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
       { id: 'settings', path: '/settings', label: 'Settings', icon: <Settings size={18} /> },
     ]
   }
@@ -30,6 +30,25 @@ const navGroups = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const [duplicateCount, setDuplicateCount] = React.useState(0);
+
+  React.useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/v1/candidates/duplicates');
+        const data = await res.json();
+        setDuplicateCount(data.count || 0);
+      } catch (e) { console.error('Error fetching duplicates:', e); }
+    };
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getDynamicBadge = (id, badge) => {
+    if (id === 'duplicates') return duplicateCount > 0 ? duplicateCount.toString() : null;
+    return badge;
+  };
 
   return (
     <div className="w-full md:w-64 h-16 md:h-[calc(100vh-2rem)] bg-white rounded-none md:rounded-3xl border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-row md:flex-col fixed bottom-0 md:relative z-[60] md:z-10" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
@@ -74,9 +93,9 @@ const Sidebar = () => {
                       {item.label}
                     </span>
 
-                    {item.badge && (
+                    {getDynamicBadge(item.id, item.badge) && (
                       <Badge className="ml-auto !bg-[#FF6B00] !text-white !border-none text-[10px] !px-1.5 rounded-full min-w-[20px] text-center">
-                        {item.badge}
+                        {getDynamicBadge(item.id, item.badge)}
                       </Badge>
                     )}
                   </NavLink>

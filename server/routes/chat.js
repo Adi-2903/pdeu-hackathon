@@ -1,11 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Anthropic } = require('@anthropic-ai/sdk');
 const { getDb } = require('../database');
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || 'dummy_key',
-});
 
 function buildLiveCandidateContext(db) {
   const candidates = db.data.candidates || [];
@@ -52,7 +47,9 @@ router.post('/', async (req, res) => {
     const db = getDb();
     const candidatesContext = buildLiveCandidateContext(db);
 
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY === 'your_anthropic_api_key_here' || process.env.ANTHROPIC_API_KEY === 'dummy_key') {
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    
+    if (!GROQ_API_KEY) {
        // Context-aware mock response using live DB data
        let contextIntro = '';
        if (context && context.path) {
@@ -104,23 +101,43 @@ router.post('/', async (req, res) => {
        }
 
        return res.json({ 
-         reply: smartReply || `${contextIntro}${message}. *(Mock mode — add ANTHROPIC_API_KEY for full AI responses.)*` 
+         reply: smartReply || `${contextIntro}${message}. *(Mock mode — add GROQ_API_KEY for full AI responses.)*` 
        });
     }
 
-    const response = await anthropic.messages.create({
-      model: 'claude-3-sonnet-20240229',
-      system: `You are TalentOS AI, an intelligent recruitment assistant. Be concise, professional, and data-driven. 
+    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          {
+            role: 'system',
+            content: `You are TalentOS AI, an intelligent recruitment assistant. Be concise, professional, and data-driven. 
 Always reference actual candidate data from the context below.
 
 ${candidatesContext}
 
-For email drafts, write the full email. For analysis, cite specific names and scores. For recommendations, be actionable and specific.`,
-      max_tokens: 600,
-      messages: [{ role: 'user', content: message }]
+For email drafts, write the full email. For analysis, cite specific names and scores. For recommendations, be actionable and specific.`
+          },
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+      }),
     });
 
-    res.json({ reply: response.content[0].text });
+    if (!groqResponse.ok) {
+      const errText = await groqResponse.text();
+      console.error('Groq API error:', errText);
+      throw new Error(`Groq API error: ${groqResponse.status}`);
+    }
+
+    const data = await groqResponse.json();
+    res.json({ reply: data.choices[0].message.content });
 
   } catch (error) {
     console.error('Chat error:', error);

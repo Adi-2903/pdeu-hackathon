@@ -73,15 +73,42 @@ function seedDatabase({ force = false } = {}) {
     { name: 'Leila Ahmadi', email: 'leila.a@data.ca', phone: '+1-604-555-0199', location: 'Vancouver, Canada', seniority: 'Senior', years: 6, role: 'Analytics Engineer', company: 'Shopify', source: 'LinkedIn', score: 85, summary: 'Analytics engineer building real-time dashboards and data models for merchant insights at Shopify.', skills: ['Python', 'SQL', 'dbt', 'Snowflake', 'Looker', 'Airflow', 'Spark', 'Data Modeling'] },
   ];
 
-  const candidates = candidateData.map(d => ({
-    id: uuidv4(),
-    full_name: d.name, email: d.email, phone: d.phone, location: d.location,
-    summary: d.summary, seniority_level: d.seniority, years_of_experience: d.years,
-    current_role: d.role, current_company: d.company, source: d.source,
-    status: 'Active', overall_score: d.score, ats_score: randomInt(55, 95),
-    ghost_status: 0, in_passive_pool: 0, resume_text: d.summary, cover_letter: '',
-    avatar_url: null, created_at: now, updated_at: now,
-  }));
+  // Distribute statuses realistically across the pipeline funnel
+  const statusPool = [
+    'Active', 'Active', 'Active', 'Active', 'Active', 'Active', 'Active', 'Active', 'Active', 'Active', // ~20%  Applied/Active
+    'Screening', 'Screening', 'Screening', 'Screening', 'Screening', 'Screening', 'Screening', 'Screening', // ~16% Screening
+    'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', 'Shortlisted', // ~22% Shortlisted
+    'Interviewing', 'Interviewing', 'Interviewing', 'Interviewing', 'Interviewing', 'Interviewing', 'Interviewing', // ~14% Interview
+    'Offer', 'Offer', 'Offer', 'Offer', 'Offer', // ~10% Offer
+    'Hired', 'Hired', 'Hired', 'Hired', // ~8% Hired
+    'Active', 'Active', 'Active', 'Active', 'Active', // remaining Active
+  ];
+
+  // Stagger created_at dates over past 30 days for trend % to work
+  const baseDate = new Date();
+  const candidates = candidateData.map((d, i) => {
+    const daysAgo = Math.floor(i * (30 / candidateData.length));
+    const createdAt = new Date(baseDate.getTime() - daysAgo * 24 * 60 * 60 * 1000).toISOString();
+    const status = statusPool[i % statusPool.length];
+    // updatedAt is recent for active pipeline candidates
+    const updatedDaysAgo = status === 'Active' ? daysAgo : Math.max(0, daysAgo - 3);
+    const updatedAt = new Date(baseDate.getTime() - updatedDaysAgo * 24 * 60 * 60 * 1000).toISOString();
+    return {
+      id: uuidv4(),
+      full_name: d.name, email: d.email, phone: d.phone, location: d.location,
+      summary: d.summary, seniority_level: d.seniority, years_of_experience: d.years,
+      current_role: d.role, current_company: d.company, source: d.source,
+      status,
+      overall_score: d.score, ats_score: randomInt(55, 95),
+      ghost_status: i % 20 === 0 ? 1 : 0,
+      in_passive_pool: i % 15 === 0 ? 1 : 0,
+      resume_text: d.summary, cover_letter: '',
+      avatar_url: null,
+      skills: d.skills,
+      created_at: createdAt,
+      updated_at: updatedAt,
+    };
+  });
 
   candidates.forEach(c => db.insert('candidates', c));
 
