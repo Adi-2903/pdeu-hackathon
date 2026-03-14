@@ -433,21 +433,33 @@ const Candidates = () => {
   const handleSendEmail = async () => {
     setIsSendingEmail(true);
     try {
-      const res = await fetch('/api/v1/company/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailConfig)
-      });
-      const d = await res.json();
-      if (res.ok) {
-        addToast('Email sent successfully!', 'success');
-        if (d.previewUrl) window.open(d.previewUrl, '_blank');
-        setIsEmailModalOpen(false);
-      } else {
-        addToast(d.error?.message || 'Failed to send email', 'error');
+      if (emailConfig.includeAttachment) {
+        addToast('Generating PDF attachment...', 'info');
+        const res = await fetch('/api/v1/company/generate-offer-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailConfig)
+        });
+        if (!res.ok) throw new Error('Failed to generate PDF');
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Offer_Letter.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        setTimeout(() => addToast('PDF downloaded! Please drag & drop it into the Gmail window.', 'success'), 500);
       }
+
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailConfig.to)}&su=${encodeURIComponent(emailConfig.subject)}&body=${encodeURIComponent(emailConfig.body)}`;
+      window.open(gmailUrl, '_blank');
+
+      setIsEmailModalOpen(false);
     } catch (err) {
-      addToast('Failed to send email', 'error');
+      console.error(err);
+      addToast(err.message || 'Failed to prepare email', 'error');
     } finally {
       setIsSendingEmail(false);
     }

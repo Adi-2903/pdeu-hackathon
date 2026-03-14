@@ -214,6 +214,37 @@ router.get('/email-compose/:candidateId', (req, res) => {
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
 
+// ── POST generate PDF for direct download ──
+router.post('/generate-offer-pdf', async (req, res) => {
+  try {
+    const { candidateId, role, salary, start_date } = req.body;
+    const db = getDb();
+    const c = db.data.candidates.find(x => x.id === candidateId);
+    if (!c) return res.status(404).json({ error: { message: 'Candidate not found' } });
+
+    console.log('Generating PDF for direct download...');
+    const html = await getOfferLetterHtml(candidateId, db, { role, salary, start_date });
+
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+    await browser.close();
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="Offer_Letter_${c.full_name.replace(/\\s+/g, '_')}.pdf"`
+    });
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error('PDF Gen Error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
+
 // ── POST send email with PDF attachment ──
 router.post('/send-email', async (req, res) => {
   try {
@@ -245,7 +276,12 @@ router.post('/send-email', async (req, res) => {
 
     // SMTP Config
     let transporter;
-    if (process.env.SMTP_HOST) {
+    if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS }
+      });
+    } else if (process.env.SMTP_HOST) {
       transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: process.env.SMTP_PORT,
@@ -262,7 +298,7 @@ router.post('/send-email', async (req, res) => {
     }
 
     const info = await transporter.sendMail({
-      from: `"${db.data.company_profile.name || 'HireX'}" <hr@hirex.ai>`,
+      from: `"${db.data.company_profile.name || 'HireX'}" <${process.env.GMAIL_USER || 'hr@hirex.ai'}>`,
       to: to || c.email,
       subject: subject,
       text: body,
