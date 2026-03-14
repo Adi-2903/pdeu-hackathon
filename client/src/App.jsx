@@ -16,10 +16,10 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 const AppContent = () => {
   useKeyboardShortcuts();
   const { addToast } = useToast();
-  
+
   useEffect(() => {
     setTimeout(() => {
-      addToast("Welcome to TalentOS. Keyboard shortcuts are active (Cmd+K).", "ai", 5000);
+      addToast("Welcome to HireX. Keyboard shortcuts are active (Cmd+K).", "ai", 5000);
     }, 4500);
   }, [addToast]);
 
@@ -60,7 +60,7 @@ const App = () => {
       <ToastProvider>
         <AnimatePresence mode="wait">
           {showSplash ? (
-            <motion.div 
+            <motion.div
               key="splash"
               initial={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 1.05, filter: 'blur(20px)' }}
@@ -74,11 +74,11 @@ const App = () => {
                 className="relative"
               >
                 <div className="absolute inset-0 bg-[#FF6B00] blur-[120px] opacity-15 rounded-full animate-pulse"></div>
-                
+
                 <div className="flex items-center text-gray-900 text-7xl font-black tracking-tighter z-10 relative">
                   <div className="w-16 h-16 mr-6 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#FF8C42] shadow-[0_8px_32px_rgba(255,107,0,0.35)] flex items-center justify-center relative overflow-hidden">
                     <div className="absolute inset-0 bg-white/20 blur-md transform -skew-x-12 translate-x-[-150%] animate-[shimmer_2s_infinite]"></div>
-                     <span className="text-gray-900 text-4xl mr-1">✦</span>
+                    <span className="text-gray-900 text-4xl mr-1">✦</span>
                   </div>
                   Talent<span className="text-[#FF6B00]">OS</span>
                 </div>
@@ -91,12 +91,12 @@ const App = () => {
               >
                 Initializing Core Neural Engine
               </motion.p>
-              
+
               <motion.div
-                 initial={{ width: 0 }}
-                 animate={{ width: 250 }}
-                 transition={{ delay: 1, duration: 1.5, ease: 'easeInOut' }}
-                 className="h-1 bg-gradient-to-r from-[#FF6B00] to-[#FF8C42] rounded-full mt-6 shadow-[0_0_12px_rgba(255,107,0,0.3)]"
+                initial={{ width: 0 }}
+                animate={{ width: 250 }}
+                transition={{ delay: 1, duration: 1.5, ease: 'easeInOut' }}
+                className="h-1 bg-gradient-to-r from-[#FF6B00] to-[#FF8C42] rounded-full mt-6 shadow-[0_0_12px_rgba(255,107,0,0.3)]"
               ></motion.div>
             </motion.div>
           ) : (

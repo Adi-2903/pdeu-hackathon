@@ -1,0 +1,4506 @@
+[
+  {
+    "full_name": "Rohan Kumar",
+    "current_role": "Software Engineer",
+    "current_company": "Microsoft",
+    "location": "Bangalore, India",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Azure",
+      "Git"
+    ],
+    "education": "Bachelor of Technology \u2014 Indian Institute of Technology",
+    "email": "rohan.kumar@microsoft.com",
+    "phone": "+91 99999 99999",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with experience in cloud computing and machine learning. Proficient in Java, Python, and C++. Strong understanding of software design patterns and principles.",
+    "overall_score": 85,
+    "work_experience": [
+      {
+        "company": "Microsoft",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Designed and developed cloud-based applications using Azure and Java."
+      },
+      {
+        "company": "TCS",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "Bachelor of Technology",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Azure Developer Associate",
+        "issuer": "Microsoft"
+      }
+    ],
+    "id": "16a0625e-a861-42ba-a155-3c6ced0aaa8b",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 55
+  },
+  {
+    "full_name": "Emily Chen",
+    "current_role": "Senior Software Engineer",
+    "current_company": "Google",
+    "location": "Mountain View, USA",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Python",
+      "Java",
+      "C++",
+      "TensorFlow",
+      "Kubernetes"
+    ],
+    "education": "Master of Science \u2014 Stanford University",
+    "email": "emily.chen@google.com",
+    "phone": "+1 650 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in machine learning, cloud computing, and DevOps. Strong leader with excellent communication skills.",
+    "overall_score": 95,
+    "work_experience": [
+      {
+        "company": "Google",
+        "title": "Senior Software Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led the development of several machine learning-based projects using TensorFlow and Python."
+      },
+      {
+        "company": "Amazon",
+        "title": "Software Engineer",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Stanford University",
+        "degree": "Master of Science",
+        "year": 2010
+      },
+      {
+        "institution": "University of California",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Google Cloud Certified - Professional Cloud Developer",
+        "issuer": "Google"
+      }
+    ],
+    "id": "a4e988bb-a9a1-4ffe-b47d-80c00fca15bd",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "New",
+    "pipeline_stage": "Screening",
+    "ats_score": 79
+  },
+  {
+    "full_name": "Luis Rodriguez",
+    "current_role": "Lead Software Engineer",
+    "current_company": "IBM",
+    "location": "New York, USA",
+    "years_of_experience": 15,
+    "seniority_level": "Lead",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "CloudFoundry",
+      "Docker"
+    ],
+    "education": "Bachelor of Science \u2014 Massachusetts Institute of Technology",
+    "email": "luis.rodriguez@ibm.com",
+    "phone": "+1 212 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in cloud computing, DevOps, and software architecture. Strong leader with excellent communication skills.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "IBM",
+        "title": "Lead Software Engineer",
+        "start_date": 2010,
+        "end_date": "Present",
+        "description": "Led the development of several cloud-based applications using CloudFoundry and Java."
+      },
+      {
+        "company": "Oracle",
+        "title": "Senior Software Engineer",
+        "start_date": 2005,
+        "end_date": 2010,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Massachusetts Institute of Technology",
+        "degree": "Bachelor of Science",
+        "year": 2005
+      }
+    ],
+    "certifications": [
+      {
+        "name": "IBM Certified Application Developer - Cloud",
+        "issuer": "IBM"
+      }
+    ],
+    "id": "017dd1a5-5503-4f06-b898-8a9593d27be9",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Screening",
+    "ats_score": 94
+  },
+  {
+    "full_name": "Sophia Patel",
+    "current_role": "Junior Software Engineer",
+    "current_company": "Accenture",
+    "location": "Mumbai, India",
+    "years_of_experience": 2,
+    "seniority_level": "Junior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Azure",
+      "Git"
+    ],
+    "education": "Bachelor of Technology \u2014 Mumbai University",
+    "email": "sophia.patel@accenture.com",
+    "phone": "+91 99999 99999",
+    "source": "LinkedIn",
+    "summary": "Highly motivated junior software engineer with experience in software development and cloud computing. Proficient in Java, Python, and C++.",
+    "overall_score": 70,
+    "work_experience": [
+      {
+        "company": "Accenture",
+        "title": "Junior Software Engineer",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Mumbai University",
+        "degree": "Bachelor of Technology",
+        "year": 2020
+      }
+    ],
+    "certifications": [],
+    "id": "49c0796b-3a87-4390-b1ed-d15edd1c154e",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Interview",
+    "pipeline_stage": "Offer",
+    "ats_score": 88
+  },
+  {
+    "full_name": "Daniel Lee",
+    "current_role": "Software Engineer",
+    "current_company": "Samsung",
+    "location": "Seoul, South Korea",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Python",
+      "Java",
+      "C++",
+      "Android",
+      "iOS"
+    ],
+    "education": "Bachelor of Science \u2014 Seoul National University",
+    "email": "daniel.lee@samsung.com",
+    "phone": "+82 10 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with experience in mobile app development and software engineering. Proficient in Python, Java, and C++.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "Samsung",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Worked on various mobile app development projects using Android and iOS."
+      },
+      {
+        "company": "LG",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Seoul National University",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [],
+    "id": "a9c7a923-dc0c-4aab-87c5-ba1b26b21f1c",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 62
+  },
+  {
+    "full_name": "Maria Rodriguez",
+    "current_role": "Senior Software Engineer",
+    "current_company": "Cisco",
+    "location": "San Jose, USA",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Networking",
+      "Cybersecurity"
+    ],
+    "education": "Master of Science \u2014 University of California",
+    "email": "maria.rodriguez@cisco.com",
+    "phone": "+1 408 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in networking, cybersecurity, and software engineering. Strong leader with excellent communication skills.",
+    "overall_score": 95,
+    "work_experience": [
+      {
+        "company": "Cisco",
+        "title": "Senior Software Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led the development of several networking and cybersecurity-based projects using Java and Python."
+      },
+      {
+        "company": "Juniper Networks",
+        "title": "Software Engineer",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of California",
+        "degree": "Master of Science",
+        "year": 2010
+      },
+      {
+        "institution": "University of Texas",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "CCIE Security",
+        "issuer": "Cisco"
+      }
+    ],
+    "id": "2964d874-ab75-45e0-a9a8-6d8d4e594ff5",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Screening",
+    "pipeline_stage": "Offer",
+    "ats_score": 88
+  },
+  {
+    "full_name": "Rajesh Sharma",
+    "current_role": "Lead Software Engineer",
+    "current_company": "TCS",
+    "location": "Mumbai, India",
+    "years_of_experience": 12,
+    "seniority_level": "Lead",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure"
+    ],
+    "education": "Bachelor of Technology \u2014 Indian Institute of Technology",
+    "email": "rajesh.sharma@tcs.com",
+    "phone": "+91 99999 99999",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in cloud computing, software engineering, and DevOps. Strong leader with excellent communication skills.",
+    "overall_score": 90,
+    "work_experience": [
+      {
+        "company": "TCS",
+        "title": "Lead Software Engineer",
+        "start_date": 2010,
+        "end_date": "Present",
+        "description": "Led the development of several cloud-based applications using AWS and Azure."
+      },
+      {
+        "company": "Infosys",
+        "title": "Senior Software Engineer",
+        "start_date": 2008,
+        "end_date": 2010,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "Bachelor of Technology",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Developer - Associate",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "68a65c8d-ff40-4cb1-824c-5df2f8c67933",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Screening",
+    "pipeline_stage": "Applied",
+    "ats_score": 58
+  },
+  {
+    "full_name": "Jian Li",
+    "current_role": "Software Engineer",
+    "current_company": "Alibaba",
+    "location": "Hangzhou, China",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Python",
+      "Java",
+      "C++",
+      "Alibaba Cloud",
+      "Docker"
+    ],
+    "education": "Bachelor of Science \u2014 Tsinghua University",
+    "email": "jian.li@alibaba.com",
+    "phone": "+86 188 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with experience in software development and cloud computing. Proficient in Python, Java, and C++.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "Alibaba",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Worked on various software development projects using Python, Java, and C++."
+      },
+      {
+        "company": "Baidu",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Tsinghua University",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [],
+    "id": "4a8b6678-f27f-41c1-ad2b-ee91ac11cb86",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Screening",
+    "pipeline_stage": "Applied",
+    "ats_score": 61
+  },
+  {
+    "full_name": "Ana Garcia",
+    "current_role": "Senior Software Engineer",
+    "current_company": "Ericsson",
+    "location": "Stockholm, Sweden",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Telecom",
+      "Networking"
+    ],
+    "education": "Master of Science \u2014 Royal Institute of Technology",
+    "email": "ana.garcia@ericsson.com",
+    "phone": "+46 70 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in telecom, networking, and software engineering. Strong leader with excellent communication skills.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "Ericsson",
+        "title": "Senior Software Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led the development of several telecom-based projects using Java and Python."
+      },
+      {
+        "company": "Nokia",
+        "title": "Software Engineer",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Royal Institute of Technology",
+        "degree": "Master of Science",
+        "year": 2010
+      },
+      {
+        "institution": "University of Madrid",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Ericsson Certified Professional - Telecom",
+        "issuer": "Ericsson"
+      }
+    ],
+    "id": "0a7103ff-c1b5-4fe8-803a-8b38d6b93bc7",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Applied",
+    "ats_score": 86
+  },
+  {
+    "full_name": "Peng Zhang",
+    "current_role": "Lead Software Engineer",
+    "current_company": "Huawei",
+    "location": "Shenzhen, China",
+    "years_of_experience": 12,
+    "seniority_level": "Lead",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Cloud Computing",
+      "Networking"
+    ],
+    "education": "Bachelor of Science \u2014 Tsinghua University",
+    "email": "peng.zhang@huawei.com",
+    "phone": "+86 188 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in cloud computing, networking, and software engineering. Strong leader with excellent communication skills.",
+    "overall_score": 90,
+    "work_experience": [
+      {
+        "company": "Huawei",
+        "title": "Lead Software Engineer",
+        "start_date": 2010,
+        "end_date": "Present",
+        "description": "Led the development of several cloud-based applications using Java and Python."
+      },
+      {
+        "company": "ZTE",
+        "title": "Senior Software Engineer",
+        "start_date": 2008,
+        "end_date": 2010,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Tsinghua University",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Huawei Certified ICT Professional - Cloud Computing",
+        "issuer": "Huawei"
+      }
+    ],
+    "id": "419d48c1-2a6f-4989-ad15-ea54544a0ce9",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 59
+  },
+  {
+    "full_name": "Julian Sanchez",
+    "current_role": "Software Engineer",
+    "current_company": "SAP",
+    "location": "Walldorf, Germany",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "SAP ERP",
+      "ABAP"
+    ],
+    "education": "Bachelor of Science \u2014 University of Stuttgart",
+    "email": "julian.sanchez@sap.com",
+    "phone": "+49 6221 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with experience in software development and SAP ERP. Proficient in Java, Python, and C++.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "SAP",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      },
+      {
+        "company": "Siemens",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Stuttgart",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [],
+    "id": "33729bc3-4410-4a84-ab92-bc8058b99f2c",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 73
+  },
+  {
+    "full_name": "Li Wei",
+    "current_role": "Senior Software Engineer",
+    "current_company": "Tencent",
+    "location": "Shenzhen, China",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Python",
+      "Java",
+      "C++",
+      "Cloud Computing",
+      "Gaming"
+    ],
+    "education": "Master of Science \u2014 Peking University",
+    "email": "li.wei@tencent.com",
+    "phone": "+86 188 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in cloud computing, gaming, and software engineering. Strong leader with excellent communication skills.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "Tencent",
+        "title": "Senior Software Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led the development of several cloud-based gaming projects using Python and Java."
+      },
+      {
+        "company": "NetEase",
+        "title": "Software Engineer",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Peking University",
+        "degree": "Master of Science",
+        "year": 2010
+      },
+      {
+        "institution": "University of Science and Technology of China",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Tencent Certified Engineer - Cloud Computing",
+        "issuer": "Tencent"
+      }
+    ],
+    "id": "f6e15c50-99a1-4823-8509-59d6598be0f6",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Screening",
+    "pipeline_stage": "Offer",
+    "ats_score": 83
+  },
+  {
+    "full_name": "Akshay Jain",
+    "current_role": "Junior Software Engineer",
+    "current_company": "Wipro",
+    "location": "Bangalore, India",
+    "years_of_experience": 2,
+    "seniority_level": "Junior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Azure",
+      "Git"
+    ],
+    "education": "Bachelor of Technology \u2014 Indian Institute of Technology",
+    "email": "akshay.jain@wipro.com",
+    "phone": "+91 99999 99999",
+    "source": "LinkedIn",
+    "summary": "Highly motivated junior software engineer with experience in software development and cloud computing. Proficient in Java, Python, and C++.",
+    "overall_score": 70,
+    "work_experience": [
+      {
+        "company": "Wipro",
+        "title": "Junior Software Engineer",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "Bachelor of Technology",
+        "year": 2020
+      }
+    ],
+    "certifications": [],
+    "id": "6529ebad-8076-4aa7-a6d8-b4d35df68180",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Applied",
+    "ats_score": 76
+  },
+  {
+    "full_name": "Jin Young Kim",
+    "current_role": "Software Engineer",
+    "current_company": "KT",
+    "location": "Seoul, South Korea",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Python",
+      "Java",
+      "C++",
+      "Telecom",
+      "Networking"
+    ],
+    "education": "Bachelor of Science \u2014 Seoul National University",
+    "email": "jin.young.kim@kt.com",
+    "phone": "+82 10 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with experience in software development and telecom. Proficient in Python, Java, and C++.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "KT",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Worked on various software development projects using Python, Java, and C++."
+      },
+      {
+        "company": "SK Telecom",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Seoul National University",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [],
+    "id": "229ecb16-5e36-4f2e-9a09-1a82d8b2237c",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "New",
+    "pipeline_stage": "Applied",
+    "ats_score": 67
+  },
+  {
+    "full_name": "Siddharth Rao",
+    "current_role": "Senior Software Engineer",
+    "current_company": "Capgemini",
+    "location": "Mumbai, India",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Cloud Computing",
+      "DevOps"
+    ],
+    "education": "Master of Science \u2014 Indian Institute of Technology",
+    "email": "siddharth.rao@capgemini.com",
+    "phone": "+91 99999 99999",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in cloud computing, DevOps, and software engineering. Strong leader with excellent communication skills.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "Capgemini",
+        "title": "Senior Software Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led the development of several cloud-based projects using Java and Python."
+      },
+      {
+        "company": "Accenture",
+        "title": "Software Engineer",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "Master of Science",
+        "year": 2010
+      },
+      {
+        "institution": "University of Mumbai",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Capgemini Certified Professional - Cloud Computing",
+        "issuer": "Capgemini"
+      }
+    ],
+    "id": "6e2b736e-6dc9-4fbe-bed6-af550a765d52",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 88
+  },
+  {
+    "full_name": "Ethan Hall",
+    "current_role": "Lead Software Engineer",
+    "current_company": "Deloitte",
+    "location": "New York, USA",
+    "years_of_experience": 12,
+    "seniority_level": "Lead",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "Cloud Computing",
+      "Cybersecurity"
+    ],
+    "education": "Bachelor of Science \u2014 Massachusetts Institute of Technology",
+    "email": "ethan.hall@deloitte.com",
+    "phone": "+1 212 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced software engineer with expertise in cloud computing, cybersecurity, and software engineering. Strong leader with excellent communication skills.",
+    "overall_score": 90,
+    "work_experience": [
+      {
+        "company": "Deloitte",
+        "title": "Lead Software Engineer",
+        "start_date": 2010,
+        "end_date": "Present",
+        "description": "Led the development of several cloud-based applications using Java and Python."
+      },
+      {
+        "company": "PwC",
+        "title": "Senior Software Engineer",
+        "start_date": 2008,
+        "end_date": 2010,
+        "description": "Worked on various software development projects using Java, Python, and C++."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Massachusetts Institute of Technology",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Deloitte Certified Professional - Cloud Computing",
+        "issuer": "Deloitte"
+      }
+    ],
+    "id": "3985a8e9-c87c-4979-8dec-d72cbc707690",
+    "created_at": "2026-03-14T00:55:57Z",
+    "status": "Screening",
+    "pipeline_stage": "Interview",
+    "ats_score": 75
+  },
+  {
+    "full_name": "Rohan Kumar",
+    "current_role": "Software Engineer",
+    "current_company": "Microsoft",
+    "location": "Bangalore, India",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes"
+    ],
+    "education": "B.Tech \u2014 Indian Institute of Technology",
+    "email": "rohan.kumar@microsoft.com",
+    "phone": "+91 99999 99999",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with expertise in cloud computing and containerization. Proficient in multiple programming languages. Strong team player with excellent communication skills.",
+    "overall_score": 85,
+    "work_experience": [
+      {
+        "company": "Microsoft",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Designed and developed multiple cloud-based applications using Java and Python."
+      },
+      {
+        "company": "Infosys",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "B.Tech",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Developer",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "9d3662a0-423e-452f-b038-b392bd6e6f87",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Screening",
+    "ats_score": 79
+  },
+  {
+    "full_name": "Emily Chen",
+    "current_role": "Senior Software Engineer",
+    "current_company": "Google",
+    "location": "San Francisco, USA",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Python",
+      "JavaScript",
+      "C#",
+      "Angular",
+      "React",
+      "Node.js",
+      "MongoDB"
+    ],
+    "education": "M.S. \u2014 Stanford University",
+    "email": "emily.chen@google.com",
+    "phone": "+1 555 555 5555",
+    "source": "LinkedIn",
+    "summary": "Results-driven senior software engineer with expertise in web development and cloud computing. Strong leader with excellent problem-solving skills.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "Google",
+        "title": "Senior Software Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led multiple teams to develop scalable web applications using Python and JavaScript."
+      },
+      {
+        "company": "Amazon",
+        "title": "Software Engineer",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Worked on various projects involving C# and Windows application development."
+      },
+      {
+        "company": "IBM",
+        "title": "Junior Software Engineer",
+        "start_date": 2008,
+        "end_date": 2010,
+        "description": "Developed multiple applications using Java and Oracle database."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Stanford University",
+        "degree": "M.S.",
+        "year": 2008
+      },
+      {
+        "institution": "University of California",
+        "degree": "B.S.",
+        "year": 2005
+      }
+    ],
+    "certifications": [],
+    "id": "c037f1dd-0c4b-4d01-8220-9b51b575b2ed",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "New",
+    "pipeline_stage": "Applied",
+    "ats_score": 95
+  },
+  {
+    "full_name": "Luis Garcia",
+    "current_role": "Lead Software Engineer",
+    "current_company": "Accenture",
+    "location": "Mexico City, Mexico",
+    "years_of_experience": 12,
+    "seniority_level": "Lead",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Git"
+    ],
+    "education": "B.S. \u2014 Universidad Nacional Autonoma de Mexico",
+    "email": "luis.garcia@accenture.com",
+    "phone": "+52 55 5555 5555",
+    "source": "LinkedIn",
+    "summary": "Highly experienced lead software engineer with expertise in cloud computing and DevOps. Strong leader with excellent communication skills.",
+    "overall_score": 90,
+    "work_experience": [
+      {
+        "company": "Accenture",
+        "title": "Lead Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Led multiple teams to develop scalable cloud-based applications using Java and Python."
+      },
+      {
+        "company": "IBM",
+        "title": "Senior Software Engineer",
+        "start_date": 2012,
+        "end_date": 2018,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Universidad Nacional Autonoma de Mexico",
+        "degree": "B.S.",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified DevOps Engineer",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "e88b140e-8059-440a-b826-6f0809afe88e",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "Interview",
+    "pipeline_stage": "Offer",
+    "ats_score": 67
+  },
+  {
+    "full_name": "Jinwoo Kim",
+    "current_role": "Software Engineer",
+    "current_company": "Samsung",
+    "location": "Seoul, South Korea",
+    "years_of_experience": 3,
+    "seniority_level": "Junior",
+    "skills": [
+      "Python",
+      "JavaScript",
+      "C#",
+      "Android",
+      "iOS",
+      "React Native"
+    ],
+    "education": "B.S. \u2014 Seoul National University",
+    "email": "jinwoo.kim@samsung.com",
+    "phone": "+82 10 9999 9999",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with expertise in mobile application development. Strong team player with excellent communication skills.",
+    "overall_score": 78,
+    "work_experience": [
+      {
+        "company": "Samsung",
+        "title": "Software Engineer",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Developed multiple mobile applications using Python and JavaScript."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Seoul National University",
+        "degree": "B.S.",
+        "year": 2020
+      }
+    ],
+    "certifications": [],
+    "id": "0b3a13c2-6e09-41a4-98ec-b09c77cf4825",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "New",
+    "pipeline_stage": "Applied",
+    "ats_score": 65
+  },
+  {
+    "full_name": "Alessandro Bianchi",
+    "current_role": "Senior Software Engineer",
+    "current_company": "ERNI",
+    "location": "Milan, Italy",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes"
+    ],
+    "education": "M.S. \u2014 Politecnico di Milano",
+    "email": "alessandro.bianchi@erni.it",
+    "phone": "+39 02 9999 9999",
+    "source": "LinkedIn",
+    "summary": "Results-driven senior software engineer with expertise in cloud computing and DevOps. Strong leader with excellent problem-solving skills.",
+    "overall_score": 88,
+    "work_experience": [
+      {
+        "company": "ERNI",
+        "title": "Senior Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Led multiple teams to develop scalable cloud-based applications using Java and Python."
+      },
+      {
+        "company": "IBM",
+        "title": "Software Engineer",
+        "start_date": 2012,
+        "end_date": 2018,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Politecnico di Milano",
+        "degree": "M.S.",
+        "year": 2012
+      },
+      {
+        "institution": "Universita degli Studi di Milano",
+        "degree": "B.S.",
+        "year": 2009
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Developer",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "6200c178-a5a5-4d9b-bd66-75dd49cb9339",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Screening",
+    "ats_score": 78
+  },
+  {
+    "full_name": "Yui Nakamura",
+    "current_role": "Mid-Level Software Engineer",
+    "current_company": "Toshiba",
+    "location": "Tokyo, Japan",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Python",
+      "JavaScript",
+      "C#",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Git"
+    ],
+    "education": "B.S. \u2014 University of Tokyo",
+    "email": "yui.nakamura@toshiba.co.jp",
+    "phone": "+81 03 9999 9999",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with expertise in cloud computing and DevOps. Strong team player with excellent communication skills.",
+    "overall_score": 82,
+    "work_experience": [
+      {
+        "company": "Toshiba",
+        "title": "Mid-Level Software Engineer",
+        "start_date": 2019,
+        "end_date": "Present",
+        "description": "Developed multiple cloud-based applications using Python and JavaScript."
+      },
+      {
+        "company": "NEC",
+        "title": "Junior Software Engineer",
+        "start_date": 2016,
+        "end_date": 2019,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Tokyo",
+        "degree": "B.S.",
+        "year": 2016
+      }
+    ],
+    "certifications": [],
+    "id": "253c7eb2-ff93-4ad1-9116-d998761a8251",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 66
+  },
+  {
+    "full_name": "Daniel Lee",
+    "current_role": "Director of Engineering",
+    "current_company": "Palantir",
+    "location": "Palo Alto, USA",
+    "years_of_experience": 15,
+    "seniority_level": "Director",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Git"
+    ],
+    "education": "M.S. \u2014 Massachusetts Institute of Technology",
+    "email": "daniel.lee@palantir.com",
+    "phone": "+1 650 9999 9999",
+    "source": "LinkedIn",
+    "summary": "Highly experienced director of engineering with expertise in cloud computing and DevOps. Strong leader with excellent problem-solving skills.",
+    "overall_score": 95,
+    "work_experience": [
+      {
+        "company": "Palantir",
+        "title": "Director of Engineering",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led multiple teams to develop scalable cloud-based applications using Java and Python."
+      },
+      {
+        "company": "Google",
+        "title": "Senior Software Engineer",
+        "start_date": 2008,
+        "end_date": 2015,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      },
+      {
+        "company": "IBM",
+        "title": "Software Engineer",
+        "start_date": 2005,
+        "end_date": 2008,
+        "description": "Developed multiple applications using Java and Oracle database."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Massachusetts Institute of Technology",
+        "degree": "M.S.",
+        "year": 2005
+      },
+      {
+        "institution": "Stanford University",
+        "degree": "B.S.",
+        "year": 2000
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified DevOps Engineer",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "8ef60b5e-1b5c-4bbd-a6b7-81573d18a5ed",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "New",
+    "pipeline_stage": "Offer",
+    "ats_score": 65
+  },
+  {
+    "full_name": "Maria Rodriguez",
+    "current_role": "Mid-Level Software Engineer",
+    "current_company": "Everis",
+    "location": "Madrid, Spain",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Python",
+      "JavaScript",
+      "C#",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Git"
+    ],
+    "education": "B.S. \u2014 Universidad Politecnica de Madrid",
+    "email": "maria.rodriguez@everis.com",
+    "phone": "+34 91 9999 9999",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with expertise in cloud computing and DevOps. Strong team player with excellent communication skills.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "Everis",
+        "title": "Mid-Level Software Engineer",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Developed multiple cloud-based applications using Python and JavaScript."
+      },
+      {
+        "company": "Indra",
+        "title": "Junior Software Engineer",
+        "start_date": 2018,
+        "end_date": 2020,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Universidad Politecnica de Madrid",
+        "degree": "B.S.",
+        "year": 2018
+      }
+    ],
+    "certifications": [],
+    "id": "0b492137-2243-4397-a218-e6313800bc86",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 73
+  },
+  {
+    "full_name": "Sofia Jensen",
+    "current_role": "Senior Software Engineer",
+    "current_company": "Maersk",
+    "location": "Copenhagen, Denmark",
+    "years_of_experience": 9,
+    "seniority_level": "Senior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Git"
+    ],
+    "education": "M.S. \u2014 Technical University of Denmark",
+    "email": "sofia.jensen@maersk.com",
+    "phone": "+45 33 9999 9999",
+    "source": "LinkedIn",
+    "summary": "Results-driven senior software engineer with expertise in cloud computing and DevOps. Strong leader with excellent problem-solving skills.",
+    "overall_score": 89,
+    "work_experience": [
+      {
+        "company": "Maersk",
+        "title": "Senior Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Led multiple teams to develop scalable cloud-based applications using Java and Python."
+      },
+      {
+        "company": "IBM",
+        "title": "Software Engineer",
+        "start_date": 2012,
+        "end_date": 2018,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Technical University of Denmark",
+        "degree": "M.S.",
+        "year": 2012
+      },
+      {
+        "institution": "University of Copenhagen",
+        "degree": "B.S.",
+        "year": 2009
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Developer",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "737dc75d-4c3e-498b-9213-b39ad94cf32a",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "Screening",
+    "pipeline_stage": "Screening",
+    "ats_score": 75
+  },
+  {
+    "full_name": "Lei Wang",
+    "current_role": "Lead Software Engineer",
+    "current_company": "Alibaba",
+    "location": "Hangzhou, China",
+    "years_of_experience": 11,
+    "seniority_level": "Lead",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Git"
+    ],
+    "education": "M.S. \u2014 Zhejiang University",
+    "email": "lei.wang@alibaba.com",
+    "phone": "+86 571 9999 9999",
+    "source": "LinkedIn",
+    "summary": "Highly experienced lead software engineer with expertise in cloud computing and DevOps. Strong leader with excellent problem-solving skills.",
+    "overall_score": 91,
+    "work_experience": [
+      {
+        "company": "Alibaba",
+        "title": "Lead Software Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Led multiple teams to develop scalable cloud-based applications using Java and Python."
+      },
+      {
+        "company": "IBM",
+        "title": "Senior Software Engineer",
+        "start_date": 2009,
+        "end_date": 2015,
+        "description": "Worked on various projects involving C++ and Windows application development."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Zhejiang University",
+        "degree": "M.S.",
+        "year": 2009
+      },
+      {
+        "institution": "Shanghai Jiao Tong University",
+        "degree": "B.S.",
+        "year": 2005
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified DevOps Engineer",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "054e1d4b-e074-45a2-b28d-bdfdb84672fd",
+    "created_at": "2026-03-14T00:56:07Z",
+    "status": "Screening",
+    "pipeline_stage": "Screening",
+    "ats_score": 69
+  },
+  {
+    "full_name": "Rohan Patel",
+    "current_role": "Software Engineer",
+    "current_company": "Google",
+    "location": "Mountain View, USA",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "JavaScript",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes"
+    ],
+    "education": "Bachelor of Science \u2014 Stanford University",
+    "email": "rohan.patel@gmail.com",
+    "phone": "+1 650 123 4567",
+    "source": "LinkedIn",
+    "summary": "Results-driven software engineer with a passion for innovation and teamwork. Proficient in a range of programming languages and cloud platforms. Strong problem-solving skills and attention to detail.",
+    "overall_score": 85,
+    "work_experience": [
+      {
+        "company": "Google",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developed multiple high-performance applications using Java and Python."
+      },
+      {
+        "company": "Microsoft",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on a team to design and implement a cloud-based storage system."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Stanford University",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Developer",
+        "issuer": "Amazon"
+      }
+    ],
+    "id": "75854001-1811-4ea1-a278-29ee73318786",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Offer",
+    "ats_score": 61
+  },
+  {
+    "full_name": "Emily Chen",
+    "current_role": "Data Scientist",
+    "current_company": "Facebook",
+    "location": "Menlo Park, USA",
+    "years_of_experience": 3,
+    "seniority_level": "Junior",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Tableau",
+      "Power BI",
+      "Machine Learning",
+      "Deep Learning"
+    ],
+    "education": "Master of Science \u2014 University of California, Berkeley",
+    "email": "emily.chen@fb.com",
+    "phone": "+1 650 123 4568",
+    "source": "LinkedIn",
+    "summary": "Ambitious data scientist with a strong foundation in statistics and machine learning. Experienced in working with large datasets and creating data visualizations. Proficient in Python and R.",
+    "overall_score": 78,
+    "work_experience": [
+      {
+        "company": "Facebook",
+        "title": "Data Scientist",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Analyzed user behavior and developed predictive models using machine learning algorithms."
+      },
+      {
+        "company": "Uber",
+        "title": "Data Analyst",
+        "start_date": 2018,
+        "end_date": 2020,
+        "description": "Created data visualizations and reports to inform business decisions."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of California, Berkeley",
+        "degree": "Master of Science",
+        "year": 2018
+      },
+      {
+        "institution": "University of California, Los Angeles",
+        "degree": "Bachelor of Science",
+        "year": 2016
+      }
+    ],
+    "certifications": [],
+    "id": "6606a982-7028-4150-acca-505a4c29ffba",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "New",
+    "pipeline_stage": "Offer",
+    "ats_score": 66
+  },
+  {
+    "full_name": "Lukas M\u00fcller",
+    "current_role": "DevOps Engineer",
+    "current_company": "Amazon",
+    "location": "Berlin, Germany",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes",
+      "Jenkins"
+    ],
+    "education": "Bachelor of Engineering \u2014 Technical University of Munich",
+    "email": "lukas.mueller@amazon.de",
+    "phone": "+49 30 123 4567",
+    "source": "LinkedIn",
+    "summary": "Seasoned DevOps engineer with expertise in cloud infrastructure and automation. Strong knowledge of containerization and orchestration using Docker and Kubernetes.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "Amazon",
+        "title": "DevOps Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Designed and implemented automated deployment pipelines using Jenkins and Docker."
+      },
+      {
+        "company": "SAP",
+        "title": "Cloud Engineer",
+        "start_date": 2012,
+        "end_date": 2015,
+        "description": "Developed and maintained cloud-based applications using Java and Python."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Technical University of Munich",
+        "degree": "Bachelor of Engineering",
+        "year": 2012
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified DevOps Engineer",
+        "issuer": "Amazon"
+      }
+    ],
+    "id": "09691616-1d0f-405a-8546-09d303885410",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 94
+  },
+  {
+    "full_name": "Sofia Rodriguez",
+    "current_role": "Product Manager",
+    "current_company": "Apple",
+    "location": "Cupertino, USA",
+    "years_of_experience": 10,
+    "seniority_level": "Lead",
+    "skills": [
+      "Product Management",
+      "Project Management",
+      "Marketing",
+      "Sales",
+      "Data Analysis"
+    ],
+    "education": "Master of Business Administration \u2014 Harvard University",
+    "email": "sofia.rodriguez@apple.com",
+    "phone": "+1 650 123 4569",
+    "source": "LinkedIn",
+    "summary": "Results-driven product manager with a strong background in marketing and sales. Experienced in leading cross-functional teams and developing product strategies.",
+    "overall_score": 95,
+    "work_experience": [
+      {
+        "company": "Apple",
+        "title": "Product Manager",
+        "start_date": 2013,
+        "end_date": "Present",
+        "description": "Led the development and launch of multiple successful products, including the iPhone and iPad."
+      },
+      {
+        "company": "Google",
+        "title": "Product Marketing Manager",
+        "start_date": 2008,
+        "end_date": 2013,
+        "description": "Developed and executed marketing campaigns for Google's advertising products."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Harvard University",
+        "degree": "Master of Business Administration",
+        "year": 2008
+      },
+      {
+        "institution": "Stanford University",
+        "degree": "Bachelor of Arts",
+        "year": 2005
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Product Manager",
+        "issuer": "Association of International Product Marketing and Management"
+      }
+    ],
+    "id": "f68bd8db-6beb-4ce4-899b-61dbeed3a763",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Screening",
+    "pipeline_stage": "Interview",
+    "ats_score": 84
+  },
+  {
+    "full_name": "Taro Yamada",
+    "current_role": "Software Engineer",
+    "current_company": "Toyota",
+    "location": "Tokyo, Japan",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "JavaScript",
+      "AWS",
+      "Azure"
+    ],
+    "education": "Bachelor of Engineering \u2014 University of Tokyo",
+    "email": "taro.yamada@toyota.co.jp",
+    "phone": "+81 3 123 4567",
+    "source": "LinkedIn",
+    "summary": "Skilled software engineer with experience in developing cloud-based applications. Strong knowledge of programming languages and cloud platforms.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "Toyota",
+        "title": "Software Engineer",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Developed and maintained software applications for Toyota's manufacturing systems."
+      },
+      {
+        "company": "Honda",
+        "title": "Junior Software Engineer",
+        "start_date": 2014,
+        "end_date": 2017,
+        "description": "Worked on a team to design and implement software applications for Honda's automotive systems."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Tokyo",
+        "degree": "Bachelor of Engineering",
+        "year": 2014
+      }
+    ],
+    "certifications": [],
+    "id": "2118fde0-8831-4c07-9501-b43ec6aaae5c",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 82
+  },
+  {
+    "full_name": "Leila Hassan",
+    "current_role": "Data Analyst",
+    "current_company": "Microsoft",
+    "location": "Dubai, UAE",
+    "years_of_experience": 4,
+    "seniority_level": "Junior",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Tableau",
+      "Power BI",
+      "Data Visualization"
+    ],
+    "education": "Bachelor of Science \u2014 American University of Sharjah",
+    "email": "leila.hassan@microsoft.com",
+    "phone": "+971 4 123 4567",
+    "source": "LinkedIn",
+    "summary": "Detail-oriented data analyst with experience in working with large datasets and creating data visualizations. Proficient in Python and R.",
+    "overall_score": 75,
+    "work_experience": [
+      {
+        "company": "Microsoft",
+        "title": "Data Analyst",
+        "start_date": 2019,
+        "end_date": "Present",
+        "description": "Analyzed customer data and developed reports to inform business decisions."
+      },
+      {
+        "company": "Emirates Airlines",
+        "title": "Junior Data Analyst",
+        "start_date": 2017,
+        "end_date": 2019,
+        "description": "Created data visualizations and reports to support business operations."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "American University of Sharjah",
+        "degree": "Bachelor of Science",
+        "year": 2017
+      }
+    ],
+    "certifications": [],
+    "id": "84db77e7-316c-4e86-a0c6-8edae2e601e6",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 93
+  },
+  {
+    "full_name": "Jian Li",
+    "current_role": "Artificial Intelligence Engineer",
+    "current_company": "Baidu",
+    "location": "Beijing, China",
+    "years_of_experience": 7,
+    "seniority_level": "Senior",
+    "skills": [
+      "Python",
+      "C++",
+      "Deep Learning",
+      "Machine Learning",
+      "Natural Language Processing"
+    ],
+    "education": "Master of Science \u2014 Tsinghua University",
+    "email": "jian.li@baidu.com",
+    "phone": "+86 10 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced artificial intelligence engineer with expertise in deep learning and natural language processing. Strong knowledge of Python and C++.",
+    "overall_score": 90,
+    "work_experience": [
+      {
+        "company": "Baidu",
+        "title": "Artificial Intelligence Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Developed and implemented AI algorithms for Baidu's search engine and virtual assistant."
+      },
+      {
+        "company": "Tencent",
+        "title": "Machine Learning Engineer",
+        "start_date": 2012,
+        "end_date": 2015,
+        "description": "Worked on a team to design and implement machine learning models for Tencent's social media platform."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Tsinghua University",
+        "degree": "Master of Science",
+        "year": 2012
+      },
+      {
+        "institution": "Peking University",
+        "degree": "Bachelor of Science",
+        "year": 2010
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Artificial Intelligence Engineer",
+        "issuer": "Chinese Institute of Electronics"
+      }
+    ],
+    "id": "273e5dcf-cd81-4b1a-92da-3a7cc490fa2a",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Interview",
+    "ats_score": 80
+  },
+  {
+    "full_name": "Maria Rodriguez",
+    "current_role": "Cybersecurity Specialist",
+    "current_company": "IBM",
+    "location": "Mexico City, Mexico",
+    "years_of_experience": 9,
+    "seniority_level": "Lead",
+    "skills": [
+      "Network Security",
+      "Cloud Security",
+      "Incident Response",
+      "Penetration Testing",
+      "Compliance"
+    ],
+    "education": "Bachelor of Science \u2014 National Autonomous University of Mexico",
+    "email": "maria.rodriguez@ibm.com",
+    "phone": "+52 55 123 4567",
+    "source": "LinkedIn",
+    "summary": "Seasoned cybersecurity specialist with expertise in network security and incident response. Strong knowledge of cloud security and compliance.",
+    "overall_score": 88,
+    "work_experience": [
+      {
+        "company": "IBM",
+        "title": "Cybersecurity Specialist",
+        "start_date": 2014,
+        "end_date": "Present",
+        "description": "Developed and implemented cybersecurity strategies for IBM's clients in Latin America."
+      },
+      {
+        "company": "Symantec",
+        "title": "Security Consultant",
+        "start_date": 2008,
+        "end_date": 2014,
+        "description": "Provided security consulting services to clients in the financial and healthcare industries."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "National Autonomous University of Mexico",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Information Systems Security Professional",
+        "issuer": "International Information Systems Security Certification Consortium"
+      }
+    ],
+    "id": "8a0a953e-1338-4440-804e-fd7d8b1f34d9",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Offer",
+    "ats_score": 82
+  },
+  {
+    "full_name": "Kai Wong",
+    "current_role": "Full Stack Developer",
+    "current_company": "Alibaba",
+    "location": "Hangzhou, China",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "JavaScript",
+      "HTML/CSS",
+      "React",
+      "Node.js",
+      "MongoDB"
+    ],
+    "education": "Bachelor of Science \u2014 Zhejiang University",
+    "email": "kai.wong@alibaba.com",
+    "phone": "+86 571 123 4567",
+    "source": "LinkedIn",
+    "summary": "Skilled full stack developer with experience in developing web applications using JavaScript and React. Strong knowledge of Node.js and MongoDB.",
+    "overall_score": 82,
+    "work_experience": [
+      {
+        "company": "Alibaba",
+        "title": "Full Stack Developer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developed and maintained multiple web applications using JavaScript and React."
+      },
+      {
+        "company": "Tencent",
+        "title": "Junior Full Stack Developer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on a team to design and implement web applications for Tencent's social media platform."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Zhejiang University",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [],
+    "id": "fd89e623-d5dd-4b9d-9350-e55816df2c3d",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Offer",
+    "ats_score": 84
+  },
+  {
+    "full_name": "Alessandro Bianchi",
+    "current_role": "IT Project Manager",
+    "current_company": "Accenture",
+    "location": "Milan, Italy",
+    "years_of_experience": 11,
+    "seniority_level": "Lead",
+    "skills": [
+      "Project Management",
+      "IT Service Management",
+      "Agile Methodologies",
+      "Cloud Computing",
+      "Cybersecurity"
+    ],
+    "education": "Master of Science \u2014 Politecnico di Milano",
+    "email": "alessandro.bianchi@accenture.com",
+    "phone": "+39 02 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced IT project manager with expertise in managing large-scale IT projects. Strong knowledge of project management methodologies and cloud computing.",
+    "overall_score": 91,
+    "work_experience": [
+      {
+        "company": "Accenture",
+        "title": "IT Project Manager",
+        "start_date": 2012,
+        "end_date": "Present",
+        "description": "Managed multiple IT projects for clients in the financial and healthcare industries."
+      },
+      {
+        "company": "Deloitte",
+        "title": "Senior Consultant",
+        "start_date": 2008,
+        "end_date": 2012,
+        "description": "Provided consulting services to clients in the IT and telecommunications industries."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Politecnico di Milano",
+        "degree": "Master of Science",
+        "year": 2008
+      },
+      {
+        "institution": "University of Milan",
+        "degree": "Bachelor of Science",
+        "year": 2005
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Project Management Professional",
+        "issuer": "Project Management Institute"
+      }
+    ],
+    "id": "242b782c-4dcc-48d8-8d0e-6adc79865111",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 70
+  },
+  {
+    "full_name": "Daniel Kim",
+    "current_role": "Cloud Architect",
+    "current_company": "Samsung",
+    "location": "Seoul, South Korea",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Cloud Computing",
+      "AWS",
+      "Azure",
+      "Google Cloud",
+      "Kubernetes",
+      "Docker"
+    ],
+    "education": "Bachelor of Science \u2014 Seoul National University",
+    "email": "daniel.kim@samsung.com",
+    "phone": "+82 2 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced cloud architect with expertise in designing and implementing cloud-based systems. Strong knowledge of AWS, Azure, and Google Cloud.",
+    "overall_score": 93,
+    "work_experience": [
+      {
+        "company": "Samsung",
+        "title": "Cloud Architect",
+        "start_date": 2013,
+        "end_date": "Present",
+        "description": "Designed and implemented cloud-based systems for Samsung's manufacturing and logistics operations."
+      },
+      {
+        "company": "LG",
+        "title": "Senior Cloud Engineer",
+        "start_date": 2008,
+        "end_date": 2013,
+        "description": "Developed and maintained cloud-based applications for LG's consumer electronics division."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Seoul National University",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Cloud Architect",
+        "issuer": "Amazon"
+      }
+    ],
+    "id": "940fbfef-4084-4458-a763-7d08e33b3b1a",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Offer",
+    "ats_score": 72
+  },
+  {
+    "full_name": "Yara Ali",
+    "current_role": "Network Engineer",
+    "current_company": "Cisco",
+    "location": "Dubai, UAE",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Network Engineering",
+      "CCNA",
+      "CCNP",
+      "Cloud Computing",
+      "Cybersecurity"
+    ],
+    "education": "Bachelor of Science \u2014 American University of Sharjah",
+    "email": "yara.ali@cisco.com",
+    "phone": "+971 4 123 4567",
+    "source": "LinkedIn",
+    "summary": "Skilled network engineer with experience in designing and implementing network systems. Strong knowledge of CCNA and CCNP.",
+    "overall_score": 81,
+    "work_experience": [
+      {
+        "company": "Cisco",
+        "title": "Network Engineer",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Designed and implemented network systems for Cisco's clients in the Middle East."
+      },
+      {
+        "company": "Huawei",
+        "title": "Junior Network Engineer",
+        "start_date": 2014,
+        "end_date": 2017,
+        "description": "Worked on a team to design and implement network systems for Huawei's clients in the region."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "American University of Sharjah",
+        "degree": "Bachelor of Science",
+        "year": 2014
+      }
+    ],
+    "certifications": [
+      {
+        "name": "CCNA Certification",
+        "issuer": "Cisco"
+      }
+    ],
+    "id": "491c758d-1931-4f50-a029-ed4866b7e131",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "New",
+    "pipeline_stage": "Interview",
+    "ats_score": 66
+  },
+  {
+    "full_name": "Rafael Silva",
+    "current_role": "Database Administrator",
+    "current_company": "Oracle",
+    "location": "Sao Paulo, Brazil",
+    "years_of_experience": 9,
+    "seniority_level": "Senior",
+    "skills": [
+      "Database Administration",
+      "Oracle Database",
+      "MySQL",
+      "SQL Server",
+      "Data Warehousing"
+    ],
+    "education": "Bachelor of Science \u2014 University of Sao Paulo",
+    "email": "rafael.silva@oracle.com",
+    "phone": "+55 11 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced database administrator with expertise in managing large-scale databases. Strong knowledge of Oracle Database and MySQL.",
+    "overall_score": 89,
+    "work_experience": [
+      {
+        "company": "Oracle",
+        "title": "Database Administrator",
+        "start_date": 2014,
+        "end_date": "Present",
+        "description": "Managed and maintained large-scale databases for Oracle's clients in Brazil."
+      },
+      {
+        "company": "IBM",
+        "title": "Senior Database Administrator",
+        "start_date": 2008,
+        "end_date": 2014,
+        "description": "Developed and implemented database solutions for IBM's clients in the financial and healthcare industries."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Sao Paulo",
+        "degree": "Bachelor of Science",
+        "year": 2008
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Oracle Certified Professional",
+        "issuer": "Oracle"
+      }
+    ],
+    "id": "bd85df71-090e-484e-a75f-427220a7b8d2",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 61
+  },
+  {
+    "full_name": "Elena Vasquez",
+    "current_role": "UX Designer",
+    "current_company": "Google",
+    "location": "Mountain View, USA",
+    "years_of_experience": 7,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "UX Design",
+      "User Research",
+      "Wireframing",
+      "Prototyping",
+      "Interaction Design"
+    ],
+    "education": "Bachelor of Fine Arts \u2014 California College of the Arts",
+    "email": "elena.vasquez@google.com",
+    "phone": "+1 650 123 4567",
+    "source": "LinkedIn",
+    "summary": "Skilled UX designer with experience in designing user-centered products. Strong knowledge of user research and wireframing.",
+    "overall_score": 86,
+    "work_experience": [
+      {
+        "company": "Google",
+        "title": "UX Designer",
+        "start_date": 2016,
+        "end_date": "Present",
+        "description": "Designed and implemented UX solutions for Google's products, including Google Search and Google Maps."
+      },
+      {
+        "company": "Facebook",
+        "title": "Junior UX Designer",
+        "start_date": 2013,
+        "end_date": 2016,
+        "description": "Worked on a team to design and implement UX solutions for Facebook's products, including Facebook and Instagram."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "California College of the Arts",
+        "degree": "Bachelor of Fine Arts",
+        "year": 2013
+      }
+    ],
+    "certifications": [],
+    "id": "0031706c-d4f3-4f31-8dca-a9b93704889b",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 62
+  },
+  {
+    "full_name": "Carlos Lopez",
+    "current_role": "DevOps Engineer",
+    "current_company": "Amazon",
+    "location": "Seattle, USA",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "DevOps",
+      "Cloud Computing",
+      "AWS",
+      "Azure",
+      "Docker",
+      "Kubernetes"
+    ],
+    "education": "Bachelor of Science \u2014 University of Washington",
+    "email": "carlos.lopez@amazon.com",
+    "phone": "+1 206 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced DevOps engineer with expertise in designing and implementing cloud-based systems. Strong knowledge of AWS and Azure.",
+    "overall_score": 94,
+    "work_experience": [
+      {
+        "company": "Amazon",
+        "title": "DevOps Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Designed and implemented cloud-based systems for Amazon's e-commerce platform."
+      },
+      {
+        "company": "Microsoft",
+        "title": "Senior Cloud Engineer",
+        "start_date": 2012,
+        "end_date": 2015,
+        "description": "Developed and maintained cloud-based applications for Microsoft's clients in the financial and healthcare industries."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Washington",
+        "degree": "Bachelor of Science",
+        "year": 2012
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified DevOps Engineer",
+        "issuer": "Amazon"
+      }
+    ],
+    "id": "b87adf92-7443-4b4a-b88d-6db29371c9d2",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "New",
+    "pipeline_stage": "Offer",
+    "ats_score": 93
+  },
+  {
+    "full_name": "Fatima Khan",
+    "current_role": "Data Scientist",
+    "current_company": "Palantir",
+    "location": "Palo Alto, USA",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Data Science",
+      "Machine Learning",
+      "Deep Learning",
+      "Natural Language Processing",
+      "Data Visualization"
+    ],
+    "education": "Master of Science \u2014 Stanford University",
+    "email": "fatima.khan@palantir.com",
+    "phone": "+1 650 123 4567",
+    "source": "LinkedIn",
+    "summary": "Skilled data scientist with experience in developing and implementing machine learning models. Strong knowledge of deep learning and natural language processing.",
+    "overall_score": 87,
+    "work_experience": [
+      {
+        "company": "Palantir",
+        "title": "Data Scientist",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developed and implemented machine learning models for Palantir's clients in the financial and healthcare industries."
+      },
+      {
+        "company": "Airbnb",
+        "title": "Junior Data Scientist",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on a team to develop and implement data-driven solutions for Airbnb's platform."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Stanford University",
+        "degree": "Master of Science",
+        "year": 2015
+      },
+      {
+        "institution": "University of California, Berkeley",
+        "degree": "Bachelor of Science",
+        "year": 2013
+      }
+    ],
+    "certifications": [],
+    "id": "ea3feb7c-2e97-4339-a6ca-6c67eec5a86e",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "New",
+    "pipeline_stage": "Offer",
+    "ats_score": 87
+  },
+  {
+    "full_name": "Alexander Lee",
+    "current_role": "Product Manager",
+    "current_company": "Salesforce",
+    "location": "San Francisco, USA",
+    "years_of_experience": 10,
+    "seniority_level": "Lead",
+    "skills": [
+      "Product Management",
+      "Project Management",
+      "Marketing",
+      "Sales",
+      "Data Analysis"
+    ],
+    "education": "Master of Business Administration \u2014 University of California, Berkeley",
+    "email": "alexander.lee@salesforce.com",
+    "phone": "+1 415 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced product manager with expertise in developing and launching successful products. Strong knowledge of product management methodologies and data analysis.",
+    "overall_score": 96,
+    "work_experience": [
+      {
+        "company": "Salesforce",
+        "title": "Product Manager",
+        "start_date": 2013,
+        "end_date": "Present",
+        "description": "Developed and launched multiple successful products for Salesforce's platform."
+      },
+      {
+        "company": "Oracle",
+        "title": "Senior Product Manager",
+        "start_date": 2008,
+        "end_date": 2013,
+        "description": "Managed and maintained multiple products for Oracle's clients in the financial and healthcare industries."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of California, Berkeley",
+        "degree": "Master of Business Administration",
+        "year": 2008
+      },
+      {
+        "institution": "Stanford University",
+        "degree": "Bachelor of Arts",
+        "year": 2005
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Product Manager",
+        "issuer": "Association of International Product Marketing and Management"
+      }
+    ],
+    "id": "81ddf6ff-aed0-4fb1-bd43-27fcd38e730f",
+    "created_at": "2026-03-14T01:14:06Z",
+    "status": "Screening",
+    "pipeline_stage": "Screening",
+    "ats_score": 74
+  },
+  {
+    "full_name": "Rahul Patel",
+    "current_role": "Software Engineer",
+    "current_company": "Google",
+    "location": "Mountain View, USA",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "JavaScript",
+      "HTML",
+      "CSS"
+    ],
+    "education": "Bachelor of Science \u2014 Stanford University",
+    "email": "rahul.patel@gmail.com",
+    "phone": "+1 650 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with experience in developing scalable software solutions. Proficient in multiple programming languages. Strong team player with excellent communication skills.",
+    "overall_score": 85,
+    "work_experience": [
+      {
+        "company": "Google",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developed multiple software applications using Java and Python."
+      },
+      {
+        "company": "Microsoft",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Contributed to the development of a cloud-based storage system."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Stanford University",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Scrum Master",
+        "issuer": "Scrum Alliance"
+      }
+    ],
+    "id": "9af7ee13-76f6-4cfe-b281-2c970390b16e",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Screening",
+    "pipeline_stage": "Applied",
+    "ats_score": 70
+  },
+  {
+    "full_name": "Emily Chen",
+    "current_role": "Data Scientist",
+    "current_company": "Amazon",
+    "location": "Seattle, USA",
+    "years_of_experience": 3,
+    "seniority_level": "Junior",
+    "skills": [
+      "Python",
+      "R",
+      "SQL",
+      "Machine Learning",
+      "Data Visualization"
+    ],
+    "education": "Master of Science \u2014 University of Washington",
+    "email": "emily.chen@amazon.com",
+    "phone": "+1 206 123 4567",
+    "source": "LinkedIn",
+    "summary": "Ambitious data scientist with experience in data analysis and machine learning. Strong understanding of statistical concepts and data visualization techniques.",
+    "overall_score": 78,
+    "work_experience": [
+      {
+        "company": "Amazon",
+        "title": "Data Scientist",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Analyzed customer purchase behavior using machine learning algorithms."
+      },
+      {
+        "company": "University of Washington",
+        "title": "Research Assistant",
+        "start_date": 2018,
+        "end_date": 2020,
+        "description": "Contributed to a research project on natural language processing."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Washington",
+        "degree": "Master of Science",
+        "year": 2020
+      },
+      {
+        "institution": "University of California, Berkeley",
+        "degree": "Bachelor of Science",
+        "year": 2018
+      }
+    ],
+    "certifications": [],
+    "id": "1f483084-c9e2-456a-b9b8-4905750e87e2",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 55
+  },
+  {
+    "full_name": "Liam Davis",
+    "current_role": "Cybersecurity Engineer",
+    "current_company": "IBM",
+    "location": "New York, USA",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "Network Security",
+      "Cloud Security",
+      "Penetration Testing",
+      "Incident Response",
+      "Compliance"
+    ],
+    "education": "Bachelor of Science \u2014 New York University",
+    "email": "liam.davis@ibm.com",
+    "phone": "+1 212 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced cybersecurity engineer with a strong background in network security and compliance. Proven track record of implementing effective security measures.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "IBM",
+        "title": "Cybersecurity Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Designed and implemented a cloud-based security system for a major client."
+      },
+      {
+        "company": "Symantec",
+        "title": "Security Consultant",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Conducted penetration testing and vulnerability assessments for multiple clients."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "New York University",
+        "degree": "Bachelor of Science",
+        "year": 2010
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Information Systems Security Professional",
+        "issuer": "ISC2"
+      },
+      {
+        "name": "Certified Ethical Hacker",
+        "issuer": "EC-Council"
+      }
+    ],
+    "id": "637290b2-4b9b-497f-ae69-31033353cca0",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 78
+  },
+  {
+    "full_name": "Sofia Rodriguez",
+    "current_role": "Product Manager",
+    "current_company": "Facebook",
+    "location": "Menlo Park, USA",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Product Development",
+      "Project Management",
+      "Team Leadership",
+      "Market Research",
+      "Data Analysis"
+    ],
+    "education": "Master of Business Administration \u2014 University of California, Berkeley",
+    "email": "sofia.rodriguez@facebook.com",
+    "phone": "+1 650 123 4567",
+    "source": "LinkedIn",
+    "summary": "Results-driven product manager with experience in developing and launching successful products. Strong understanding of market trends and customer needs.",
+    "overall_score": 88,
+    "work_experience": [
+      {
+        "company": "Facebook",
+        "title": "Product Manager",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Led the development and launch of a new product feature."
+      },
+      {
+        "company": "Google",
+        "title": "Associate Product Manager",
+        "start_date": 2015,
+        "end_date": 2017,
+        "description": "Contributed to the development of a new product line."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of California, Berkeley",
+        "degree": "Master of Business Administration",
+        "year": 2015
+      },
+      {
+        "institution": "Stanford University",
+        "degree": "Bachelor of Science",
+        "year": 2013
+      }
+    ],
+    "certifications": [],
+    "id": "98ef4818-96ba-473f-8523-9854d7236a09",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Applied",
+    "ats_score": 84
+  },
+  {
+    "full_name": "Jian Li",
+    "current_role": "Artificial Intelligence Engineer",
+    "current_company": "Baidu",
+    "location": "Beijing, China",
+    "years_of_experience": 4,
+    "seniority_level": "Junior",
+    "skills": [
+      "Python",
+      "TensorFlow",
+      "PyTorch",
+      "Computer Vision",
+      "Natural Language Processing"
+    ],
+    "education": "Bachelor of Science \u2014 Tsinghua University",
+    "email": "jian.li@baidu.com",
+    "phone": "+86 10 123 4567",
+    "source": "LinkedIn",
+    "summary": "Ambitious artificial intelligence engineer with experience in developing AI models and algorithms. Strong understanding of deep learning concepts.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "Baidu",
+        "title": "Artificial Intelligence Engineer",
+        "start_date": 2019,
+        "end_date": "Present",
+        "description": "Developed a computer vision model for image recognition."
+      },
+      {
+        "company": "Tsinghua University",
+        "title": "Research Assistant",
+        "start_date": 2017,
+        "end_date": 2019,
+        "description": "Contributed to a research project on natural language processing."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Tsinghua University",
+        "degree": "Bachelor of Science",
+        "year": 2019
+      }
+    ],
+    "certifications": [],
+    "id": "001ffbac-4039-4460-910f-c202b17c015e",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Offer",
+    "ats_score": 94
+  },
+  {
+    "full_name": "Maria Hernandez",
+    "current_role": "DevOps Engineer",
+    "current_company": "Netflix",
+    "location": "Los Gatos, USA",
+    "years_of_experience": 7,
+    "seniority_level": "Senior",
+    "skills": [
+      "Cloud Computing",
+      "Containerization",
+      "Continuous Integration",
+      "Continuous Deployment",
+      "Monitoring"
+    ],
+    "education": "Bachelor of Science \u2014 University of California, Los Angeles",
+    "email": "maria.hernandez@netflix.com",
+    "phone": "+1 408 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced DevOps engineer with a strong background in cloud computing and containerization. Proven track record of improving system reliability and efficiency.",
+    "overall_score": 95,
+    "work_experience": [
+      {
+        "company": "Netflix",
+        "title": "DevOps Engineer",
+        "start_date": 2016,
+        "end_date": "Present",
+        "description": "Designed and implemented a cloud-based CI/CD pipeline."
+      },
+      {
+        "company": "Amazon",
+        "title": "DevOps Engineer",
+        "start_date": 2012,
+        "end_date": 2016,
+        "description": "Contributed to the development of a cloud-based storage system."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of California, Los Angeles",
+        "degree": "Bachelor of Science",
+        "year": 2012
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified DevOps Engineer",
+        "issuer": "DevOps Institute"
+      }
+    ],
+    "id": "6acf415c-0e70-4494-bf48-10609319ee38",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Screening",
+    "ats_score": 85
+  },
+  {
+    "full_name": "Taro Yamada",
+    "current_role": "Data Analyst",
+    "current_company": "Sony",
+    "location": "Tokyo, Japan",
+    "years_of_experience": 3,
+    "seniority_level": "Junior",
+    "skills": [
+      "Data Analysis",
+      "Data Visualization",
+      "Statistical Modeling",
+      "Machine Learning",
+      "SQL"
+    ],
+    "education": "Bachelor of Science \u2014 University of Tokyo",
+    "email": "taro.yamada@sony.com",
+    "phone": "+81 3 123 4567",
+    "source": "LinkedIn",
+    "summary": "Ambitious data analyst with experience in data analysis and visualization. Strong understanding of statistical concepts and data modeling techniques.",
+    "overall_score": 82,
+    "work_experience": [
+      {
+        "company": "Sony",
+        "title": "Data Analyst",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Analyzed customer purchase behavior using statistical models."
+      },
+      {
+        "company": "University of Tokyo",
+        "title": "Research Assistant",
+        "start_date": 2018,
+        "end_date": 2020,
+        "description": "Contributed to a research project on data mining."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Tokyo",
+        "degree": "Bachelor of Science",
+        "year": 2020
+      }
+    ],
+    "certifications": [],
+    "id": "c6a5ba99-5bf0-413e-aa4c-2251c79e90e9",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "New",
+    "pipeline_stage": "Screening",
+    "ats_score": 79
+  },
+  {
+    "full_name": "Lei Wang",
+    "current_role": "Software Developer",
+    "current_company": "Alibaba",
+    "location": "Hangzhou, China",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "JavaScript",
+      "HTML",
+      "CSS"
+    ],
+    "education": "Bachelor of Science \u2014 Zhejiang University",
+    "email": "lei.wang@alibaba.com",
+    "phone": "+86 571 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software developer with experience in developing scalable software applications. Proficient in multiple programming languages.",
+    "overall_score": 86,
+    "work_experience": [
+      {
+        "company": "Alibaba",
+        "title": "Software Developer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developed multiple software applications using Java and Python."
+      },
+      {
+        "company": "Zhejiang University",
+        "title": "Research Assistant",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Contributed to a research project on artificial intelligence."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Zhejiang University",
+        "degree": "Bachelor of Science",
+        "year": 2018
+      }
+    ],
+    "certifications": [],
+    "id": "30bcbcd2-d949-4e2c-a081-aaa2ddbf3d68",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Screening",
+    "pipeline_stage": "Interview",
+    "ats_score": 77
+  },
+  {
+    "full_name": "Carlos Silva",
+    "current_role": "Network Engineer",
+    "current_company": "Telefonica",
+    "location": "Madrid, Spain",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "Network Architecture",
+      "Network Security",
+      "Routing",
+      "Switching",
+      "VoIP"
+    ],
+    "education": "Bachelor of Science \u2014 Universidad Politecnica de Madrid",
+    "email": "carlos.silva@telefonica.com",
+    "phone": "+34 91 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced network engineer with a strong background in network architecture and security. Proven track record of designing and implementing scalable network solutions.",
+    "overall_score": 90,
+    "work_experience": [
+      {
+        "company": "Telefonica",
+        "title": "Network Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Designed and implemented a cloud-based network architecture."
+      },
+      {
+        "company": "Universidad Politecnica de Madrid",
+        "title": "Research Assistant",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Contributed to a research project on network security."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Universidad Politecnica de Madrid",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Network Engineer",
+        "issuer": "Cisco"
+      }
+    ],
+    "id": "4537350c-5650-4ec0-9359-2943f53a91f8",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 90
+  },
+  {
+    "full_name": "Julia Lee",
+    "current_role": "UX Designer",
+    "current_company": "Samsung",
+    "location": "Seoul, South Korea",
+    "years_of_experience": 4,
+    "seniority_level": "Junior",
+    "skills": [
+      "User Experience Design",
+      "User Interface Design",
+      "Human-Computer Interaction",
+      "Visual Design",
+      "Prototyping"
+    ],
+    "education": "Bachelor of Fine Arts \u2014 Seoul National University",
+    "email": "julia.lee@samsung.com",
+    "phone": "+82 2 123 4567",
+    "source": "LinkedIn",
+    "summary": "Ambitious UX designer with experience in designing user-centered interfaces. Strong understanding of human-computer interaction principles and visual design concepts.",
+    "overall_score": 84,
+    "work_experience": [
+      {
+        "company": "Samsung",
+        "title": "UX Designer",
+        "start_date": 2019,
+        "end_date": "Present",
+        "description": "Designed a user interface for a mobile application."
+      },
+      {
+        "company": "Seoul National University",
+        "title": "Research Assistant",
+        "start_date": 2017,
+        "end_date": 2019,
+        "description": "Contributed to a research project on human-computer interaction."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Seoul National University",
+        "degree": "Bachelor of Fine Arts",
+        "year": 2019
+      }
+    ],
+    "certifications": [],
+    "id": "cbc16f5a-5bbe-4c3b-b65e-bbb6cc2124b4",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Offer",
+    "ats_score": 86
+  },
+  {
+    "full_name": "Daniel Kim",
+    "current_role": "Cloud Engineer",
+    "current_company": "Microsoft",
+    "location": "Redmond, USA",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Cloud Computing",
+      "Cloud Architecture",
+      "Cloud Security",
+      "Cloud Migration",
+      "DevOps"
+    ],
+    "education": "Bachelor of Science \u2014 University of Washington",
+    "email": "daniel.kim@microsoft.com",
+    "phone": "+1 425 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated cloud engineer with experience in designing and implementing cloud-based solutions. Strong understanding of cloud security and migration concepts.",
+    "overall_score": 89,
+    "work_experience": [
+      {
+        "company": "Microsoft",
+        "title": "Cloud Engineer",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Designed and implemented a cloud-based architecture for a major client."
+      },
+      {
+        "company": "University of Washington",
+        "title": "Research Assistant",
+        "start_date": 2014,
+        "end_date": 2017,
+        "description": "Contributed to a research project on cloud computing."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Washington",
+        "degree": "Bachelor of Science",
+        "year": 2017
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Cloud Engineer",
+        "issuer": "Microsoft"
+      }
+    ],
+    "id": "6abd9082-7ed7-44d5-ad95-63bd7facd9f5",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Interview",
+    "ats_score": 56
+  },
+  {
+    "full_name": "Sarah Taylor",
+    "current_role": "Information Security Analyst",
+    "current_company": "Bank of America",
+    "location": "Charlotte, USA",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Information Security",
+      "Network Security",
+      "Compliance",
+      "Risk Management",
+      "Incident Response"
+    ],
+    "education": "Bachelor of Science \u2014 University of North Carolina at Charlotte",
+    "email": "sarah.taylor@bankofamerica.com",
+    "phone": "+1 704 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated information security analyst with experience in analyzing and mitigating security threats. Strong understanding of compliance and risk management concepts.",
+    "overall_score": 87,
+    "work_experience": [
+      {
+        "company": "Bank of America",
+        "title": "Information Security Analyst",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Analyzed and mitigated security threats using various security tools and techniques."
+      },
+      {
+        "company": "University of North Carolina at Charlotte",
+        "title": "Research Assistant",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Contributed to a research project on information security."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of North Carolina at Charlotte",
+        "degree": "Bachelor of Science",
+        "year": 2018
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Information Systems Security Professional",
+        "issuer": "ISC2"
+      }
+    ],
+    "id": "bf691c99-9094-4d59-b97e-a8f705c1e962",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Offer",
+    "ats_score": 72
+  },
+  {
+    "full_name": "Alexandre Dupont",
+    "current_role": "Solutions Architect",
+    "current_company": "SAP",
+    "location": "Paris, France",
+    "years_of_experience": 10,
+    "seniority_level": "Lead",
+    "skills": [
+      "Solutions Architecture",
+      "Enterprise Architecture",
+      "Cloud Computing",
+      "Digital Transformation",
+      "Innovation"
+    ],
+    "education": "Master of Science \u2014 Ecole Polytechnique",
+    "email": "alexandre.dupont@sap.com",
+    "phone": "+33 1 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced solutions architect with a strong background in designing and implementing enterprise-level solutions. Proven track record of driving digital transformation and innovation.",
+    "overall_score": 96,
+    "work_experience": [
+      {
+        "company": "SAP",
+        "title": "Solutions Architect",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Designed and implemented a cloud-based enterprise architecture for a major client."
+      },
+      {
+        "company": "Ecole Polytechnique",
+        "title": "Research Assistant",
+        "start_date": 2009,
+        "end_date": 2015,
+        "description": "Contributed to a research project on enterprise architecture."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Ecole Polytechnique",
+        "degree": "Master of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Solutions Architect",
+        "issuer": "SAP"
+      }
+    ],
+    "id": "79bb3172-2cc6-4094-aefb-e939c1907dac",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "New",
+    "pipeline_stage": "Screening",
+    "ats_score": 82
+  },
+  {
+    "full_name": "Rajesh Kumar",
+    "current_role": "Technical Lead",
+    "current_company": "Infosys",
+    "location": "Bengaluru, India",
+    "years_of_experience": 12,
+    "seniority_level": "Director",
+    "skills": [
+      "Technical Leadership",
+      "Software Development",
+      "Team Management",
+      "Architecture",
+      "Innovation"
+    ],
+    "education": "Bachelor of Engineering \u2014 Indian Institute of Technology",
+    "email": "rajesh.kumar@infosys.com",
+    "phone": "+91 80 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced technical lead with a strong background in software development and team management. Proven track record of driving innovation and technical excellence.",
+    "overall_score": 98,
+    "work_experience": [
+      {
+        "company": "Infosys",
+        "title": "Technical Lead",
+        "start_date": 2010,
+        "end_date": "Present",
+        "description": "Led the development of multiple software applications using various technologies."
+      },
+      {
+        "company": "Indian Institute of Technology",
+        "title": "Research Assistant",
+        "start_date": 2005,
+        "end_date": 2010,
+        "description": "Contributed to a research project on software engineering."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "Bachelor of Engineering",
+        "year": 2010
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Technical Lead",
+        "issuer": "Infosys"
+      }
+    ],
+    "id": "ffe24247-7a47-490c-9992-4e721ccdd853",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Applied",
+    "ats_score": 62
+  },
+  {
+    "full_name": "Eva Lopez",
+    "current_role": "Digital Marketing Specialist",
+    "current_company": "Procter & Gamble",
+    "location": "Cincinnati, USA",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Digital Marketing",
+      "Social Media Marketing",
+      "Content Marketing",
+      "SEO",
+      "Analytics"
+    ],
+    "education": "Bachelor of Business Administration \u2014 University of Cincinnati",
+    "email": "eva.lopez@pg.com",
+    "phone": "+1 513 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated digital marketing specialist with experience in developing and implementing digital marketing campaigns. Strong understanding of social media marketing and content marketing concepts.",
+    "overall_score": 85,
+    "work_experience": [
+      {
+        "company": "Procter & Gamble",
+        "title": "Digital Marketing Specialist",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Developed and implemented a digital marketing campaign for a major brand."
+      },
+      {
+        "company": "University of Cincinnati",
+        "title": "Research Assistant",
+        "start_date": 2014,
+        "end_date": 2017,
+        "description": "Contributed to a research project on digital marketing."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Cincinnati",
+        "degree": "Bachelor of Business Administration",
+        "year": 2017
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Digital Marketing Specialist",
+        "issuer": "HubSpot"
+      }
+    ],
+    "id": "61d59bb4-f5e5-4e5d-8fa9-e15ca276fb98",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "New",
+    "pipeline_stage": "Interview",
+    "ats_score": 83
+  },
+  {
+    "full_name": "Michael Brown",
+    "current_role": "IT Project Manager",
+    "current_company": "IBM",
+    "location": "Armonk, USA",
+    "years_of_experience": 10,
+    "seniority_level": "Lead",
+    "skills": [
+      "IT Project Management",
+      "Agile Methodologies",
+      "Scrum",
+      "Waterfall",
+      "Stakeholder Management"
+    ],
+    "education": "Master of Business Administration \u2014 New York University",
+    "email": "michael.brown@ibm.com",
+    "phone": "+1 914 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced IT project manager with a strong background in managing IT projects using various methodologies. Proven track record of delivering projects on time and within budget.",
+    "overall_score": 93,
+    "work_experience": [
+      {
+        "company": "IBM",
+        "title": "IT Project Manager",
+        "start_date": 2013,
+        "end_date": "Present",
+        "description": "Managed the implementation of a cloud-based IT project for a major client."
+      },
+      {
+        "company": "New York University",
+        "title": "Research Assistant",
+        "start_date": 2008,
+        "end_date": 2013,
+        "description": "Contributed to a research project on IT project management."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "New York University",
+        "degree": "Master of Business Administration",
+        "year": 2013
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified IT Project Manager",
+        "issuer": "Project Management Institute"
+      }
+    ],
+    "id": "c7d37a86-640f-4429-8104-2ac8aaac107a",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 81
+  },
+  {
+    "full_name": "Hannah Lee",
+    "current_role": "Business Analyst",
+    "current_company": "Deloitte",
+    "location": "New York, USA",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Business Analysis",
+      "Requirements Gathering",
+      "Solution Design",
+      "Stakeholder Management",
+      "Data Analysis"
+    ],
+    "education": "Bachelor of Business Administration \u2014 University of Michigan",
+    "email": "hannah.lee@deloitte.com",
+    "phone": "+1 212 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated business analyst with experience in analyzing business requirements and designing solutions. Strong understanding of stakeholder management and data analysis concepts.",
+    "overall_score": 88,
+    "work_experience": [
+      {
+        "company": "Deloitte",
+        "title": "Business Analyst",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Analyzed business requirements and designed a solution for a major client."
+      },
+      {
+        "company": "University of Michigan",
+        "title": "Research Assistant",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Contributed to a research project on business analysis."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Michigan",
+        "degree": "Bachelor of Business Administration",
+        "year": 2018
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Business Analyst",
+        "issuer": "International Institute of Business Analysis"
+      }
+    ],
+    "id": "d4609899-a4fa-4be2-a5c0-29cd183dc087",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Screening",
+    "pipeline_stage": "Applied",
+    "ats_score": 68
+  },
+  {
+    "full_name": "Feng Zhang",
+    "current_role": "Data Scientist",
+    "current_company": "Tencent",
+    "location": "Shenzhen, China",
+    "years_of_experience": 4,
+    "seniority_level": "Junior",
+    "skills": [
+      "Data Science",
+      "Machine Learning",
+      "Deep Learning",
+      "Natural Language Processing",
+      "Computer Vision"
+    ],
+    "education": "Bachelor of Science \u2014 Tsinghua University",
+    "email": "feng.zhang@tencent.com",
+    "phone": "+86 755 123 4567",
+    "source": "LinkedIn",
+    "summary": "Ambitious data scientist with experience in developing and implementing machine learning models. Strong understanding of deep learning concepts and natural language processing techniques.",
+    "overall_score": 81,
+    "work_experience": [
+      {
+        "company": "Tencent",
+        "title": "Data Scientist",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Developed and implemented a machine learning model for a major client."
+      },
+      {
+        "company": "Tsinghua University",
+        "title": "Research Assistant",
+        "start_date": 2017,
+        "end_date": 2020,
+        "description": "Contributed to a research project on data science."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Tsinghua University",
+        "degree": "Bachelor of Science",
+        "year": 2020
+      }
+    ],
+    "certifications": [],
+    "id": "c3b65bed-5b94-4f77-9f08-7c9ccf3be687",
+    "created_at": "2026-03-14T01:14:20Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 84
+  },
+  {
+    "full_name": "Rohini Jain",
+    "current_role": "Software Engineer",
+    "current_company": "Google",
+    "location": "Bangalore, India",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "Cloud Computing",
+      "Agile",
+      "Scrum"
+    ],
+    "education": "Bachelor of Technology \u2014 Indian Institute of Technology",
+    "email": "rohini.jain@gmail.com",
+    "phone": "+91 9876543210",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software engineer with experience in cloud computing and agile development. Proven track record of delivering high-quality software products. Strong team player with excellent communication skills.",
+    "overall_score": 85,
+    "work_experience": [
+      {
+        "company": "Google",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developing scalable software applications using Java and Python."
+      },
+      {
+        "company": "TCS",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Working on software development projects using agile methodologies."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "Bachelor of Technology",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Scrum Master",
+        "issuer": "Scrum Alliance"
+      }
+    ],
+    "id": "45320836-5d76-4328-a4ac-85b6d0ac5272",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 72
+  },
+  {
+    "full_name": "Emily Chen",
+    "current_role": "Data Scientist",
+    "current_company": "Microsoft",
+    "location": "Seattle, USA",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "Python",
+      "R",
+      "Machine Learning",
+      "Data Visualization",
+      "Statistics"
+    ],
+    "education": "Master of Science \u2014 Stanford University",
+    "email": "emily.chen@microsoft.com",
+    "phone": "+1 2061234567",
+    "source": "LinkedIn",
+    "summary": "Experienced data scientist with expertise in machine learning and data visualization. Strong background in statistics and data analysis. Excellent communication skills with ability to present complex data insights to non-technical stakeholders.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "Microsoft",
+        "title": "Data Scientist",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Developing predictive models using machine learning algorithms and analyzing large datasets."
+      },
+      {
+        "company": "Amazon",
+        "title": "Junior Data Scientist",
+        "start_date": 2012,
+        "end_date": 2015,
+        "description": "Working on data analysis projects using Python and R."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Stanford University",
+        "degree": "Master of Science",
+        "year": 2012
+      },
+      {
+        "institution": "University of California, Berkeley",
+        "degree": "Bachelor of Science",
+        "year": 2010
+      }
+    ],
+    "certifications": [],
+    "id": "b01159f2-cce1-4cca-9a9e-6ce9e93d5568",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Screening",
+    "pipeline_stage": "Applied",
+    "ats_score": 73
+  },
+  {
+    "full_name": "L\u00e9a Dupont",
+    "current_role": "Product Manager",
+    "current_company": "Airbnb",
+    "location": "Paris, France",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Product Development",
+      "Project Management",
+      "Agile",
+      "Scrum",
+      "Marketing"
+    ],
+    "education": "Master of Business Administration \u2014 INSEAD",
+    "email": "lea.dupont@airbnb.com",
+    "phone": "+33 612345678",
+    "source": "LinkedIn",
+    "summary": "Results-driven product manager with experience in product development and project management. Strong understanding of agile methodologies and scrum framework. Excellent communication skills with ability to work with cross-functional teams.",
+    "overall_score": 88,
+    "work_experience": [
+      {
+        "company": "Airbnb",
+        "title": "Product Manager",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Developing and launching new product features using agile methodologies."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Product Manager",
+        "start_date": 2015,
+        "end_date": 2017,
+        "description": "Working on product development projects using scrum framework."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "INSEAD",
+        "degree": "Master of Business Administration",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Product Owner",
+        "issuer": "Scrum Alliance"
+      }
+    ],
+    "id": "d0030cdd-5873-4a72-9395-14cb1f26f2c5",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Interview",
+    "pipeline_stage": "Screening",
+    "ats_score": 70
+  },
+  {
+    "full_name": "Jin-Soo Kim",
+    "current_role": "DevOps Engineer",
+    "current_company": "Samsung",
+    "location": "Seoul, South Korea",
+    "years_of_experience": 4,
+    "seniority_level": "Junior",
+    "skills": [
+      "AWS",
+      "Azure",
+      "Kubernetes",
+      "Docker",
+      "Python"
+    ],
+    "education": "Bachelor of Science \u2014 Seoul National University",
+    "email": "jin-soo.kim@samsung.com",
+    "phone": "+82 102345678",
+    "source": "LinkedIn",
+    "summary": "Highly motivated DevOps engineer with experience in cloud computing and containerization. Strong understanding of AWS and Azure platforms. Excellent problem-solving skills with ability to work in fast-paced environments.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "Samsung",
+        "title": "DevOps Engineer",
+        "start_date": 2019,
+        "end_date": "Present",
+        "description": "Developing and deploying scalable software applications using Kubernetes and Docker."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior DevOps Engineer",
+        "start_date": 2018,
+        "end_date": 2019,
+        "description": "Working on DevOps projects using AWS and Azure platforms."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Seoul National University",
+        "degree": "Bachelor of Science",
+        "year": 2018
+      }
+    ],
+    "certifications": [],
+    "id": "ea223c2a-0ad8-4858-907b-875f178dbcfc",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "New",
+    "pipeline_stage": "Interview",
+    "ats_score": 55
+  },
+  {
+    "full_name": "Maria Rodriguez",
+    "current_role": "UX Designer",
+    "current_company": "Nike",
+    "location": "Santiago, Chile",
+    "years_of_experience": 7,
+    "seniority_level": "Senior",
+    "skills": [
+      "User Experience",
+      "User Interface",
+      "Design Thinking",
+      "Prototyping",
+      "Usability Testing"
+    ],
+    "education": "Bachelor of Fine Arts \u2014 Universidad de Chile",
+    "email": "maria.rodriguez@nike.com",
+    "phone": "+56 912345678",
+    "source": "LinkedIn",
+    "summary": "Experienced UX designer with expertise in user experience and user interface design. Strong understanding of design thinking and prototyping methodologies. Excellent communication skills with ability to work with cross-functional teams.",
+    "overall_score": 90,
+    "work_experience": [
+      {
+        "company": "Nike",
+        "title": "UX Designer",
+        "start_date": 2016,
+        "end_date": "Present",
+        "description": "Designing and developing user-centered software applications using design thinking methodologies."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior UX Designer",
+        "start_date": 2014,
+        "end_date": 2016,
+        "description": "Working on UX design projects using prototyping and usability testing techniques."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Universidad de Chile",
+        "degree": "Bachelor of Fine Arts",
+        "year": 2014
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified UX Designer",
+        "issuer": "Nielsen Norman Group"
+      }
+    ],
+    "id": "2c98bc26-db8f-46de-b7a5-7c4d2958760b",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Screening",
+    "pipeline_stage": "Applied",
+    "ats_score": 86
+  },
+  {
+    "full_name": "Alexander M\u00fcller",
+    "current_role": "Solutions Architect",
+    "current_company": "SAP",
+    "location": "Munich, Germany",
+    "years_of_experience": 10,
+    "seniority_level": "Lead",
+    "skills": [
+      "Cloud Computing",
+      "Enterprise Architecture",
+      "Solutions Architecture",
+      "IT Strategy",
+      "Digital Transformation"
+    ],
+    "education": "Master of Science \u2014 Technical University of Munich",
+    "email": "alexander.mueller@sap.com",
+    "phone": "+49 891234567",
+    "source": "LinkedIn",
+    "summary": "Experienced solutions architect with expertise in cloud computing and enterprise architecture. Strong understanding of IT strategy and digital transformation. Excellent communication skills with ability to work with senior stakeholders.",
+    "overall_score": 95,
+    "work_experience": [
+      {
+        "company": "SAP",
+        "title": "Solutions Architect",
+        "start_date": 2013,
+        "end_date": "Present",
+        "description": "Developing and implementing cloud-based solutions using enterprise architecture frameworks."
+      },
+      {
+        "company": "IBM",
+        "title": "Junior Solutions Architect",
+        "start_date": 2009,
+        "end_date": 2013,
+        "description": "Working on solutions architecture projects using IT strategy and digital transformation methodologies."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Technical University of Munich",
+        "degree": "Master of Science",
+        "year": 2009
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Solutions Architect",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "15cd7155-70fc-4db1-942e-87034eaaa248",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "New",
+    "pipeline_stage": "Offer",
+    "ats_score": 81
+  },
+  {
+    "full_name": "Sofia Patel",
+    "current_role": "Cybersecurity Engineer",
+    "current_company": "Cisco",
+    "location": "London, UK",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Network Security",
+      "Cloud Security",
+      "Threat Intelligence",
+      "Incident Response",
+      "Compliance"
+    ],
+    "education": "Bachelor of Science \u2014 University College London",
+    "email": "sofia.patel@cisco.com",
+    "phone": "+44 771234567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated cybersecurity engineer with experience in network security and cloud security. Strong understanding of threat intelligence and incident response methodologies. Excellent problem-solving skills with ability to work in fast-paced environments.",
+    "overall_score": 87,
+    "work_experience": [
+      {
+        "company": "Cisco",
+        "title": "Cybersecurity Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developing and implementing cybersecurity solutions using network security and cloud security technologies."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Cybersecurity Engineer",
+        "start_date": 2016,
+        "end_date": 2018,
+        "description": "Working on cybersecurity projects using threat intelligence and incident response techniques."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University College London",
+        "degree": "Bachelor of Science",
+        "year": 2016
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Information Systems Security Professional",
+        "issuer": "ISC2"
+      }
+    ],
+    "id": "e8830152-8d41-4060-8975-4ee0ef3dde2c",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "New",
+    "pipeline_stage": "Interview",
+    "ats_score": 61
+  },
+  {
+    "full_name": "Gabriel Lee",
+    "current_role": "Artificial Intelligence Engineer",
+    "current_company": "Facebook",
+    "location": "Singapore",
+    "years_of_experience": 6,
+    "seniority_level": "Senior",
+    "skills": [
+      "Machine Learning",
+      "Deep Learning",
+      "Natural Language Processing",
+      "Computer Vision",
+      "Robotics"
+    ],
+    "education": "Master of Science \u2014 National University of Singapore",
+    "email": "gabriel.lee@facebook.com",
+    "phone": "+65 91234567",
+    "source": "LinkedIn",
+    "summary": "Experienced artificial intelligence engineer with expertise in machine learning and deep learning. Strong understanding of natural language processing and computer vision. Excellent research skills with ability to publish papers in top-tier conferences.",
+    "overall_score": 93,
+    "work_experience": [
+      {
+        "company": "Facebook",
+        "title": "Artificial Intelligence Engineer",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Developing and implementing AI models using machine learning and deep learning algorithms."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Artificial Intelligence Engineer",
+        "start_date": 2015,
+        "end_date": 2017,
+        "description": "Working on AI projects using natural language processing and computer vision techniques."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "National University of Singapore",
+        "degree": "Master of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [],
+    "id": "fb2fd51d-195f-41e6-a30d-076e3dc9ed40",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Screening",
+    "pipeline_stage": "Interview",
+    "ats_score": 86
+  },
+  {
+    "full_name": "Eva Hernandez",
+    "current_role": "Data Analyst",
+    "current_company": "Banco Santander",
+    "location": "Madrid, Spain",
+    "years_of_experience": 3,
+    "seniority_level": "Junior",
+    "skills": [
+      "Data Analysis",
+      "Data Visualization",
+      "Statistics",
+      "SQL",
+      "Excel"
+    ],
+    "education": "Bachelor of Science \u2014 Universidad Complutense de Madrid",
+    "email": "eva.hernandez@bancosantander.com",
+    "phone": "+34 612345678",
+    "source": "LinkedIn",
+    "summary": "Highly motivated data analyst with experience in data analysis and data visualization. Strong understanding of statistics and SQL. Excellent communication skills with ability to work with non-technical stakeholders.",
+    "overall_score": 82,
+    "work_experience": [
+      {
+        "company": "Banco Santander",
+        "title": "Data Analyst",
+        "start_date": 2020,
+        "end_date": "Present",
+        "description": "Analyzing and visualizing data using statistical techniques and data visualization tools."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Data Analyst",
+        "start_date": 2019,
+        "end_date": 2020,
+        "description": "Working on data analysis projects using SQL and Excel."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Universidad Complutense de Madrid",
+        "degree": "Bachelor of Science",
+        "year": 2019
+      }
+    ],
+    "certifications": [],
+    "id": "96659a0d-7ac5-42f3-8c58-7cea22b30071",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Screening",
+    "ats_score": 80
+  },
+  {
+    "full_name": "Liang Li",
+    "current_role": "Full Stack Developer",
+    "current_company": "Alibaba",
+    "location": "Hangzhou, China",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "JavaScript",
+      "Python",
+      "HTML/CSS",
+      "React",
+      "Node.js"
+    ],
+    "education": "Bachelor of Science \u2014 Zhejiang University",
+    "email": "liang.li@alibaba.com",
+    "phone": "+86 571234567",
+    "source": "LinkedIn",
+    "summary": "Experienced full stack developer with expertise in JavaScript and Python. Strong understanding of front-end and back-end development. Excellent problem-solving skills with ability to work in fast-paced environments.",
+    "overall_score": 91,
+    "work_experience": [
+      {
+        "company": "Alibaba",
+        "title": "Full Stack Developer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Developing and deploying scalable web applications using JavaScript and Python."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Full Stack Developer",
+        "start_date": 2012,
+        "end_date": 2015,
+        "description": "Working on web development projects using HTML/CSS and React."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Zhejiang University",
+        "degree": "Bachelor of Science",
+        "year": 2012
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Full Stack Developer",
+        "issuer": "FreeCodeCamp"
+      }
+    ],
+    "id": "773df1a7-c256-4473-a1fe-b8be69a41230",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Screening",
+    "ats_score": 90
+  },
+  {
+    "full_name": "Caitlin O'Connor",
+    "current_role": "Digital Marketing Specialist",
+    "current_company": "Procter & Gamble",
+    "location": "Dublin, Ireland",
+    "years_of_experience": 4,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Digital Marketing",
+      "Social Media",
+      "Content Creation",
+      "SEO",
+      "PPC"
+    ],
+    "education": "Bachelor of Business Administration \u2014 University College Dublin",
+    "email": "caitlin.oconnor@pg.com",
+    "phone": "+353 87234567",
+    "source": "LinkedIn",
+    "summary": "Highly motivated digital marketing specialist with experience in digital marketing and social media. Strong understanding of content creation and SEO. Excellent communication skills with ability to work with cross-functional teams.",
+    "overall_score": 86,
+    "work_experience": [
+      {
+        "company": "Procter & Gamble",
+        "title": "Digital Marketing Specialist",
+        "start_date": 2019,
+        "end_date": "Present",
+        "description": "Developing and implementing digital marketing campaigns using social media and content creation strategies."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Digital Marketing Specialist",
+        "start_date": 2017,
+        "end_date": 2019,
+        "description": "Working on digital marketing projects using SEO and PPC techniques."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University College Dublin",
+        "degree": "Bachelor of Business Administration",
+        "year": 2017
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Digital Marketing Professional",
+        "issuer": "Digital Marketing Institute"
+      }
+    ],
+    "id": "ee40f08a-97f0-4e1c-9aee-a23001c59169",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Screening",
+    "pipeline_stage": "Applied",
+    "ats_score": 93
+  },
+  {
+    "full_name": "Daniel Kim",
+    "current_role": "IT Project Manager",
+    "current_company": "Hyundai",
+    "location": "Seoul, South Korea",
+    "years_of_experience": 9,
+    "seniority_level": "Lead",
+    "skills": [
+      "Project Management",
+      "IT Service Management",
+      "Agile",
+      "Scrum",
+      "Waterfall"
+    ],
+    "education": "Master of Business Administration \u2014 Seoul National University",
+    "email": "daniel.kim@hyundai.com",
+    "phone": "+82 10345678",
+    "source": "LinkedIn",
+    "summary": "Experienced IT project manager with expertise in project management and IT service management. Strong understanding of agile and scrum methodologies. Excellent leadership skills with ability to manage cross-functional teams.",
+    "overall_score": 94,
+    "work_experience": [
+      {
+        "company": "Hyundai",
+        "title": "IT Project Manager",
+        "start_date": 2014,
+        "end_date": "Present",
+        "description": "Managing and delivering IT projects using agile and scrum methodologies."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior IT Project Manager",
+        "start_date": 2011,
+        "end_date": 2014,
+        "description": "Working on IT projects using waterfall and hybrid methodologies."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Seoul National University",
+        "degree": "Master of Business Administration",
+        "year": 2011
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Project Management Professional",
+        "issuer": "Project Management Institute"
+      }
+    ],
+    "id": "bd820c8b-d2a8-4176-a487-6f93410c9989",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Screening",
+    "pipeline_stage": "Interview",
+    "ats_score": 79
+  },
+  {
+    "full_name": "Rafael Silva",
+    "current_role": "Cloud Engineer",
+    "current_company": "Amazon",
+    "location": "Sao Paulo, Brazil",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Cloud Computing",
+      "AWS",
+      "Azure",
+      "Google Cloud",
+      "Kubernetes"
+    ],
+    "education": "Bachelor of Science \u2014 Universidade de Sao Paulo",
+    "email": "rafael.silva@amazon.com",
+    "phone": "+55 112345678",
+    "source": "LinkedIn",
+    "summary": "Highly motivated cloud engineer with experience in cloud computing and AWS. Strong understanding of Azure and Google Cloud platforms. Excellent problem-solving skills with ability to work in fast-paced environments.",
+    "overall_score": 89,
+    "work_experience": [
+      {
+        "company": "Amazon",
+        "title": "Cloud Engineer",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Designing and deploying scalable cloud architectures using AWS and Kubernetes."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Cloud Engineer",
+        "start_date": 2015,
+        "end_date": 2017,
+        "description": "Working on cloud computing projects using Azure and Google Cloud platforms."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Universidade de Sao Paulo",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Cloud Practitioner",
+        "issuer": "AWS"
+      }
+    ],
+    "id": "47fca145-764a-43eb-87ca-986ea8c42efe",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Interview",
+    "ats_score": 89
+  },
+  {
+    "full_name": "Akira Nakamura",
+    "current_role": "Network Engineer",
+    "current_company": "NTT",
+    "location": "Tokyo, Japan",
+    "years_of_experience": 10,
+    "seniority_level": "Senior",
+    "skills": [
+      "Network Architecture",
+      "Network Security",
+      "CCNA",
+      "CCNP",
+      "Juniper"
+    ],
+    "education": "Bachelor of Engineering \u2014 University of Tokyo",
+    "email": "akira.nakamura@ntt.com",
+    "phone": "+81 33214567",
+    "source": "LinkedIn",
+    "summary": "Experienced network engineer with expertise in network architecture and network security. Strong understanding of CCNA and CCNP certifications. Excellent troubleshooting skills with ability to work in fast-paced environments.",
+    "overall_score": 96,
+    "work_experience": [
+      {
+        "company": "NTT",
+        "title": "Network Engineer",
+        "start_date": 2013,
+        "end_date": "Present",
+        "description": "Designing and implementing network architectures using CCNA and CCNP certifications."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Network Engineer",
+        "start_date": 2009,
+        "end_date": 2013,
+        "description": "Working on network engineering projects using Juniper and Cisco technologies."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Tokyo",
+        "degree": "Bachelor of Engineering",
+        "year": 2009
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Cisco Network Associate",
+        "issuer": "Cisco"
+      }
+    ],
+    "id": "ea5f2090-fe51-4b5b-aefb-45b2ed1b2154",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "New",
+    "pipeline_stage": "Applied",
+    "ats_score": 88
+  },
+  {
+    "full_name": "Yankee Wong",
+    "current_role": "Software Developer",
+    "current_company": "Tencent",
+    "location": "Shenzhen, China",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "C++",
+      "JavaScript",
+      "SQL"
+    ],
+    "education": "Bachelor of Science \u2014 Hong Kong University of Science and Technology",
+    "email": "yankee.wong@tencent.com",
+    "phone": "+86 755123456",
+    "source": "LinkedIn",
+    "summary": "Highly motivated software developer with experience in Java and Python. Strong understanding of C++ and JavaScript. Excellent problem-solving skills with ability to work in fast-paced environments.",
+    "overall_score": 84,
+    "work_experience": [
+      {
+        "company": "Tencent",
+        "title": "Software Developer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developing and deploying scalable software applications using Java and Python."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Software Developer",
+        "start_date": 2016,
+        "end_date": 2018,
+        "description": "Working on software development projects using C++ and JavaScript."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Hong Kong University of Science and Technology",
+        "degree": "Bachelor of Science",
+        "year": 2016
+      }
+    ],
+    "certifications": [],
+    "id": "0e62061c-8a4f-45f7-9662-690285a44ae3",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Offer",
+    "ats_score": 62
+  },
+  {
+    "full_name": "Samantha Brown",
+    "current_role": "Business Analyst",
+    "current_company": "Commonwealth Bank",
+    "location": "Sydney, Australia",
+    "years_of_experience": 7,
+    "seniority_level": "Senior",
+    "skills": [
+      "Business Analysis",
+      "Requirements Gathering",
+      "Process Improvement",
+      "Stakeholder Management",
+      "Agile"
+    ],
+    "education": "Master of Business Administration \u2014 University of New South Wales",
+    "email": "samantha.brown@commbank.com.au",
+    "phone": "+61 29314567",
+    "source": "LinkedIn",
+    "summary": "Experienced business analyst with expertise in business analysis and requirements gathering. Strong understanding of process improvement and stakeholder management. Excellent communication skills with ability to work with senior stakeholders.",
+    "overall_score": 97,
+    "work_experience": [
+      {
+        "company": "Commonwealth Bank",
+        "title": "Business Analyst",
+        "start_date": 2016,
+        "end_date": "Present",
+        "description": "Analyzing business requirements and developing process improvement solutions using agile methodologies."
+      },
+      {
+        "company": "Start-Up",
+        "title": "Junior Business Analyst",
+        "start_date": 2014,
+        "end_date": 2016,
+        "description": "Working on business analysis projects using process improvement and stakeholder management techniques."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of New South Wales",
+        "degree": "Master of Business Administration",
+        "year": 2014
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified Business Analyst Professional",
+        "issuer": "International Institute of Business Analysis"
+      }
+    ],
+    "id": "9615f4ea-ef9c-4b4d-a1c1-45f646d7fc00",
+    "created_at": "2026-03-14T01:14:33Z",
+    "status": "Interview",
+    "pipeline_stage": "Applied",
+    "ats_score": 73
+  },
+  {
+    "full_name": "Rahul Kumar",
+    "current_role": "Software Engineer",
+    "current_company": "Microsoft",
+    "location": "Bangalore, India",
+    "years_of_experience": 5,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "Java",
+      "Python",
+      "AWS",
+      "Azure",
+      "MySQL",
+      "NoSQL",
+      "Git"
+    ],
+    "education": "Bachelor of Technology \u2014 Indian Institute of Technology",
+    "email": "rahul.kumar@gmail.com",
+    "phone": "+91 98765 43210",
+    "source": "LinkedIn",
+    "summary": "Highly motivated and experienced software engineer with a strong background in cloud computing and data storage. Proficient in multiple programming languages and technologies. Looking for a challenging role to grow professionally.",
+    "overall_score": 85,
+    "work_experience": [
+      {
+        "company": "Microsoft",
+        "title": "Software Engineer",
+        "start_date": 2018,
+        "end_date": "Present",
+        "description": "Developed multiple software applications using Java and Python, and managed cloud infrastructure on AWS and Azure."
+      },
+      {
+        "company": "TCS",
+        "title": "Junior Software Engineer",
+        "start_date": 2015,
+        "end_date": 2018,
+        "description": "Worked on various software development projects using Java and MySQL, and collaborated with senior engineers to design and implement new features."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Indian Institute of Technology",
+        "degree": "Bachelor of Technology",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "AWS Certified Developer",
+        "issuer": "Amazon"
+      }
+    ],
+    "id": "52f226a2-9b56-46fe-b308-c8e031ae955a",
+    "created_at": "2026-03-14T01:14:39Z",
+    "status": "Interview",
+    "pipeline_stage": "Interview",
+    "ats_score": 85
+  },
+  {
+    "full_name": "Emily Chen",
+    "current_role": "Data Scientist",
+    "current_company": "Google",
+    "location": "New York City, USA",
+    "years_of_experience": 8,
+    "seniority_level": "Senior",
+    "skills": [
+      "Python",
+      "R",
+      "TensorFlow",
+      "Keras",
+      "SQL",
+      "NoSQL",
+      "Tableau"
+    ],
+    "education": "Master of Science \u2014 Stanford University",
+    "email": "emily.chen@yahoo.com",
+    "phone": "+1 555 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced data scientist with a strong background in machine learning and data visualization. Skilled in multiple programming languages and data analysis tools. Looking for a leadership role to drive business growth through data-driven decisions.",
+    "overall_score": 92,
+    "work_experience": [
+      {
+        "company": "Google",
+        "title": "Data Scientist",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Developed and implemented multiple machine learning models using TensorFlow and Keras, and worked with cross-functional teams to drive business growth through data-driven decisions."
+      },
+      {
+        "company": "IBM",
+        "title": "Junior Data Scientist",
+        "start_date": 2012,
+        "end_date": 2015,
+        "description": "Worked on various data analysis projects using Python and R, and collaborated with senior data scientists to design and implement new features."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Stanford University",
+        "degree": "Master of Science",
+        "year": 2012
+      },
+      {
+        "institution": "University of California",
+        "degree": "Bachelor of Science",
+        "year": 2010
+      }
+    ],
+    "certifications": [],
+    "id": "a0411e14-bd03-4672-80ad-81e3652a0c06",
+    "created_at": "2026-03-14T01:14:39Z",
+    "status": "New",
+    "pipeline_stage": "Applied",
+    "ats_score": 82
+  },
+  {
+    "full_name": "Lukas M\u00fcller",
+    "current_role": "DevOps Engineer",
+    "current_company": "SAP",
+    "location": "Berlin, Germany",
+    "years_of_experience": 10,
+    "seniority_level": "Lead",
+    "skills": [
+      "Java",
+      "Python",
+      "Docker",
+      "Kubernetes",
+      "Jenkins",
+      "Git"
+    ],
+    "education": "Bachelor of Engineering \u2014 Technical University of Berlin",
+    "email": "lukas.mueller@outlook.com",
+    "phone": "+49 123 456 7890",
+    "source": "LinkedIn",
+    "summary": "Highly experienced DevOps engineer with a strong background in cloud computing and containerization. Skilled in multiple programming languages and technologies. Looking for a challenging role to lead a team and drive technical innovation.",
+    "overall_score": 95,
+    "work_experience": [
+      {
+        "company": "SAP",
+        "title": "DevOps Engineer",
+        "start_date": 2015,
+        "end_date": "Present",
+        "description": "Developed and implemented multiple DevOps pipelines using Docker and Kubernetes, and worked with cross-functional teams to drive technical innovation and improve software delivery."
+      },
+      {
+        "company": "Siemens",
+        "title": "Junior DevOps Engineer",
+        "start_date": 2010,
+        "end_date": 2015,
+        "description": "Worked on various DevOps projects using Java and Python, and collaborated with senior engineers to design and implement new features."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "Technical University of Berlin",
+        "degree": "Bachelor of Engineering",
+        "year": 2010
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified DevOps Engineer",
+        "issuer": "DevOps Institute"
+      }
+    ],
+    "id": "442a3c17-5453-46c3-936b-5654b622f174",
+    "created_at": "2026-03-14T01:14:39Z",
+    "status": "Interview",
+    "pipeline_stage": "Screening",
+    "ats_score": 94
+  },
+  {
+    "full_name": "Jian Li",
+    "current_role": "Product Manager",
+    "current_company": "Alibaba",
+    "location": "Shanghai, China",
+    "years_of_experience": 12,
+    "seniority_level": "Director",
+    "skills": [
+      "Product Management",
+      "Marketing",
+      "Sales",
+      "Strategy",
+      "Leadership"
+    ],
+    "education": "Master of Business Administration \u2014 University of Oxford",
+    "email": "jian.li@aliyun.com",
+    "phone": "+86 136 123 4567",
+    "source": "LinkedIn",
+    "summary": "Highly experienced product manager with a strong background in e-commerce and digital marketing. Skilled in multiple areas of product management, including strategy, sales, and leadership. Looking for a challenging role to drive business growth and innovation.",
+    "overall_score": 98,
+    "work_experience": [
+      {
+        "company": "Alibaba",
+        "title": "Product Manager",
+        "start_date": 2010,
+        "end_date": "Present",
+        "description": "Developed and launched multiple e-commerce products, and worked with cross-functional teams to drive business growth and innovation."
+      },
+      {
+        "company": "Tencent",
+        "title": "Junior Product Manager",
+        "start_date": 2008,
+        "end_date": 2010,
+        "description": "Worked on various product development projects, and collaborated with senior product managers to design and implement new features."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "University of Oxford",
+        "degree": "Master of Business Administration",
+        "year": 2008
+      },
+      {
+        "institution": "Tsinghua University",
+        "degree": "Bachelor of Science",
+        "year": 2005
+      }
+    ],
+    "certifications": [],
+    "id": "2164c61e-e997-43df-8f67-6410913e7c82",
+    "created_at": "2026-03-14T01:14:39Z",
+    "status": "New",
+    "pipeline_stage": "Applied",
+    "ats_score": 92
+  },
+  {
+    "full_name": "Lucia Rodriguez",
+    "current_role": "UX Designer",
+    "current_company": "Accenture",
+    "location": "Mexico City, Mexico",
+    "years_of_experience": 6,
+    "seniority_level": "Mid-Level",
+    "skills": [
+      "UX Design",
+      "UI Design",
+      "Human-Computer Interaction",
+      "User Research",
+      "Prototyping"
+    ],
+    "education": "Bachelor of Science \u2014 National Autonomous University of Mexico",
+    "email": "lucia.rodriguez@hotmail.com",
+    "phone": "+52 55 123 4567",
+    "source": "LinkedIn",
+    "summary": "Experienced UX designer with a strong background in human-computer interaction and user research. Skilled in multiple areas of UX design, including prototyping and user testing. Looking for a challenging role to drive user-centered design and innovation.",
+    "overall_score": 80,
+    "work_experience": [
+      {
+        "company": "Accenture",
+        "title": "UX Designer",
+        "start_date": 2017,
+        "end_date": "Present",
+        "description": "Developed and implemented multiple UX design projects, and worked with cross-functional teams to drive user-centered design and innovation."
+      },
+      {
+        "company": "BBVA",
+        "title": "Junior UX Designer",
+        "start_date": 2015,
+        "end_date": 2017,
+        "description": "Worked on various UX design projects, and collaborated with senior designers to design and implement new features."
+      }
+    ],
+    "education_list": [
+      {
+        "institution": "National Autonomous University of Mexico",
+        "degree": "Bachelor of Science",
+        "year": 2015
+      }
+    ],
+    "certifications": [
+      {
+        "name": "Certified UX Designer",
+        "issuer": "Nielsen Norman Group"
+      }
+    ],
+    "id": "d9905afe-2238-401b-9e98-474a840986c1",
+    "created_at": "2026-03-14T01:14:39Z",
+    "status": "Shortlisted",
+    "pipeline_stage": "Interview",
+    "ats_score": 65
+  }
+]

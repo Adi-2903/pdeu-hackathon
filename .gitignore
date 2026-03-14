@@ -23,3 +23,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 talentflow/next-env.d.ts
+
+server/ai-service/.env
