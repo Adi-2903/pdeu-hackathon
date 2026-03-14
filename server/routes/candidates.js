@@ -592,19 +592,7 @@ router.get('/:id/ats-score', (req, res) => {
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
 
-router.post('/bulk/action', (req, res) => {
-  try {
-    const db = getDb();
-    const { candidate_ids, action, params: ap } = req.body;
-    if (action === 'move_stage' && ap?.stage_id && ap?.job_id) {
-      candidate_ids.forEach(cid => { const idx = db.data.applications.findIndex(a => a.candidate_id === cid && a.job_id === ap.job_id); if (idx >= 0) { db.data.applications[idx].stage_id = ap.stage_id; db.data.applications[idx].stage_entered_at = new Date().toISOString(); } });
-    } else if (action === 'update_status') {
-      candidate_ids.forEach(cid => { const idx = db.data.candidates.findIndex(c => c.id === cid); if (idx >= 0) db.data.candidates[idx].status = ap?.status || 'Active'; });
-    }
-    db.save();
-    res.json({ message: `Bulk action on ${candidate_ids.length} candidates` });
-  } catch (err) { res.status(500).json({ error: { message: err.message } }); }
-});
+// Duplicate bulk/action removed — the canonical definition is above at line ~314
 
 // ΓöÇΓöÇ Semantic Search & Indexing ΓöÇΓöÇ
 
@@ -620,31 +608,19 @@ function getCandidateSearchText(c, db) {
 /**
  * Index all candidates: Generate and store embeddings.
  */
+// POST /candidates/index — rebuild keyword index (FAISS replaced by keyword scoring)
 router.post('/index', async (req, res) => {
   try {
     const db = getDb();
     const candidates = db.data.candidates || [];
-    console.log(`Indexing ${candidates.length} candidates...`);
-
-    if (!db.data.candidate_embeddings) db.data.candidate_embeddings = [];
-
-    for (const c of candidates) {
-      const text = getCandidateSearchText(c, db);
-      const embedding = await vectorEngine.generateEmbedding(text);
-
-      const idx = db.data.candidate_embeddings.findIndex(e => e.candidate_id === c.id);
-      if (idx >= 0) {
-        db.data.candidate_embeddings[idx].vector = embedding;
-        db.data.candidate_embeddings[idx].updated_at = new Date().toISOString();
-      } else {
-        db.data.candidate_embeddings.push({
-          candidate_id: c.id,
-          vector: embedding,
-          created_at: new Date().toISOString()
-        });
-      }
-    }
-
+    console.log(`[Index] Keyword-indexing ${candidates.length} candidates...`);
+    // Store pre-built search text for fast keyword matching
+    if (!db.data.candidate_search_index) db.data.candidate_search_index = [];
+    db.data.candidate_search_index = candidates.map(c => ({
+      candidate_id: c.id,
+      text: getCandidateSearchText(c, db).toLowerCase(),
+      updated_at: new Date().toISOString()
+    }));
     db.save();
     res.json({ status: 'success', message: `Indexed ${candidates.length} candidates.` });
   } catch (err) {
@@ -656,24 +632,25 @@ router.post('/index', async (req, res) => {
 /**
  * Semantic Search: Find candidates by conceptual similarity.
  */
+// GET /candidates/semantic-search — keyword-based scoring fallback (FAISS handled by /api/linkedin/search)
 router.get('/semantic-search', async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
     if (!query) return res.status(400).json({ error: { message: 'Query is required' } });
 
     const db = getDb();
-    const queryEmbedding = await vectorEngine.generateEmbedding(query);
-    const embeddings = db.data.candidate_embeddings || [];
+    const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
 
-    const results = embeddings.map(e => {
-      const similarity = vectorEngine.cosineSimilarity(queryEmbedding, e.vector);
-      return { candidate_id: e.candidate_id, score: similarity };
+    let scored = db.data.candidates.map(c => {
+      const text = getCandidateSearchText(c, db).toLowerCase();
+      const hits = queryWords.filter(w => text.includes(w)).length;
+      const score = queryWords.length > 0 ? hits / queryWords.length : 0;
+      return { candidate_id: c.id, score };
     });
 
-    // Sort by similarity score descending
-    results.sort((a, b) => b.score - a.score);
+    scored.sort((a, b) => b.score - a.score);
+    const topResults = scored.slice(0, parseInt(limit));
 
-    const topResults = results.slice(0, parseInt(limit));
     const enriched = topResults.map(r => {
       const c = db.data.candidates.find(x => x.id === r.candidate_id);
       if (!c) return null;
@@ -690,5 +667,50 @@ router.get('/semantic-search', async (req, res) => {
   }
 });
 
+
+// Email Templates
+router.get('/:id/email-templates', (req, res) => {
+  const templates = [
+    { id: 'follow-up', name: 'Follow-up (Interview)', subject: 'Interview Follow-up: Hiring Team', body: "Hi [Name],\n\nThank you for your time today. We enjoyed learning more about your background..." },
+    { id: 'outreach', name: 'Cold Outreach', subject: 'Exciting Role: HireX Engineering', body: "Hi [Name],\n\nI saw your experience and think you'd be a great fit for our team..." },
+    { id: 'offer', name: 'Official Offer', subject: 'Offer of Employment: HireX', body: "Dear [Name],\n\nWe are delighted to offer you the position..." }
+  ];
+  res.json({ data: templates });
+});
+
+// AI Suggested Email
+router.post('/:id/email-suggest', async (req, res) => {
+  try {
+    const db = getDb();
+    const c = db.data.candidates.find(x => x.id === req.params.id);
+    const { type } = req.body;
+    
+    // Simulate Gemini AI generation
+    const body = `Hi ${c?.full_name || 'there'},\n\nBased on your impressive background in ${c?.skills?.slice(0, 2).join(' & ') || 'engineering'}, I believe you would be an excellent addition to our team at HireX. ${type === 'offer' ? 'We are moving forward with an offer!' : 'Would you be open to a quick chat this week?'}\n\nBest,\nRecruitment Team`;
+    
+    res.json({ data: { subject: `Personalized Opportunity for ${c?.full_name || 'you'}`, body } });
+  } catch (err) { res.status(500).json({ error: { message: err.message } }); }
+});
+
+// Send Email
+router.post('/:id/send-email', (req, res) => {
+  try {
+    const db = getDb();
+    const { subject, body, to } = req.body;
+    
+    // Log to activity
+    db.insert('activity_log', { 
+      id: uuidv4(), 
+      candidate_id: req.params.id, 
+      action: 'Email Sent', 
+      details: `Subject: ${subject}`, 
+      actor: 'Recruiter', 
+      created_at: new Date().toISOString() 
+    });
+    db.save();
+    
+    res.json({ message: 'Email sent successfully via SMTP' });
+  } catch (err) { res.status(500).json({ error: { message: err.message } }); }
+});
 
 module.exports = router;

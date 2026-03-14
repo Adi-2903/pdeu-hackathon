@@ -7,6 +7,7 @@ import CandidateComparison from '../components/ui/CandidateComparison';
 import { ShimmerTable } from '../components/ui/Skeletons';
 import { useToast } from '../context/ToastContext';
 import ResumeUploadModal from '../components/ui/ResumeUploadModal';
+import ComposeEmailModal from '../components/ui/ComposeEmailModal';
 import {
   Search, Upload, UserPlus, SlidersHorizontal, ChevronDown,
   MapPin, Briefcase, Mail, Phone, Calendar, Download,
@@ -44,7 +45,7 @@ const CustomRadarTooltip = ({ active, payload }) => {
   return null;
 };
 
-const CandidateModal = ({ candidate, onClose }) => {
+const CandidateModal = ({ candidate, onClose, onOpenEmail, onShortlist }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isReengageOpen, setIsReengageOpen] = useState(false);
   const { addToast } = useToast();
@@ -178,17 +179,17 @@ const CandidateModal = ({ candidate, onClose }) => {
                 <Sparkles size={16} className="mr-2" /> AI Re-engage Ghost
               </OrangeButton>
             ) : (
-              <OrangeButton className="w-full py-3 shadow-[0_4px_16px_rgba(255,107,0,0.3)]">Shortlist Candidate</OrangeButton>
+              <OrangeButton className="w-full py-3 shadow-[0_4px_16px_rgba(255,107,0,0.3)]" onClick={() => onShortlist && onShortlist(candidate)}>Shortlist Candidate</OrangeButton>
             )}
             <div className="grid grid-cols-2 gap-2">
               <button
-                onClick={() => onOpenEmail(candidate, 'outreach')}
+                onClick={() => onOpenEmail ? onOpenEmail(candidate, 'outreach') : null}
                 className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center"
               >
                 <Mail size={13} className="mr-1.5" /> Email
               </button>
               <button
-                onClick={() => onOpenEmail(candidate, 'offer')}
+                onClick={() => onOpenEmail ? onOpenEmail(candidate, 'offer') : null}
                 className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center"
               >
                 <FileText size={13} className="mr-1.5" /> Send Offer
@@ -400,7 +401,7 @@ const CandidateModal = ({ candidate, onClose }) => {
                 <FileText size={48} className="text-gray-300 mb-4" />
                 <p className="text-gray-900 font-bold mb-2">Resume Preview</p>
                 <p className="text-gray-500 font-medium mb-6 text-sm text-center max-w-xs">PDF rendering requires a PDF viewer worker in production. Download to view.</p>
-                <OrangeButton variant="secondary" icon={<Download size={16} />}>Download Raw PDF</OrangeButton>
+                <OrangeButton variant="secondary" icon={<Download size={16} />} onClick={() => window.open(`/api/v1/candidates/${candidate.id}/resume`, '_blank')}>Download Raw PDF</OrangeButton>
               </div>
             )}
 
@@ -460,99 +461,15 @@ const Candidates = () => {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-// Email Modal State
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const [emailConfig, setEmailConfig] = useState({ to: '', subject: '', body: '', type: '', includeAttachment: false });
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailModal, setEmailModal] = useState({ isOpen: false, candidate: null, type: 'outreach' });
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  const filters = ['All', 'New', 'Shortlisted', 'Interviewing', 'Offer Extended'];
 
-  const fetchCandidates = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      let response;
-      if (isSmartSearch && searchTerm) {
-        response = await api.get('/candidates/semantic-search', {
-          params: { query: searchTerm, limit: DEFAULT_PAGE_SIZE }
-        });
-        setCandidates(response.data.data || []);
-        setTotalCandidates(response.data.data?.length || 0);
-      } else {
-        response = await api.get('/candidates', {
-          params: {
-            search: searchTerm,
-            status: selectedFilter === 'All' ? undefined : selectedFilter,
-            page: 1,
-            limit: DEFAULT_PAGE_SIZE,
-          },
-        });
-        setCandidates(response.data.data || []);
-        setTotalCandidates(response.data.pagination?.total || 0);
-      }
-    } catch (error) {
-      console.error('Error fetching candidates:', error);
-      setCandidates([]);
-      setTotalCandidates(0);
-    } finally {
-      setTimeout(() => setIsLoading(false), 500);
-    }
-  }, [searchTerm, selectedFilter, isSmartSearch]);
 
-  const handleOpenEmailModal = async (candidate, type) => {
-    try {
-      const res = await fetch(`/api/v1/company/email-compose/${candidate.id}?type=${type}`);
-      const d = await res.json();
-      if (d.data) {
-        setEmailConfig({
-          candidateId: candidate.id,
-          to: d.data.to,
-          subject: d.data.subject,
-          body: d.data.body,
-          type: type,
-          includeAttachment: type === 'offer'
-        });
-        setIsEmailModalOpen(true);
-      }
-    } catch (err) {
-      addToast('Failed to load email template', 'error');
-    }
+  const handleOpenEmailModal = (candidate, type = 'outreach') => {
+    setEmailModal({ isOpen: true, candidate, type });
   };
 
-  const handleSendEmail = async () => {
-    setIsSendingEmail(true);
-    try {
-      if (emailConfig.includeAttachment) {
-        addToast('Generating PDF attachment...', 'info');
-        const res = await fetch('/api/v1/company/generate-offer-pdf', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(emailConfig)
-        });
-        if (!res.ok) throw new Error('Failed to generate PDF');
-
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Offer_Letter.pdf`;
-        a.click();
-        window.URL.revokeObjectURL(url);
-
-        setTimeout(() => addToast('PDF downloaded! Please drag & drop it into the Gmail window.', 'success'), 500);
-      }
-
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(emailConfig.to)}&su=${encodeURIComponent(emailConfig.subject)}&body=${encodeURIComponent(emailConfig.body)}`;
-      window.open(gmailUrl, '_blank');
-
-      setIsEmailModalOpen(false);
-    } catch (err) {
-      console.error(err);
-      addToast(err.message || 'Failed to prepare email', 'error');
-    } finally {
-      setIsSendingEmail(false);
-    }
-  };
 
   
   const filters = ['All', 'New', 'Screening', 'Shortlisted', 'Interview', 'Offer', 'Hired', '👻 Ghosts'];
@@ -654,7 +571,7 @@ const Candidates = () => {
           >
             <Upload size={18} className="mr-2" /> Bulk Upload
           </button>
-          <OrangeButton icon={<UserPlus size={18} />} className="shadow-[0_4px_16px_rgba(255,107,0,0.3)] font-bold px-5">
+          <OrangeButton icon={<UserPlus size={18} />} className="shadow-[0_4px_16px_rgba(255,107,0,0.3)] font-bold px-5" onClick={() => setIsUploadModalOpen(true)}>
             Add Candidate
           </OrangeButton>
         </div>
@@ -822,10 +739,16 @@ const Candidates = () => {
                         </p>
                       </td>
                       <td className="px-6 py-4 text-right whitespace-nowrap">
-                        <button className="text-gray-400 hover:text-[#FF6B00] p-1.5 rounded-lg hover:bg-[#FF6B00]/10 transition-colors mr-1">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleOpenEmailModal(cand, 'outreach'); }}
+                          title="Send Email"
+                          className="text-gray-400 hover:text-[#FF6B00] p-1.5 rounded-lg hover:bg-[#FF6B00]/10 transition-colors mr-1">
                           <Mail size={16} />
                         </button>
-                        <button className="text-gray-400 hover:text-gray-900 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setSelectedCandidate(cand); }}
+                          title="View Details"
+                          className="text-gray-400 hover:text-gray-900 p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
                           <MoreHorizontal size={16} />
                         </button>
                       </td>
@@ -851,7 +774,19 @@ const Candidates = () => {
       </GlassCard>
 
       {/* CANDIDATE DETAIL MODAL */}
-      <CandidateModal candidate={selectedCandidate} onClose={() => setSelectedCandidate(null)} />
+      <CandidateModal
+        candidate={selectedCandidate}
+        onClose={() => setSelectedCandidate(null)}
+        onOpenEmail={handleOpenEmailModal}
+        onShortlist={async (cand) => {
+          try {
+            await api.put(`/candidates/${cand.id}`, { status: 'Screening' });
+            setCandidates(prev => prev.map(c => c.id === cand.id ? { ...c, status: 'Screening' } : c));
+            addToast(`${cand.name} shortlisted!`, 'success');
+            setSelectedCandidate(null);
+          } catch { addToast('Failed to shortlist candidate', 'error'); }
+        }}
+      />
 
       {/* CANDIDATE COMPARISON MODAL */}
       <CandidateComparison
@@ -870,6 +805,15 @@ const Candidates = () => {
           addToast(`${newCand.name || 'Candidate'} added successfully!`, 'success');
         }}
       />
+
+      {emailModal.isOpen && (
+        <ComposeEmailModal 
+          isOpen={emailModal.isOpen}
+          candidate={emailModal.candidate}
+          initialType={emailModal.type}
+          onClose={() => setEmailModal({ ...emailModal, isOpen: false })}
+        />
+      )}
     </div>
   );
 };

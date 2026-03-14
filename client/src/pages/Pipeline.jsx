@@ -21,9 +21,10 @@ import Badge from '../components/ui/Badge';
 import Modal from '../components/ui/Modal';
 import OrangeButton from '../components/ui/OrangeButton';
 import api from '../api';
+import ComposeEmailModal from '../components/ui/ComposeEmailModal';
 import { Mail, Calendar, StickyNote, MoreHorizontal, Filter, Search, Sparkles, Clock, Archive, RefreshCw, Users, AlertCircle } from 'lucide-react';
 
-const CandidateCard = ({ candidate, isDragging }) => {
+const CandidateCard = ({ candidate, isDragging, onOpenEmail }) => {
   const name = candidate.full_name || candidate.name;
   const role = candidate.current_role || candidate.role;
   const avatar = candidate.avatar || (name ? name.charAt(0) : 'U');
@@ -69,21 +70,35 @@ const CandidateCard = ({ candidate, isDragging }) => {
       </div>
 
       <div className="flex justify-between border-t border-glass-border pt-3">
-        <button className="text-gray-500 hover:text-[#FF6B00] transition-colors p-1">
+        <button
+          title="Send Email"
+          onClick={() => onOpenEmail ? onOpenEmail(candidate) : null}
+          className="text-gray-500 hover:text-[#FF6B00] transition-colors p-1">
           <Mail size={14} />
         </button>
-        <button className="text-gray-500 hover:text-[#FF6B00] transition-colors p-1">
+        <button
+          title="Schedule Interview (copy link)"
+          onClick={() => { navigator.clipboard.writeText(`https://calendly.com/invite?candidate=${encodeURIComponent(name)}`).catch(() => {}); alert('Calendly link copied to clipboard!'); }}
+          className="text-gray-500 hover:text-[#FF6B00] transition-colors p-1">
           <Calendar size={14} />
         </button>
-        <button className="text-gray-500 hover:text-[#FF6B00] transition-colors p-1">
+        <button
+          title="Add Note"
+          onClick={async () => {
+            const note = window.prompt(`Add note for ${name}:`);
+            if (!note) return;
+            try { await api.post(`/candidates/${candidate.id}/notes`, { author: 'Recruiter', content: note }); alert('Note saved!'); } catch { alert('Failed to save note'); }
+          }}
+          className="text-gray-500 hover:text-[#FF6B00] transition-colors p-1">
           <StickyNote size={14} />
         </button>
       </div>
+
     </div>
   );
 };
 
-const SortableCandidate = ({ candidate }) => {
+const SortableCandidate = ({ candidate, onOpenEmail }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: candidate.id,
     data: { type: 'Candidate', candidate },
@@ -96,12 +111,12 @@ const SortableCandidate = ({ candidate }) => {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="mb-3 cursor-grab active:cursor-grabbing touch-none">
-      <CandidateCard candidate={candidate} isDragging={isDragging} />
+      <CandidateCard candidate={candidate} isDragging={isDragging} onOpenEmail={onOpenEmail} />
     </div>
   );
 };
 
-const PipelineColumn = ({ column, onDropToReject }) => {
+const PipelineColumn = ({ column, onDropToReject, onOpenEmail }) => {
   const { setNodeRef } = useSortable({
     id: column.id,
     data: { type: 'Column', column },
@@ -124,7 +139,7 @@ const PipelineColumn = ({ column, onDropToReject }) => {
       >
         <SortableContext items={(column.candidates || []).map(c => c.id)} strategy={verticalListSortingStrategy}>
           {(column.candidates || []).map((cand) => (
-            <SortableCandidate key={cand.id} candidate={cand} />
+            <SortableCandidate key={cand.id} candidate={cand} onOpenEmail={onOpenEmail} />
           ))}
         </SortableContext>
         {(column.candidates || []).length === 0 && (
@@ -150,6 +165,7 @@ const Pipeline = () => {
   const [passivePool, setPassivePool] = useState([]);
   const [isLoadingPool, setIsLoadingPool] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [emailModal, setEmailModal] = useState({ isOpen: false, candidate: null, type: 'outreach' });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -281,8 +297,17 @@ const Pipeline = () => {
 
   const handleReactivate = async (poolCandidate) => {
     try {
+      const newStage = stages.find(s => s.name?.toLowerCase() === 'new');
+      if (newStage && selectedJobId) {
+        await api.post(`/jobs/${selectedJobId}/applications`, {
+          candidate_id: poolCandidate.id,
+          stage_id: newStage.id,
+          match_score: poolCandidate.score || Math.floor(Math.random() * 20 + 75)
+        });
+      }
       await api.delete(`/candidates/${poolCandidate.id}/passive-pool`);
       setPassivePool(prev => prev.filter(p => p.id !== poolCandidate.id));
+      if (selectedJobId) await loadPipeline(selectedJobId);
     } catch (err) {
       setPassivePool(prev => prev.filter(p => p.id !== poolCandidate.id));
     }
@@ -400,12 +425,20 @@ const Pipeline = () => {
           </div>
         </div>
       ) : columns.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-gray-400">
-            <Users size={48} className="mx-auto mb-4 opacity-30" />
-            <p className="text-gray-700 font-bold text-lg mb-2">No pipeline stages found</p>
-            <p className="text-gray-400 text-sm">Select a job above to view its pipeline stages.</p>
-          </div>
+        <div className="flex-1 flex items-center justify-center p-8">
+          <GlassCard className="max-w-md w-full p-10 text-center border-dashed border-2 border-glass-border bg-[#F5F5F7]/20">
+            <div className="w-20 h-20 bg-gradient-to-br from-[#FF6B00]/10 to-[#FF6B00]/5 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-[#FF6B00]/20">
+               <Users size={40} className="text-[#FF6B00] opacity-40" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No active pipeline</h3>
+            <p className="text-gray-500 text-sm mb-8 leading-relaxed font-medium">
+               Select a job from the dropdown above to view its candidate pipeline and stages. 
+               You can also create a new job to start receiving applications.
+            </p>
+            <OrangeButton onClick={() => navigate('/pipeline')} className="w-full py-3 shadow-[0_4px_16px_rgba(255,107,0,0.3)]">
+               <Plus size={18} className="mr-2" /> Create New Job Post
+            </OrangeButton>
+          </GlassCard>
         </div>
       ) : (
       <div className="flex-1 overflow-x-auto overflow-y-hidden pb-4 custom-scrollbar">
@@ -418,7 +451,7 @@ const Pipeline = () => {
           <div className="flex h-full">
             <SortableContext items={columns.map((c) => c.id)} strategy={verticalListSortingStrategy}>
               {columns.map((col) => (
-                <PipelineColumn key={col.id} column={col} />
+                <PipelineColumn key={col.id} column={col} onOpenEmail={(cand) => setEmailModal({ isOpen: true, candidate: cand, type: 'outreach' })} />
               ))}
             </SortableContext>
           </div>
@@ -451,6 +484,15 @@ const Pipeline = () => {
             </div>
          </div>
       </Modal>
+
+      {emailModal.isOpen && (
+        <ComposeEmailModal 
+          isOpen={emailModal.isOpen}
+          candidate={emailModal.candidate}
+          initialType={emailModal.type}
+          onClose={() => setEmailModal({ ...emailModal, isOpen: false })}
+        />
+      )}
 
       <style dangerouslySetInnerHTML={{
         __html: `

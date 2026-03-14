@@ -1,21 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import GlassCard from '../components/ui/GlassCard';
 import OrangeButton from '../components/ui/OrangeButton';
-import SearchBar from '../components/ui/SearchBar';
 import Badge from '../components/ui/Badge';
 import { Sparkles, Download, SlidersHorizontal, User, MapPin, Building, ChevronDown, Check, MoreHorizontal } from 'lucide-react';
 
 const AISearch = () => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const [searchPhase, setSearchPhase] = useState(0); // 0: idle, 1: parsing, 2: semantic, 3: done
+  const [searchPhase, setSearchPhase] = useState(0);
   const [results, setResults] = useState([]);
   const [parsedContext, setParsedContext] = useState(null);
+  const [sortBy, setSortBy] = useState('score'); // 'score' | 'experience'
 
   // Filters State
   const [filters, setFilters] = useState({ matchMin: 50, exp: 'Any', source: 'All' });
   const [viewMode, setViewMode] = useState('grid');
+
+  // Apply filters + sort to results
+  const displayedResults = useMemo(() => {
+    let out = [...results];
+    if (filters.matchMin > 0) out = out.filter(c => (c.score || 0) >= filters.matchMin);
+    if (filters.source !== 'All') out = out.filter(c => c.source === filters.source);
+    if (sortBy === 'experience') out.sort((a, b) => parseInt(b.experience) - parseInt(a.experience));
+    else out.sort((a, b) => (b.score || 0) - (a.score || 0));
+    return out;
+  }, [results, filters, sortBy]);
+
+  const exportCSV = () => {
+    if (!results.length) return;
+    const header = 'Name,Role,Company,Location,Experience,Score,Source';
+    const rows = results.map(c => `"${c.name}","${c.role}","${c.company}","${c.location}","${c.experience}",${c.score},"${c.source}"`);
+    const blob = new Blob([header + '\n' + rows.join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'ai_search_results.csv'; a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const exampleQueries = [
     "Senior Python dev, 5+ years",
@@ -205,8 +227,8 @@ const AISearch = () => {
               <div className="flex items-center space-x-4">
                 <span className="text-gray-400 text-sm font-medium">Sort by:</span>
                 <div className="glass-panel flex rounded-lg p-1">
-                  <button className="px-3 py-1.5 rounded-md bg-[#FF6B00]/20 text-[#FF6B00] text-sm font-semibold">Match Score</button>
-                  <button className="px-3 py-1.5 rounded-md text-gray-500 hover:text-gray-900 text-sm font-medium transition-colors">Experience</button>
+                  <button onClick={() => setSortBy('score')} className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${sortBy === 'score' ? 'bg-[#FF6B00]/20 text-[#FF6B00]' : 'text-gray-500 hover:text-gray-900'}`}>Match Score</button>
+                  <button onClick={() => setSortBy('experience')} className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${sortBy === 'experience' ? 'bg-[#FF6B00]/20 text-[#FF6B00]' : 'text-gray-500 hover:text-gray-900'}`}>Experience</button>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -218,7 +240,7 @@ const AISearch = () => {
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
                   </button>
                 </div>
-                <OrangeButton variant="outline" icon={<Download size={16} />} className="text-sm py-2">
+                <OrangeButton variant="outline" icon={<Download size={16} />} className="text-sm py-2" onClick={exportCSV}>
                   Export CSV
                 </OrangeButton>
               </div>
@@ -226,7 +248,7 @@ const AISearch = () => {
 
             {/* Results Grid */}
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 overflow-y-auto pb-10 custom-scrollbar pr-2">
-              {results.map((candidate) => (
+              {displayedResults.map((candidate) => (
                 <GlassCard key={candidate.id} className="flex flex-col hover:border-[#FF6B00]/40 transition-[border-color] duration-300 group p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center space-x-4">
@@ -286,10 +308,21 @@ const AISearch = () => {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 mt-auto">
-                    <button className="glass-panel text-gray-900 font-medium hover:bg-white/10 py-2.5 rounded-xl transition-all">
+                    <button
+                      className="glass-panel text-gray-900 font-medium hover:bg-white/10 py-2.5 rounded-xl transition-all"
+                      onClick={() => navigate(`/candidates?search=${encodeURIComponent(candidate.name || '')}`)}
+                    >
                       View Profile
                     </button>
-                    <button className="bg-[#FF6B00] text-gray-900 font-medium shadow-[0_4px_16px_rgba(255,107,0,0.3)] hover:bg-[#FF8C42] py-2.5 rounded-xl transition-all">
+                    <button
+                      className="bg-[#FF6B00] text-gray-900 font-medium shadow-[0_4px_16px_rgba(255,107,0,0.3)] hover:bg-[#FF8C42] py-2.5 rounded-xl transition-all"
+                      onClick={async () => {
+                        try {
+                          if (candidate.id) await api.put(`/candidates/${candidate.id}`, { status: 'Screening' });
+                          alert(`${candidate.name} shortlisted!`);
+                        } catch { alert('Failed to shortlist'); }
+                      }}
+                    >
                       Shortlist
                     </button>
                   </div>
@@ -299,13 +332,14 @@ const AISearch = () => {
           </div>
 
           {/* Filter Sidebar */}
+
           <div className="w-80 flex-shrink-0 order-first md:order-last">
             <GlassCard className="h-[calc(100vh-140px)] sticky top-8 flex flex-col p-6 overflow-y-auto custom-scrollbar">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-lg font-bold text-gray-900 flex items-center">
                   <SlidersHorizontal size={18} className="mr-2 text-[#FF6B00]" /> Filters
                 </h2>
-                <button className="text-gray-400 text-xs font-semibold hover:text-gray-900 transition-colors">Reset</button>
+                <button className="text-gray-400 text-xs font-semibold hover:text-gray-900 transition-colors" onClick={() => setFilters({ matchMin: 50, exp: 'Any', source: 'All' })}>Reset</button>
               </div>
 
               <div className="space-y-8">

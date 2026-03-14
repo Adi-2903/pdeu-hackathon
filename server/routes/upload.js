@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const resumeParser = require('../services/resumeParser');
+const { getDb } = require('../database');
+const { v4: uuidv4 } = require('uuid');
 
 // Configure multer for memory storage
 const upload = multer({ 
@@ -67,26 +69,34 @@ router.post('/resume', upload.single('resume'), async (req, res) => {
 
     // 2. Format result as Candidate object for DB
     const newCandidate = {
-      id: Math.floor(Math.random() * 10000), // mock DB id
-      name: parsedData.name || 'Unknown',
+      id: uuidv4(),
+      full_name: parsedData.name || 'Unknown',
       email: parsedData.email || 'N/A',
       phone: parsedData.phone || 'N/A',
       location: parsedData.location || 'Unknown',
-      role: parsedData.currentRole || 'Candidate',
-      company: parsedData.company || 'N/A',
-      experience: parsedData.experience?.length ? `${parsedData.experience.length * 2} yrs` : 'Entry', // Mocking total yrs
-      education: parsedData.education || [],
+      current_role: parsedData.currentRole || 'Candidate',
+      current_company: parsedData.company || 'N/A',
+      years_of_experience: parsedData.experience?.length ? parsedData.experience.length * 2 : 1,
       skills: parsedData.skills || [],
       source: 'Upload',
       status: 'New',
-      avatar: parsedData.name ? parsedData.name.charAt(0).toUpperCase() : 'U',
-      score: Math.floor(Math.random() * 40) + 50, // Mock initial score before full pipeline run
-      timeline: [
-        { date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), event: 'Resume parsed by AI', type: 'ai' }
-      ]
+      avatar_url: '',
+      overall_score: Math.floor(Math.random() * 40) + 50,
+      created_at: new Date().toISOString()
     };
 
     const sessionId = req.query.sessionId;
+
+    // Actually save to Database
+    const db = getDb();
+    db.insert('candidates', newCandidate);
+    
+    if (parsedData.education) {
+      parsedData.education.forEach(edu => {
+        db.insert('education', { id: uuidv4(), candidate_id: newCandidate.id, institution: edu.school, degree: edu.degree });
+      });
+    }
+    db.save();
 
     if (sessionId && activeStreams.has(sessionId)) {
       // Stream is active, let's simulate a staggered extraction process for UI wow-factor
@@ -115,9 +125,6 @@ router.post('/resume', upload.single('resume'), async (req, res) => {
       // but we return a generic success for the fetch call.
       return res.status(200).json({ status: 'success', message: 'Streaming to client' });
     }
-
-    // 3. (Mock) Save to Database / Check for duplicates
-    // In a real app we would query DB by email/phone to merge records
 
     res.status(201).json({
       status: 'success',

@@ -117,6 +117,15 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Serve the frontend build
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// Catch-all for React Router to prevent "Cannot GET /route"
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
+
 // Initialize DB, seed it (if needed), and start server
 initializeDatabase();
 seedDatabase({ force: process.env.FORCE_SEED === 'true' });

@@ -987,12 +987,12 @@
       "avatar_url": null,
       "status": "Active",
       "ghost_status": 0,
-      "in_passive_pool": 1,
+      "in_passive_pool": 0,
       "culture_fit_score": 0,
       "salary_min": null,
       "salary_max": null,
       "created_at": "2026-01-15T10:16:07.902Z",
-      "updated_at": "2026-01-15T10:16:07.902Z"
+      "updated_at": "2026-03-14T08:41:49.718Z"
     },
     {
       "id": "49cd1f44-afb7-4f55-80da-f7125c330d8a",
@@ -1010,12 +1010,12 @@
       "avatar_url": null,
       "status": "Active",
       "ghost_status": 0,
-      "in_passive_pool": 1,
+      "in_passive_pool": 0,
       "culture_fit_score": 0,
       "salary_min": null,
       "salary_max": null,
       "created_at": "2026-01-10T10:16:07.902Z",
-      "updated_at": "2026-01-10T10:16:07.902Z"
+      "updated_at": "2026-03-14T08:19:12.635Z"
     },
     {
       "id": "5cc07827-37aa-439a-850e-ff56943cba13",
@@ -1033,12 +1033,12 @@
       "avatar_url": null,
       "status": "Active",
       "ghost_status": 0,
-      "in_passive_pool": 1,
+      "in_passive_pool": 0,
       "culture_fit_score": 0,
       "salary_min": null,
       "salary_max": null,
       "created_at": "2026-02-12T10:16:07.902Z",
-      "updated_at": "2026-02-12T10:16:07.902Z"
+      "updated_at": "2026-03-14T08:41:46.006Z"
     },
     {
       "id": "ed400f2c-4094-4c16-b6e7-55e1af039261",
@@ -1079,12 +1079,12 @@
       "avatar_url": null,
       "status": "Active",
       "ghost_status": 0,
-      "in_passive_pool": 1,
+      "in_passive_pool": 0,
       "culture_fit_score": 0,
       "salary_min": null,
       "salary_max": null,
       "created_at": "2026-01-11T10:16:07.902Z",
-      "updated_at": "2026-01-11T10:16:07.902Z"
+      "updated_at": "2026-03-14T08:16:32.434Z"
     },
     {
       "id": "211cb2c2-d934-4fb4-b66a-a14285ea7f1d",
@@ -1125,12 +1125,12 @@
       "avatar_url": null,
       "status": "Active",
       "ghost_status": 0,
-      "in_passive_pool": 1,
+      "in_passive_pool": 0,
       "culture_fit_score": 0,
       "salary_min": null,
       "salary_max": null,
       "created_at": "2026-02-11T10:16:07.902Z",
-      "updated_at": "2026-02-11T10:16:07.902Z"
+      "updated_at": "2026-03-14T08:41:48.434Z"
     },
     {
       "id": "a7b9a202-36cf-4480-b2ab-619e65098afd",
@@ -6279,6 +6279,36 @@
       "stage_entered_at": "2026-02-21T10:16:07.903Z",
       "applied_at": "2026-02-19T10:16:07.903Z",
       "status": "Active"
+    },
+    {
+      "id": "aa1c18ed-f942-4cc2-b410-d33275cf3f4b",
+      "candidate_id": "5cc07827-37aa-439a-850e-ff56943cba13",
+      "job_id": "6a7bba97-987a-4fb8-a931-7f3483def2e8",
+      "stage_id": "a86dc1b0-5dd2-41d0-8d4d-4ff3d6800e72",
+      "match_score": 55,
+      "stage_entered_at": "2026-03-14T08:41:45.970Z",
+      "applied_at": "2026-03-14T08:41:45.970Z",
+      "status": "Active"
+    },
+    {
+      "id": "a824da58-f378-4391-8bf1-04b10f3e251f",
+      "candidate_id": "cb97cd18-af7e-4bfc-8813-9191a9077a87",
+      "job_id": "6a7bba97-987a-4fb8-a931-7f3483def2e8",
+      "stage_id": "a86dc1b0-5dd2-41d0-8d4d-4ff3d6800e72",
+      "match_score": 76,
+      "stage_entered_at": "2026-03-14T08:41:48.401Z",
+      "applied_at": "2026-03-14T08:41:48.401Z",
+      "status": "Active"
+    },
+    {
+      "id": "5430b9a3-dec4-4a54-986e-6066ff254483",
+      "candidate_id": "e934c751-258f-4c57-94ac-ea7827c8c6ab",
+      "job_id": "6a7bba97-987a-4fb8-a931-7f3483def2e8",
+      "stage_id": "a86dc1b0-5dd2-41d0-8d4d-4ff3d6800e72",
+      "match_score": 73,
+      "stage_entered_at": "2026-03-14T08:41:49.690Z",
+      "applied_at": "2026-03-14T08:41:49.690Z",
+      "status": "Active"
     }
   ],
   "sources": [],
@@ -7230,53 +7260,21 @@
       "details": "Completed Focus Action: Schedule Sofia Andersson",
       "actor": "System",
       "created_at": "2026-03-14T04:38:38.529Z"
+    },
+    {
+      "id": "169247f9-fc7d-44c3-9739-5cf8f0e2dfe7",
+      "candidate_id": "system",
+      "job_id": "system",
+      "action": "Focus Mode Generated",
+      "details": "Generated for 5 jobs with target date 2026-03-20",
+      "actor": "Recruiter",
+      "created_at": "2026-03-14T08:38:49.757Z"
     }
   ],
   "email_threads": [],
   "duplicate_groups": [],
   "search_queries": [],
-  "passive_pool": [
-    {
-      "id": "c5412419-00db-42a5-bcad-826b7ea08016",
-      "candidate_id": "cb97cd18-af7e-4bfc-8813-9191a9077a87",
-      "original_job_id": "77beaa94-cbb4-47bd-a703-09d87a5d751b",
-      "original_score": 67,
-      "reason": "Strong candidate, not selected",
-      "added_at": "2025-10-22T10:16:07.903Z"
-    },
-    {
-      "id": "67574b14-a125-40e2-b3da-3e2f33a57fcd",
-      "candidate_id": "017f2867-5cc1-4f07-ba6c-fdb972d27c18",
-      "original_job_id": "6de92f5d-476f-440e-9172-f5bb4d2b2aec",
-      "original_score": 75,
-      "reason": "Strong candidate, not selected",
-      "added_at": "2025-11-24T10:16:07.903Z"
-    },
-    {
-      "id": "db80bbc2-1be8-48d5-ab82-97736dc3f866",
-      "candidate_id": "5cc07827-37aa-439a-850e-ff56943cba13",
-      "original_job_id": "6a7bba97-987a-4fb8-a931-7f3483def2e8",
-      "original_score": 87,
-      "reason": "Strong candidate, not selected",
-      "added_at": "2025-12-19T10:16:07.903Z"
-    },
-    {
-      "id": "cf94d0e7-8532-40d1-a554-de79e005ab22",
-      "candidate_id": "49cd1f44-afb7-4f55-80da-f7125c330d8a",
-      "original_job_id": "77beaa94-cbb4-47bd-a703-09d87a5d751b",
-      "original_score": 73,
-      "reason": "Strong candidate, not selected",
-      "added_at": "2025-11-09T10:16:07.903Z"
-    },
-    {
-      "id": "758ad5ee-1c98-4081-9e48-d3a2d911563e",
-      "candidate_id": "e934c751-258f-4c57-94ac-ea7827c8c6ab",
-      "original_job_id": "e68b448d-2271-48e7-b419-e576c14c77d2",
-      "original_score": 87,
-      "reason": "Strong candidate, not selected",
-      "added_at": "2025-10-20T10:16:07.903Z"
-    }
-  ],
+  "passive_pool": [],
   "company_values": [
     {
       "id": "06fa312f-7f85-4d7e-a424-27470db5395e",
