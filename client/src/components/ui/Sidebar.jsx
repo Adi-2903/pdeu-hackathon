@@ -8,6 +8,7 @@ const navGroups = [
     label: 'OVERVIEW',
     items: [
       { id: 'dashboard', path: '/', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
+      { id: 'analytics', path: '/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
     ]
   },
   {
@@ -35,7 +36,7 @@ const Sidebar = () => {
   React.useEffect(() => {
     const fetchCount = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/v1/candidates/duplicates');
+        const res = await fetch('http://localhost:3001/api/v1/candidates/duplicates');
         const data = await res.json();
         setDuplicateCount(data.count || 0);
       } catch (e) { console.error('Error fetching duplicates:', e); }

@@ -461,7 +461,17 @@ const Candidates = () => {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  const [emailModal, setEmailModal] = useState({ isOpen: false, candidate: null, type: 'outreach' });
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailConfig, setEmailConfig] = useState({
+    to: '',
+    subject: '',
+    body: '',
+    type: 'outreach',
+    salary: '120,000',
+    startDate: '',
+    includeAttachment: false
+  });
   const [uploadProgress, setUploadProgress] = useState(0);
   const [emailType, setEmailType] = useState('outreach');
 
@@ -965,14 +975,6 @@ const Candidates = () => {
         }}
       />
 
-      {emailModal.isOpen && (
-        <ComposeEmailModal 
-          isOpen={emailModal.isOpen}
-          candidate={emailModal.candidate}
-          initialType={emailModal.type}
-          onClose={() => setEmailModal({ ...emailModal, isOpen: false })}
-        />
-      )}
     </div>
   );
 };
