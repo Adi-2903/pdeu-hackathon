@@ -45,11 +45,7 @@ const CustomRadarTooltip = ({ active, payload }) => {
   return null;
 };
 
-<<<<<<< HEAD
 const CandidateModal = ({ candidate, onClose, onOpenEmail, onShortlist }) => {
-=======
-const CandidateModal = ({ candidate, onClose, onOpenEmail }) => {
->>>>>>> origin/god
   const [activeTab, setActiveTab] = useState('overview');
   const [isReengageOpen, setIsReengageOpen] = useState(false);
   const { addToast } = useToast();
@@ -470,13 +466,6 @@ const Candidates = () => {
   const [emailType, setEmailType] = useState('outreach');
 
 
-<<<<<<< HEAD
-
-  const handleOpenEmailModal = (candidate, type = 'outreach') => {
-    setEmailModal({ isOpen: true, candidate, type });
-  };
-
-=======
   const handleOpenEmailModal = (candidate, type = 'outreach') => {
     setEmailType(type);
     setSelectedCandidate(candidate); // Ensure state is synced
@@ -549,7 +538,6 @@ const Candidates = () => {
       setIsSendingEmail(false);
     }
   };
->>>>>>> origin/god
 
   
   const filters = ['All', 'New', 'Screening', 'Shortlisted', 'Interview', 'Offer', 'Hired', '👻 Ghosts'];
@@ -819,17 +807,11 @@ const Candidates = () => {
                         </p>
                       </td>
                       <td className="px-6 py-4 text-right whitespace-nowrap">
-<<<<<<< HEAD
                         <button
                           onClick={(e) => { e.stopPropagation(); handleOpenEmailModal(cand, 'outreach'); }}
                           title="Send Email"
-                          className="text-gray-400 hover:text-[#FF6B00] p-1.5 rounded-lg hover:bg-[#FF6B00]/10 transition-colors mr-1">
-=======
-                        <button 
-                          onClick={() => handleOpenEmailModal(cand, 'outreach')}
                           className="text-gray-400 hover:text-[#FF6B00] p-1.5 rounded-lg hover:bg-[#FF6B00]/10 transition-colors mr-1"
                         >
->>>>>>> origin/god
                           <Mail size={16} />
                         </button>
                         <button
@@ -861,7 +843,6 @@ const Candidates = () => {
       </GlassCard>
 
       {/* CANDIDATE DETAIL MODAL */}
-<<<<<<< HEAD
       <CandidateModal
         candidate={selectedCandidate}
         onClose={() => setSelectedCandidate(null)}
@@ -875,8 +856,6 @@ const Candidates = () => {
           } catch { addToast('Failed to shortlist candidate', 'error'); }
         }}
       />
-=======
-      <CandidateModal candidate={selectedCandidate} onClose={() => setSelectedCandidate(null)} onOpenEmail={handleOpenEmailModal} />
 
       {/* EMAIL MODAL */}
       <Modal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)} title="📧 Draft Communication">
@@ -967,7 +946,6 @@ const Candidates = () => {
           </div>
         </div>
       </Modal>
->>>>>>> origin/god
 
       {/* CANDIDATE COMPARISON MODAL */}
       <CandidateComparison

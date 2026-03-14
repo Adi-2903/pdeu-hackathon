@@ -33,7 +33,6 @@ const CustomTooltip = ({ active, payload, label }) => {
 const Dashboard = () => {
   const navigate = useNavigate();
   const currentDate = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-<<<<<<< HEAD
   const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
   const [activeDashboardTab, setActiveDashboardTab] = useState('Dashboard');
   
@@ -41,8 +40,6 @@ const Dashboard = () => {
   const [focusPlan, setFocusPlan] = useState(null);
   const [completedActionsCount, setCompletedActionsCount] = useState(0);
   const [animatingActionId, setAnimatingActionId] = useState(null);
-=======
->>>>>>> origin/god
 
   const [stats, setStats] = useState({
     totalCandidates: 0,
@@ -137,13 +134,12 @@ const Dashboard = () => {
       {/* ━━━ HEADER SECTION ━━━ */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Recruitment Overview</h1>
-<<<<<<< HEAD
         <div className="flex items-center space-x-3">
            <button 
              onClick={() => setIsFocusModalOpen(true)}
              className="glass-panel text-gray-900 border border-[#FF6B00]/40 px-5 py-2.5 rounded-xl font-bold hover:bg-[#FF6B00]/5 hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit"
            >
-             <Target size={18} className="mr-2 text-[#FF6B00]" />
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mr-2 text-[#FF6B00]"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
              Hire by Friday
            </button>
            <button
@@ -171,18 +167,6 @@ const Dashboard = () => {
         <>
           {/* ━━━ KPI STATS ROW ━━━ */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-=======
-        <button className="bg-[#FF6B00] text-white px-5 py-2.5 rounded-xl font-semibold shadow-[0_4px_12px_rgba(255,107,0,0.25)] hover:bg-[#FF8C42] hover:-translate-y-0.5 transition-all flex items-center text-sm w-fit">
-          <Plus size={18} className="mr-2" />
-          Post New Job
-        </button>
-      </div>
-
-
-
-      {/* ━━━ KPI STATS ROW (HORIZONTAL) ━━━ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
->>>>>>> origin/god
         {/* Stat 1 */}
         <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex items-center justify-between">
           <div className="flex items-center">

@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import React, { useState, useRef } from 'react';
-import GlassCard from '../components/ui/GlassCard';
-import OrangeButton from '../components/ui/OrangeButton';
-import Badge from '../components/ui/Badge';
-=======
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import * as pdfjsLib from 'pdfjs-dist';
@@ -11,15 +5,12 @@ import GlassCard from '../components/ui/GlassCard';
 import OrangeButton from '../components/ui/OrangeButton';
 import Badge from '../components/ui/Badge';
 import { useToast } from '../context/ToastContext';
->>>>>>> origin/god
 import api from '../api';
 import {
   Mail, Upload, Linkedin, Database, Users, Settings,
   CheckCircle2, RefreshCw, AlertCircle, Link, FileText, Download, Loader2
 } from 'lucide-react';
 
-<<<<<<< HEAD
-=======
 // Configure pdf.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.mjs',
@@ -27,7 +18,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 ).href;
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
->>>>>>> origin/god
 
 const LOADING_MESSAGES = [
   'Reading file...',
@@ -49,8 +39,6 @@ const Sources = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef(null);
   const loadingIntervalRef = useRef(null);
-
-  const fileInputRef = useRef(null);
 
   // LinkedIn / AI generation state
   const [linkedinDomain, setLinkedinDomain] = useState('');
@@ -187,10 +175,7 @@ const Sources = () => {
         count: linkedinCount,
         domain: linkedinDomain || undefined,
       }, { timeout: 300000 });
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/god
       setLinkedinStatus('done');
       setLinkedinResult(res.data);
     } catch (err) {
@@ -199,35 +184,7 @@ const Sources = () => {
     }
   };
 
-<<<<<<< HEAD
-  const handleFileUpload = async (file) => {
-    if (!file) return;
-    setUploadProgress(10);
-    setUploadedName(file.name);
-    const formData = new FormData();
-    formData.append('resume', file);
-    try {
-      setUploadProgress(40);
-      await api.post('/upload/resume', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
-      setUploadProgress(100);
-      setTimeout(() => setUploadProgress(0), 2500);
-    } catch (err) {
-      console.error('Upload failed', err);
-      setUploadProgress(0);
-      alert('Upload failed: ' + (err.response?.data?.message || err.message));
-    }
-  };
 
-  const handleDropZoneClick = () => fileInputRef.current?.click();
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file) handleFileUpload(file);
-  };
-
-=======
->>>>>>> origin/god
   return (
     <div className="p-8 h-full flex flex-col overflow-y-auto custom-scrollbar">
 
@@ -541,21 +498,6 @@ const Sources = () => {
             </div>
           </div>
 
-<<<<<<< HEAD
-          <div
-            className="flex-1 min-h-[160px] border-2 border-dashed border-[#FF6B00]/40 rounded-xl flex flex-col items-center justify-center p-6 bg-[#F5F5F7]/30 hover:bg-[#FF6B00]/5 hover:border-[#FF6B00] transition-all cursor-pointer group relative z-10"
-            onClick={handleDropZoneClick}
-            onDrop={handleDrop}
-            onDragOver={(e) => e.preventDefault()}
-          >
-            <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.zip" className="hidden" onChange={(e) => handleFileUpload(e.target.files[0])} />
-            <Upload size={32} className="text-[#FF6B00] mb-3 group-hover:scale-110 transition-transform drop-shadow-[0_0_8px_rgba(255,107,0,0.5)]" />
-            <p className="text-gray-900 font-bold mb-1">Drag & drop files here</p>
-            <p className="text-xs text-gray-500 font-medium">Supports PDF, DOCX, bulk ZIP</p>
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <p className="text-xs text-[#FF6B00] font-semibold mt-2">Uploading {uploadedName}...</p>
-            )}
-=======
           {/* Hidden file input */}
           <input
             ref={fileInputRef}
@@ -564,7 +506,6 @@ const Sources = () => {
             className="hidden"
             onChange={handleFileInputChange}
           />
->>>>>>> origin/god
 
           <div
             className={`flex-1 min-h-[160px] border-2 border-dashed rounded-xl flex flex-col items-center justify-center p-6 transition-all relative z-10
