@@ -1,128 +1,229 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import GlassCard from '../components/ui/GlassCard';
+import OrangeButton from '../components/ui/OrangeButton';
+import { 
+  Cpu, Webhook, Users, Bell, Palette, Shield, Download, Trash2, Key, ChevronRight 
+} from 'lucide-react';
 
-export default function Settings() {
-  const [activeTab, setActiveTab] = useState('general');
-  const [values, setValues] = useState(['Ownership', 'Move Fast', 'Data-Driven', 'Remote-First', 'Continuous Learning']);
-  const [newValue, setNewValue] = useState('');
+const Settings = () => {
+  const [activeTab, setActiveTab] = useState('ai');
+  const [sensitivity, setSensitivity] = useState(85);
 
-  const addValue = () => {
-    if (newValue.trim() && values.length < 10) {
-      setValues([...values, newValue.trim()]);
-      setNewValue('');
-    }
-  };
+  const TABS = [
+    { id: 'ai', icon: <Cpu size={18}/>, label: 'AI Configuration' },
+    { id: 'integrations', icon: <Webhook size={18}/>, label: 'Integrations' },
+    { id: 'team', icon: <Users size={18}/>, label: 'Team Members' },
+    { id: 'notifications', icon: <Bell size={18}/>, label: 'Notifications' },
+    { id: 'branding', icon: <Palette size={18}/>, label: 'Branding' },
+    { id: 'privacy', icon: <Shield size={18}/>, label: 'Data & Privacy' }
+  ];
 
   return (
-    <div className="page-enter">
-      <div className="section-header stagger-1">
-        <div>
-          <h1>Settings</h1>
-          <p className="section-subtitle">Configure integrations, company values, and platform preferences</p>
+    <div className="p-8 h-full flex flex-col overflow-y-auto custom-scrollbar">
+      
+      {/* ━━━ HEADER ━━━ */}
+      <div className="mb-8 border-b border-glass-border pb-6">
+        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">System Settings</h1>
+        <p className="text-gray-500 font-medium mt-1">Configure TalentOS workspace parameters.</p>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-8 flex-1">
+        
+        {/* SETTINGS SIDEBAR MENU */}
+        <div className="w-full md:w-64 flex-shrink-0 space-y-2">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all font-medium text-sm ${
+                activeTab === tab.id 
+                  ? 'bg-[#FF6B00]/20 text-[#FF6B00] shadow-[inset_0_0_10px_rgba(255,107,0,0.1)] border border-[#FF6B00]/30' 
+                  : 'text-gray-500 hover:bg-white hover:text-gray-900 border border-transparent'
+              }`}
+            >
+              <div className="flex items-center">
+                <span className="mr-3">{tab.icon}</span> {tab.label}
+              </div>
+              {activeTab === tab.id && <ChevronRight size={16} />}
+            </button>
+          ))}
+        </div>
+
+        {/* SETTINGS CONTENT AREA */}
+        <div className="flex-1 max-w-3xl">
+          
+          {/* AI CONFIGURATION */}
+          {activeTab === 'ai' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">AI Configuration</h2>
+              
+              <GlassCard className="p-6">
+                 <h3 className="text-sm font-bold text-[#FF6B00] tracking-wider uppercase mb-4 flex items-center">
+                   <Key size={16} className="mr-2"/> Anthropic API Connection
+                 </h3>
+                 <p className="text-gray-500 text-sm mb-4">
+                   TalentOS requires a Claude API key to power semantic search and automated resume parsing.
+                 </p>
+                 <div className="flex space-x-3 mb-2">
+                   <input type="password" value="sk-ant-api03-***************************************" readOnly className="flex-1 bg-[#F5F5F7] border border-glass-border rounded-xl px-4 py-3 text-gray-500 font-mono focus:outline-none" />
+                   <OrangeButton className="font-bold">Update Key</OrangeButton>
+                 </div>
+                 <p className="text-xs text-gray-400">Using model: claude-3-sonnet-20240229</p>
+              </GlassCard>
+
+              <GlassCard className="p-6">
+                 <h3 className="text-sm font-bold text-gray-900 mb-2">Semantic Match Sensitivity</h3>
+                 <p className="text-gray-500 text-sm mb-6">Adjust how strictly the AI requires exact skill matches versus conceptual overlap.</p>
+                 
+                 <div className="mb-4">
+                   <div className="flex justify-between text-sm font-bold text-gray-900 mb-3">
+                      <span>Broad Conceptual</span>
+                      <span className="text-[#FF6B00]">{sensitivity}% Strictness</span>
+                   </div>
+                   <input 
+                     type="range" min="0" max="100" 
+                     value={sensitivity} onChange={(e) => setSensitivity(e.target.value)}
+                     className="w-full h-2 bg-[#F5F5F7] rounded-lg appearance-none cursor-pointer accent-[#FF6B00]" 
+                   />
+                 </div>
+                 <div className="flex justify-between text-xs text-gray-400">
+                    <span>Focuses on potential & capability</span>
+                    <span>Requires exact keyword combinations</span>
+                 </div>
+              </GlassCard>
+            </div>
+          )}
+
+          {/* INTEGRATIONS */}
+          {activeTab === 'integrations' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Connected Sources</h2>
+              <GlassCard className="p-6">
+                 <div className="grid grid-cols-1 gap-4">
+                   {['Gmail', 'LinkedIn', 'Greenhouse'].map(Integration => (
+                     <div key={Integration} className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-glass-border">
+                       <div>
+                         <h4 className="text-gray-900 font-bold">{Integration}</h4>
+                         <p className="text-gray-500 text-xs mt-1">Status: <span className="text-green-500">Connected</span></p>
+                       </div>
+                       <OrangeButton variant="outline" className="text-xs py-1.5 border-[#636366] text-gray-500 hover:text-gray-900 hover:border-[#FF6B00]">Configure</OrangeButton>
+                     </div>
+                   ))}
+                 </div>
+                 <div className="mt-4 pt-4 border-t border-glass-border">
+                   <OrangeButton variant="ghost" className="w-full py-2 border border-dashed border-[#FF6B00]/40 text-[#FF6B00] hover:bg-[#FF6B00]/10">
+                     + Add New Integration
+                   </OrangeButton>
+                 </div>
+              </GlassCard>
+            </div>
+          )}
+
+          {/* TEAM MEMBERS */}
+          {activeTab === 'team' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+               <div className="flex justify-between items-center mb-6">
+                 <h2 className="text-xl font-bold text-gray-900">Team Members</h2>
+                 <OrangeButton className="text-sm py-2">Invite Member</OrangeButton>
+               </div>
+               <GlassCard noPadding className="overflow-hidden">
+                 <table className="w-full text-left">
+                   <thead className="bg-white/80 border-b border-glass-border">
+                     <tr className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                       <th className="px-6 py-4">User</th>
+                       <th className="px-6 py-4">Role</th>
+                       <th className="px-6 py-4">Actions</th>
+                     </tr>
+                   </thead>
+                   <tbody className="divide-y divide-glass-border/40 text-sm">
+                     <tr className="hover:bg-white/5 transition-colors">
+                       <td className="px-6 py-4 text-gray-900 font-bold">Sarah Admin <p className="text-gray-500 text-xs font-normal">sarah@talentos.ai</p></td>
+                       <td className="px-6 py-4"><Badge className="bg-[#FF6B00]/20 text-[#FF6B00] border-none">Workspace Owner</Badge></td>
+                       <td className="px-6 py-4 text-gray-400">—</td>
+                     </tr>
+                     <tr className="hover:bg-white/5 transition-colors">
+                       <td className="px-6 py-4 text-gray-900 font-bold">David Recruiter <p className="text-gray-500 text-xs font-normal">david@talentos.ai</p></td>
+                       <td className="px-6 py-4 text-gray-500">Recruiter</td>
+                       <td className="px-6 py-4 text-[#FF6B00] hover:text-gray-900 cursor-pointer font-medium">Edit</td>
+                     </tr>
+                   </tbody>
+                 </table>
+               </GlassCard>
+            </div>
+          )}
+
+          {/* NOTIFICATIONS */}
+          {activeTab === 'notifications' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+               <h2 className="text-xl font-bold text-gray-900 mb-6">Notification Preferences</h2>
+               <GlassCard className="p-6 space-y-6">
+                 {[
+                   { title: 'New Candidate Applications', desc: 'Alert when a new resume is parsed.' },
+                   { title: 'High AI Matches (90%+)', desc: 'Notify immediately when a top-tier candidate applies.' },
+                   { title: 'Pipeline Stagnation', desc: 'Alert if candidate hasn\'t moved in 5 days.' },
+                   { title: 'Daily Digest', desc: 'Morning summary of all hiring activity.' }
+                 ].map((Pref, i) => (
+                   <div key={i} className="flex justify-between items-center">
+                     <div>
+                       <h4 className="text-gray-900 font-bold text-sm">{Pref.title}</h4>
+                       <p className="text-gray-500 text-xs mt-1">{Pref.desc}</p>
+                     </div>
+                     <div className="w-10 h-5 bg-[#F5F5F7] border border-glass-border rounded-full relative cursor-pointer" onClick={(e) => {
+                       const el = e.currentTarget;
+                       if (el.classList.contains('bg-[#FF6B00]')) {
+                         el.classList.remove('bg-[#FF6B00]', 'border-[#FF6B00]', 'shadow-[0_0_8px_rgba(255,107,0,0.4)]');
+                         el.classList.add('bg-[#F5F5F7]', 'border-glass-border');
+                         el.children[0].classList.remove('right-0.5', 'bg-white');
+                         el.children[0].classList.add('left-0.5', 'bg-[#636366]');
+                       } else {
+                         el.classList.remove('bg-[#F5F5F7]', 'border-glass-border');
+                         el.classList.add('bg-[#FF6B00]', 'border-[#FF6B00]', 'shadow-[0_0_8px_rgba(255,107,0,0.4)]');
+                         el.children[0].classList.remove('left-0.5', 'bg-[#636366]');
+                         el.children[0].classList.add('right-0.5', 'bg-white');
+                       }
+                     }}>
+                       <div className="w-4 h-4 bg-white rounded-full absolute right-0.5 top-0.5 transition-all shadow-sm"></div>
+                     </div>
+                   </div>
+                 ))}
+               </GlassCard>
+            </div>
+          )}
+
+          {/* DATA & PRIVACY */}
+          {activeTab === 'privacy' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+               <h2 className="text-xl font-bold text-gray-900 mb-6">Data & Privacy</h2>
+               
+               <GlassCard className="p-6 mb-6">
+                 <h3 className="text-gray-900 font-bold mb-2">Data Export</h3>
+                 <p className="text-gray-500 text-sm mb-4">Download a copy of all workspace candidate data, metrics, and settings in JSON/CSV format.</p>
+                 <button className="glass-panel text-gray-900 font-semibold py-2 px-4 rounded-xl flex items-center hover:bg-white/10 transition-colors">
+                   <Download size={16} className="mr-2"/> Export Workspace Data
+                 </button>
+               </GlassCard>
+
+               <GlassCard className="p-6 border-red-500/30 bg-red-500/5">
+                 <h3 className="text-red-500 font-bold mb-2">Danger Zone</h3>
+                 <p className="text-gray-500 text-sm mb-4">Irreversibly delete this workspace and all associated candidate data.</p>
+                 <button className="bg-red-500 text-gray-900 font-bold py-2 px-4 rounded-xl flex items-center shadow-[0_4px_16px_rgba(239,68,68,0.3)] hover:bg-red-600 transition-colors">
+                   <Trash2 size={16} className="mr-2"/> Delete Workspace
+                 </button>
+               </GlassCard>
+            </div>
+          )}
+
         </div>
       </div>
-
-      <div className="tabs stagger-2">
-        <button className={`tab ${activeTab === 'general' ? 'active' : ''}`} onClick={() => setActiveTab('general')}>General</button>
-        <button className={`tab ${activeTab === 'integrations' ? 'active' : ''}`} onClick={() => setActiveTab('integrations')}>Integrations</button>
-        <button className={`tab ${activeTab === 'values' ? 'active' : ''}`} onClick={() => setActiveTab('values')}>Company Values</button>
-        <button className={`tab ${activeTab === 'notifications' ? 'active' : ''}`} onClick={() => setActiveTab('notifications')}>Notifications</button>
-      </div>
-
-      <div className="stagger-3">
-        {activeTab === 'general' && (
-          <div className="glass-card-static" style={{ maxWidth: '600px' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, marginBottom: '20px' }}>General Settings</h3>
-            <div className="input-group"><label>Company Name</label><input className="input" defaultValue="TalentOS Inc." /></div>
-            <div className="input-group"><label>Ghost Detection Threshold (days)</label><input className="input" type="number" defaultValue="14" /></div>
-            <div className="input-group"><label>Passive Pool Minimum Score</label><input className="input" type="number" defaultValue="60" /></div>
-            <div className="input-group"><label>Default Currency</label>
-              <select className="input"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>CAD</option></select>
-            </div>
-            <button className="btn btn-primary" style={{ marginTop: '8px' }}>Save Changes</button>
-          </div>
-        )}
-
-        {activeTab === 'integrations' && (
-          <div style={{ maxWidth: '600px' }}>
-            {[
-              { name: 'Gmail', icon: '📧', desc: 'Automatically scan inbox for resume attachments', status: 'Connected', color: 'var(--accent-mint)' },
-              { name: 'Microsoft Outlook', icon: '📬', desc: 'Integrate with Outlook for email parsing', status: 'Not Connected', color: 'var(--text-tertiary)' },
-              { name: 'LinkedIn', icon: '💼', desc: 'Import candidate profiles from LinkedIn', status: 'Connected', color: 'var(--accent-mint)' },
-              { name: 'BambooHR', icon: '🎋', desc: 'Sync candidate data via webhook', status: 'Not Connected', color: 'var(--text-tertiary)' },
-              { name: 'Workday', icon: '⚡', desc: 'Receive candidate submissions via API', status: 'Not Connected', color: 'var(--text-tertiary)' },
-              { name: 'Slack', icon: '💬', desc: 'Get notifications for pipeline updates', status: 'Connected', color: 'var(--accent-mint)' },
-            ].map((integration, i) => (
-              <div key={i} className="glass-card" style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <span style={{ fontSize: '1.5rem' }}>{integration.icon}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600 }}>{integration.name}</div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.82rem' }}>{integration.desc}</div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '0.78rem', color: integration.color }}>{integration.status}</span>
-                  <button className={`btn btn-sm ${integration.status === 'Connected' ? 'btn-secondary' : 'btn-primary'}`}>
-                    {integration.status === 'Connected' ? 'Configure' : 'Connect'}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === 'values' && (
-          <div className="glass-card-static" style={{ maxWidth: '600px' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, marginBottom: '8px' }}>Company Values</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginBottom: '20px' }}>Define your company values (5-10). These are used by the Culture Fit Analyzer to score candidates.</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-              {values.map((v, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-tertiary)', width: '24px' }}>{i+1}.</span>
-                  <span style={{ flex: 1 }}>{v}</span>
-                  <button className="btn btn-ghost btn-sm" style={{ color: 'var(--accent-red)', padding: '4px 8px' }} onClick={() => setValues(values.filter((_, j) => j !== i))}>✕</button>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <input className="input" value={newValue} onChange={e => setNewValue(e.target.value)} placeholder="Add a company value..." onKeyDown={e => e.key === 'Enter' && addValue()} />
-              <button className="btn btn-primary" onClick={addValue}>Add</button>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'notifications' && (
-          <div className="glass-card-static" style={{ maxWidth: '600px' }}>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 700, marginBottom: '20px' }}>Notification Preferences</h3>
-            {[
-              { label: 'New candidate ingested', desc: 'When a candidate is added via any source' },
-              { label: 'Ghost candidate detected', desc: 'When a candidate goes silent beyond threshold' },
-              { label: 'Pipeline stage change', desc: 'When a candidate moves between stages' },
-              { label: 'Passive pool resurface', desc: 'When AI surfaces a passive candidate for a new job' },
-              { label: 'Duplicate detected', desc: 'When a potential duplicate candidate is found' },
-            ].map((notif, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border-subtle)' }}>
-                <div>
-                  <div style={{ fontWeight: 500, fontSize: '0.88rem' }}>{notif.label}</div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.78rem' }}>{notif.desc}</div>
-                </div>
-                <label style={{ position: 'relative', display: 'inline-block', width: '44px', height: '24px' }}>
-                  <input type="checkbox" defaultChecked={i < 3} style={{ opacity: 0, width: 0, height: 0 }} />
-                  <span style={{
-                    position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0,
-                    backgroundColor: i < 3 ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
-                    borderRadius: '12px', transition: '0.3s',
-                  }}>
-                    <span style={{
-                      position: 'absolute', height: '18px', width: '18px',
-                      left: i < 3 ? '23px' : '3px', bottom: '3px',
-                      backgroundColor: 'white', borderRadius: '50%', transition: '0.3s'
-                    }}></span>
-                  </span>
-                </label>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.2); border-radius: 10px; }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb { background: rgba(255, 107, 0, 0.5); }
+      `}} />
     </div>
   );
-}
+};
+
+export default Settings;

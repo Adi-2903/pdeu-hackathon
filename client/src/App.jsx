@@ -1,122 +1,124 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Routes, Route, NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import Sidebar from './components/ui/Sidebar';
+import TopHeader from './components/layout/TopHeader';
 import Dashboard from './pages/Dashboard';
 import Candidates from './pages/Candidates';
-import CandidateProfile from './pages/CandidateProfile';
-import Jobs from './pages/Jobs';
-import JobDetail from './pages/JobDetail';
 import AISearch from './pages/AISearch';
-import Analytics from './pages/Analytics';
+import Pipeline from './pages/Pipeline';
+import Sources from './pages/Sources';
 import Settings from './pages/Settings';
-import Copilot from './components/Copilot';
-import CommandPalette from './components/CommandPalette';
+import { ToastProvider, useToast } from './context/ToastContext';
+import AIChatAssistant from './components/ui/AIChatAssistant';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
-const navItems = [
-  { section: 'Overview' },
-  { path: '/', icon: '◉', label: 'Dashboard' },
-  { path: '/candidates', icon: '◎', label: 'Candidates', badge: null },
-  { path: '/jobs', icon: '◈', label: 'Jobs' },
-  { section: 'Intelligence' },
-  { path: '/ai-search', icon: '⬡', label: 'AI Search' },
-  { path: '/analytics', icon: '◇', label: 'Analytics' },
-  { section: 'System' },
-  { path: '/settings', icon: '⚙', label: 'Settings' },
-];
-
-export default function App() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [showCmdPalette, setShowCmdPalette] = useState(false);
-  const [candidateCount, setCandidateCount] = useState(0);
-  const navigate = useNavigate();
-
+const AppContent = () => {
+  useKeyboardShortcuts();
+  const { addToast } = useToast();
+  
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/analytics/dashboard')
-      .then(r => r.json())
-      .then(d => setCandidateCount(d.stats?.totalCandidates || 0))
-      .catch(() => {});
-  }, []);
-
-  const handleKeyDown = useCallback((e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      e.preventDefault();
-      setShowCmdPalette(prev => !prev);
-    }
-    if (e.key === 'Escape') setShowCmdPalette(false);
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    setTimeout(() => {
+      addToast("Welcome to TalentOS. Keyboard shortcuts are active (Cmd+K).", "ai", 5000);
+    }, 4500);
+  }, [addToast]);
 
   return (
-    <div className="app-layout">
-      <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        <div className="sidebar-header">
-          <div className="sidebar-logo">T</div>
-          <div className="sidebar-logo-text">
-            Talent<span>OS</span>
-          </div>
-        </div>
-        <button className="sidebar-collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
-          {sidebarCollapsed ? '▶' : '◀'}
-        </button>
-        <nav className="sidebar-nav">
-          {navItems.map((item, i) => {
-            if (item.section) {
-              return <div key={i} className="sidebar-section-title sidebar-label">{item.section}</div>;
-            }
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.path === '/'}
-                className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="sidebar-label">{item.label}</span>
-                {item.label === 'Candidates' && candidateCount > 0 && (
-                  <span className="nav-badge sidebar-label">{candidateCount}</span>
-                )}
-              </NavLink>
-            );
-          })}
-        </nav>
-      </aside>
-
-      <div className="main-content">
-        <header className="topbar">
-          <div className="topbar-search" onClick={() => setShowCmdPalette(true)}>
-            <span className="search-icon">⌕</span>
-            <input type="text" placeholder="Search candidates, jobs, or actions..." readOnly />
-            <kbd>Ctrl+K</kbd>
-          </div>
-          <div className="topbar-actions">
-            <button className="topbar-action-btn" title="Notifications">
-              🔔
-              <span className="notification-dot"></span>
-            </button>
-            <button className="topbar-action-btn" title="Help">?</button>
-            <div className="topbar-avatar">AT</div>
-          </div>
-        </header>
-
-        <div className="page-content">
+    <div className="flex h-screen text-gray-900 font-sans overflow-hidden p-0 md:p-4 md:gap-6 bg-[var(--color-dark-bg)]">
+      <Sidebar />
+      <main className="flex-1 overflow-hidden w-full flex flex-col pt-4 md:pt-0 pb-20 md:pb-0 pr-4 md:pr-0">
+        <TopHeader />
+        <div className="flex-1 overflow-x-hidden overflow-y-auto w-full custom-scrollbar rounded-3xl">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/candidates" element={<Candidates />} />
-            <Route path="/candidates/:id" element={<CandidateProfile />} />
-            <Route path="/jobs" element={<Jobs />} />
-            <Route path="/jobs/:id" element={<JobDetail />} />
             <Route path="/ai-search" element={<AISearch />} />
-            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/pipeline" element={<Pipeline />} />
+            <Route path="/sources" element={<Sources />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/analytics" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
-      </div>
-
-      <Copilot />
-      {showCmdPalette && <CommandPalette onClose={() => setShowCmdPalette(false)} onNavigate={(path) => { navigate(path); setShowCmdPalette(false); }} />}
+      </main>
+      <AIChatAssistant />
     </div>
   );
-}
+};
+
+// SPLASH SCREEN
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSplash(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <Router>
+      <ToastProvider>
+        <AnimatePresence mode="wait">
+          {showSplash ? (
+            <motion.div 
+              key="splash"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 1.05, filter: 'blur(20px)' }}
+              transition={{ duration: 0.8, ease: 'easeInOut' }}
+              className="fixed inset-0 z-[999] bg-white flex flex-col items-center justify-center"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                className="relative"
+              >
+                <div className="absolute inset-0 bg-[#FF6B00] blur-[120px] opacity-15 rounded-full animate-pulse"></div>
+                
+                <div className="flex items-center text-gray-900 text-7xl font-black tracking-tighter z-10 relative">
+                  <div className="w-16 h-16 mr-6 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#FF8C42] shadow-[0_8px_32px_rgba(255,107,0,0.35)] flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-white/20 blur-md transform -skew-x-12 translate-x-[-150%] animate-[shimmer_2s_infinite]"></div>
+                     <span className="text-gray-900 text-4xl mr-1">✦</span>
+                  </div>
+                  Talent<span className="text-[#FF6B00]">OS</span>
+                </div>
+              </motion.div>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+                className="mt-8 text-gray-400 font-medium tracking-widest uppercase text-sm"
+              >
+                Initializing Core Neural Engine
+              </motion.p>
+              
+              <motion.div
+                 initial={{ width: 0 }}
+                 animate={{ width: 250 }}
+                 transition={{ delay: 1, duration: 1.5, ease: 'easeInOut' }}
+                 className="h-1 bg-gradient-to-r from-[#FF6B00] to-[#FF8C42] rounded-full mt-6 shadow-[0_0_12px_rgba(255,107,0,0.3)]"
+              ></motion.div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="app"
+              initial={{ opacity: 0, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 0.5 }}
+              className="h-full w-full"
+            >
+              <AppContent />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </ToastProvider>
+      <style>{`
+        @keyframes shimmer {
+          100% { transform: skewX(-12deg) translateX(150%); }
+        }
+      `}</style>
+    </Router>
+  );
+};
+
+export default App;
