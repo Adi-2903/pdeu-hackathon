@@ -811,9 +811,8 @@ router.post('/bulk/action', (req, res) => {
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
 
-<<<<<<< HEAD
-=======
-// ΓöÇΓöÇ Semantic Search & Indexing ΓöÇΓöÇ
+
+// ── Semantic Search & Indexing ──
 
 /**
  * Compiles a rich text representation of a candidate for embedding.
