@@ -4,6 +4,7 @@ const { getDb } = require('../database');
 const { v4: uuidv4 } = require('uuid');
 const aiSimulator = require('../utils/aiSimulator');
 const vectorEngine = require('../utils/vector-engine');
+const { runDedup, mergeCandidates, buildCandidateText, getEmbedding } = require('../dedup');
 
 function buildFrontendCandidate(c, db) {
   const skills = (db.data.candidate_skills || []).filter(s => s.candidate_id === c.id).map(s => s.skill_name);
@@ -58,6 +59,99 @@ function buildFrontendCandidate(c, db) {
   };
 }
 
+
+// ── Semantic Search & Indexing ──
+// NOTE: These must be BEFORE the GET /:id route to avoid being shadowed
+
+/**
+ * Compiles a rich text representation of a candidate for embedding.
+ */
+function getCandidateSearchText(c, db) {
+  const skills = (db.data.candidate_skills || []).filter(s => s.candidate_id === c.id).map(s => s.skill_name).join(', ');
+  const exp = (db.data.work_experience || []).filter(w => w.candidate_id === c.id).map(w => `${w.title} at ${w.company}: ${w.description}`).join('. ');
+  return `${c.full_name}. ${c.current_role} at ${c.current_company}. Skills: ${skills}. Summary: ${c.summary}. Exp: ${exp}`.substring(0, 5000);
+}
+
+/**
+ * Index all candidates: Generate and store embeddings.
+ */
+router.post('/index', async (req, res) => {
+  try {
+    const db = getDb();
+    const candidates = db.data.candidates || [];
+    console.log(`Indexing ${candidates.length} candidates...`);
+
+    if (!db.data.candidate_embeddings) db.data.candidate_embeddings = [];
+
+    for (const c of candidates) {
+      const text = getCandidateSearchText(c, db);
+      const embedding = await vectorEngine.generateEmbedding(text);
+
+      // Store in separate table (legacy support)
+      const idx = db.data.candidate_embeddings.findIndex(e => e.candidate_id === c.id);
+      if (idx >= 0) {
+        db.data.candidate_embeddings[idx].vector = embedding;
+        db.data.candidate_embeddings[idx].updated_at = new Date().toISOString();
+      } else {
+        db.data.candidate_embeddings.push({
+          candidate_id: c.id,
+          vector: embedding,
+          created_at: new Date().toISOString()
+        });
+      }
+
+      // ALSO store directly on candidate for dedup engine as requested
+      const cIdx = db.data.candidates.findIndex(xc => xc.id === c.id);
+      if (cIdx >= 0) {
+        db.data.candidates[cIdx].embedding = embedding;
+      }
+    }
+
+    db.save();
+    res.json({ status: 'success', message: `Indexed ${candidates.length} candidates.` });
+  } catch (err) {
+    console.error('Indexing Error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
+
+/**
+ * Semantic Search: Find candidates by conceptual similarity.
+ */
+router.get('/semantic-search', async (req, res) => {
+  try {
+    const { query, limit = 10 } = req.query;
+    if (!query) return res.status(400).json({ error: { message: 'Query is required' } });
+
+    const db = getDb();
+    const queryEmbedding = await vectorEngine.generateEmbedding(query);
+    const embeddings = db.data.candidate_embeddings || [];
+
+    const results = embeddings.map(e => {
+      const similarity = vectorEngine.cosineSimilarity(queryEmbedding, e.vector);
+      return { candidate_id: e.candidate_id, score: similarity };
+    });
+
+    // Sort by similarity score descending
+    results.sort((a, b) => b.score - a.score);
+
+    const topResults = results.slice(0, parseInt(limit));
+    const enriched = topResults.map(r => {
+      const c = db.data.candidates.find(x => x.id === r.candidate_id);
+      if (!c) return null;
+      return {
+        ...buildFrontendCandidate(c, db),
+        match_score: Math.round(r.score * 100)
+      };
+    }).filter(Boolean);
+
+    res.json({ status: 'success', data: enriched });
+  } catch (err) {
+    console.error('Semantic Search Error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
+
 router.get('/', (req, res) => {
   try {
     const db = getDb();
@@ -84,6 +178,56 @@ router.get('/', (req, res) => {
 
     res.json({ data: enriched, pagination: { total, page: p, limit: l, pages: Math.ceil(total / l) } });
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
+});
+
+// ── Duplicate Management ──
+
+router.get('/duplicates', (req, res) => {
+  try {
+    const db = getDb();
+    const flagged = db.data.candidates.filter(c => c.needsReview === true);
+    const result = flagged.map(c => {
+      const potentialMatch = db.data.candidates.find(x => x.id === c.reviewMatchId);
+      return {
+        candidate: buildFrontendCandidate(c, db),
+        potentialMatch: potentialMatch ? buildFrontendCandidate(potentialMatch, db) : null,
+        score: c.reviewScore,
+        rawId: c.id
+      };
+    });
+    res.json({ count: result.length, items: result });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/duplicates/:id/resolve', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action } = req.body;
+    const db = getDb();
+    
+    // Use raw array for removal/mutation
+    const candidateIdx = db.data.candidates.findIndex(c => c.id === id);
+    if (candidateIdx === -1) return res.status(404).json({ error: 'Candidate not found' });
+    const candidate = db.data.candidates[candidateIdx];
+
+    if (action === 'merge' && candidate.reviewMatchId) {
+      const existing = db.data.candidates.find(c => c.id === candidate.reviewMatchId);
+      if (existing) {
+        mergeCandidates(existing, candidate, candidate.reviewScore, 'manual_review');
+        // Remove the flagged duplicate
+        db.data.candidates.splice(candidateIdx, 1);
+        db.save();
+        return res.json({ result: 'merged', survivingId: existing.id });
+      }
+    }
+
+    // keep_separate — just clear the review flag
+    candidate.needsReview = false;
+    candidate.reviewMatchId = null;
+    candidate.reviewScore = null;
+    db.save();
+    res.json({ result: 'kept_separate', candidateId: id });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 router.get('/compare/multi', (req, res) => {
@@ -119,21 +263,84 @@ router.get('/:id', (req, res) => {
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const db = getDb();
-    const id = uuidv4();
     const { full_name, email, phone, location, linkedin_url, github_url, portfolio_url, summary, seniority_level, years_of_experience, current_role, current_company, source, skills, work_experience, education, resume_text, cover_letter } = req.body;
-    const candidate = { id, full_name, email, phone, location, linkedin_url, github_url, portfolio_url, summary, seniority_level, years_of_experience: years_of_experience || 0, current_role, current_company, source: source || 'Upload', status: 'Active', overall_score: 0, ghost_status: 0, in_passive_pool: 0, resume_text, cover_letter, avatar_url: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
-    db.insert('candidates', candidate);
-    if (skills) skills.forEach(s => db.insert('candidate_skills', { id: uuidv4(), candidate_id: id, skill_name: s.name || s.skill_name, category: s.category || 'Other', proficiency_level: s.proficiency || 3 }));
-    if (work_experience) work_experience.forEach(w => db.insert('work_experience', { id: uuidv4(), candidate_id: id, ...w }));
-    if (education) education.forEach(e => db.insert('education', { id: uuidv4(), candidate_id: id, ...e }));
-    db.insert('activity_log', { id: uuidv4(), candidate_id: id, action: 'Candidate Created', details: `${full_name} added via ${source || 'Upload'}`, actor: 'System', created_at: new Date().toISOString() });
+    
+    const newCand = { 
+      full_name, 
+      email, 
+      phone, 
+      location, 
+      linkedin_url, 
+      github_url, 
+      portfolio_url, 
+      summary, 
+      seniority_level, 
+      years_of_experience: years_of_experience || 0, 
+      current_role, 
+      current_company, 
+      source: source || 'Upload', 
+      status: 'Active', 
+      overall_score: 0, 
+      ghost_status: 0, 
+      in_passive_pool: 0, 
+      resume_text, 
+      cover_letter, 
+      avatar_url: null, 
+      created_at: new Date().toISOString(), 
+      updated_at: new Date().toISOString() 
+    };
+
+    // 1. Generate embedding for new candidate
+    newCand.embedding = await getEmbedding(buildCandidateText(newCand));
+
+    // 2. Run dedup (enrich candidates with skills/companies for better vector matching)
+    const enrichedCandidates = db.data.candidates.map(c => ({
+      ...c,
+      skills: (db.data.candidate_skills || []).filter(s => s.candidate_id === c.id).map(s => s.skill_name),
+      companies: (db.data.work_experience || []).filter(w => w.candidate_id === c.id).map(w => w.company_name)
+    }));
+    
+    const { action, matchedId, score, reason } = await runDedup(newCand, enrichedCandidates);
+
+    // 3. Branch on action
+    if (action === 'merge') {
+      const existing = db.data.candidates.find(c => c.id === matchedId);
+      mergeCandidates(existing, newCand, score, reason);
+      db.save();
+      return res.json({ result: 'merged', candidateId: existing.id, score, reason });
+    }
+    
+    if (action === 'review') {
+      newCand.needsReview = true;
+      newCand.reviewMatchId = matchedId;
+      newCand.reviewScore = score;
+      newCand.id = uuidv4();
+      db.insert('candidates', newCand);
+      db.save();
+      return res.json({ result: 'flagged_review', candidateId: newCand.id, score, reason });
+    }
+
+    // action === 'create'
+    newCand.id = uuidv4();
+    db.insert('candidates', newCand);
+    
+    if (skills) skills.forEach(s => db.insert('candidate_skills', { id: uuidv4(), candidate_id: newCand.id, skill_name: s.name || s.skill_name, category: s.category || 'Other', proficiency_level: s.proficiency || 3 }));
+    if (work_experience) work_experience.forEach(w => db.insert('work_experience', { id: uuidv4(), candidate_id: newCand.id, ...w }));
+    if (education) education.forEach(e => db.insert('education', { id: uuidv4(), candidate_id: newCand.id, ...e }));
+    
+    db.insert('activity_log', { id: uuidv4(), candidate_id: newCand.id, action: 'Candidate Created', details: `${full_name} added via ${source || 'Upload'}`, actor: 'System', created_at: new Date().toISOString() });
     db.save();
-    res.status(201).json({ data: { id, full_name, email }, message: 'Candidate created' });
-  } catch (err) { res.status(500).json({ error: { message: err.message } }); }
+    
+    res.status(201).json({ result: 'created', data: { id: newCand.id, full_name, email }, message: 'Candidate created', score, reason });
+  } catch (err) { 
+    console.error('Post Candidate Error:', err);
+    res.status(500).json({ error: { message: err.message } }); 
+  }
 });
+
 
 router.put('/:id', (req, res) => {
   try {
@@ -438,90 +645,6 @@ router.post('/bulk/action', (req, res) => {
     db.save();
     res.json({ message: `Bulk action on ${candidate_ids.length} candidates` });
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
-});
-
-// ── Semantic Search & Indexing ──
-
-/**
- * Compiles a rich text representation of a candidate for embedding.
- */
-function getCandidateSearchText(c, db) {
-  const skills = (db.data.candidate_skills || []).filter(s => s.candidate_id === c.id).map(s => s.skill_name).join(', ');
-  const exp = (db.data.work_experience || []).filter(w => w.candidate_id === c.id).map(w => `${w.title} at ${w.company}: ${w.description}`).join('. ');
-  return `${c.full_name}. ${c.current_role} at ${c.current_company}. Skills: ${skills}. Summary: ${c.summary}. Exp: ${exp}`.substring(0, 5000);
-}
-
-/**
- * Index all candidates: Generate and store embeddings.
- */
-router.post('/index', async (req, res) => {
-  try {
-    const db = getDb();
-    const candidates = db.data.candidates || [];
-    console.log(`Indexing ${candidates.length} candidates...`);
-
-    if (!db.data.candidate_embeddings) db.data.candidate_embeddings = [];
-
-    for (const c of candidates) {
-      const text = getCandidateSearchText(c, db);
-      const embedding = await vectorEngine.generateEmbedding(text);
-
-      const idx = db.data.candidate_embeddings.findIndex(e => e.candidate_id === c.id);
-      if (idx >= 0) {
-        db.data.candidate_embeddings[idx].vector = embedding;
-        db.data.candidate_embeddings[idx].updated_at = new Date().toISOString();
-      } else {
-        db.data.candidate_embeddings.push({
-          candidate_id: c.id,
-          vector: embedding,
-          created_at: new Date().toISOString()
-        });
-      }
-    }
-
-    db.save();
-    res.json({ status: 'success', message: `Indexed ${candidates.length} candidates.` });
-  } catch (err) {
-    console.error('Indexing Error:', err);
-    res.status(500).json({ error: { message: err.message } });
-  }
-});
-
-/**
- * Semantic Search: Find candidates by conceptual similarity.
- */
-router.get('/semantic-search', async (req, res) => {
-  try {
-    const { query, limit = 10 } = req.query;
-    if (!query) return res.status(400).json({ error: { message: 'Query is required' } });
-
-    const db = getDb();
-    const queryEmbedding = await vectorEngine.generateEmbedding(query);
-    const embeddings = db.data.candidate_embeddings || [];
-
-    const results = embeddings.map(e => {
-      const similarity = vectorEngine.cosineSimilarity(queryEmbedding, e.vector);
-      return { candidate_id: e.candidate_id, score: similarity };
-    });
-
-    // Sort by similarity score descending
-    results.sort((a, b) => b.score - a.score);
-
-    const topResults = results.slice(0, parseInt(limit));
-    const enriched = topResults.map(r => {
-      const c = db.data.candidates.find(x => x.id === r.candidate_id);
-      if (!c) return null;
-      return {
-        ...buildFrontendCandidate(c, db),
-        match_score: Math.round(r.score * 100)
-      };
-    }).filter(Boolean);
-
-    res.json({ status: 'success', data: enriched });
-  } catch (err) {
-    console.error('Semantic Search Error:', err);
-    res.status(500).json({ error: { message: err.message } });
-  }
 });
 
 module.exports = router;

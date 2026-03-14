@@ -9,6 +9,7 @@ import AISearch from './pages/AISearch';
 import Pipeline from './pages/Pipeline';
 import Sources from './pages/Sources';
 import Settings from './pages/Settings';
+import Duplicates from './pages/Duplicates';
 import { ToastProvider, useToast } from './context/ToastContext';
 import AIChatAssistant from './components/ui/AIChatAssistant';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
@@ -35,6 +36,7 @@ const AppContent = () => {
             <Route path="/ai-search" element={<AISearch />} />
             <Route path="/pipeline" element={<Pipeline />} />
             <Route path="/sources" element={<Sources />} />
+            <Route path="/duplicates" element={<Duplicates />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/analytics" element={<Navigate to="/" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
