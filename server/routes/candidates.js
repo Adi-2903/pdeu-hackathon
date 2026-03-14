@@ -356,6 +356,101 @@ router.get('/:id', (req, res) => {
   } catch (err) { res.status(500).json({ error: { message: err.message } }); }
 });
 
+// ── AI Resume Parsing via Groq ──
+router.post('/parse-resume', async (req, res) => {
+  try {
+    const { resumeText } = req.body;
+    if (!resumeText || resumeText.trim().length < 20) {
+      return res.status(400).json({ error: { message: 'Resume text is too short or empty. Please upload a valid PDF.' } });
+    }
+
+    const GROQ_API_KEY = process.env.GROQ_API_KEY;
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: { message: 'Groq API key not configured on server.' } });
+    }
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          {
+            role: 'system',
+            content: `You are a resume parser. Given the text content of a resume, extract structured information and return ONLY a raw JSON object with no markdown, no backticks, no explanation — just the JSON object. Use these exact fields:
+{
+  "name": "Full Name",
+  "email": "email@example.com",
+  "phone": "+1234567890",
+  "location": "City, State/Country",
+  "currentRole": "Current Job Title",
+  "experience": "X years",
+  "skills": ["skill1", "skill2", "skill3", "skill4", "skill5", "skill6"],
+  "education": "Degree, University",
+  "summary": "A 1-2 sentence professional summary.",
+  "linkedIn": "LinkedIn URL or empty string"
+}
+Rules:
+- skills array must have at most 6 items
+- summary must be at most 2 sentences
+- If a field cannot be determined, use an empty string
+- For experience, estimate from work history if not explicitly stated
+- Return ONLY the JSON object, nothing else`
+          },
+          {
+            role: 'user',
+            content: `Parse this resume:\n\n${resumeText.substring(0, 8000)}`
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 1000,
+      }),
+    });
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      console.error('Groq API error:', response.status, errBody);
+      return res.status(502).json({ error: { message: `Groq API error: ${response.status}` } });
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || '';
+
+    // Try to parse JSON from response (handle potential markdown wrapping)
+    let parsed;
+    try {
+      // Remove potential markdown code fences
+      const cleaned = content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+      parsed = JSON.parse(cleaned);
+    } catch (parseErr) {
+      console.error('Failed to parse Groq response:', content);
+      return res.status(502).json({ error: { message: 'AI returned invalid JSON. Please try again.' } });
+    }
+
+    // Validate and normalize
+    const result = {
+      name: parsed.name || '',
+      email: parsed.email || '',
+      phone: parsed.phone || '',
+      location: parsed.location || '',
+      currentRole: parsed.currentRole || '',
+      experience: parsed.experience || '',
+      skills: Array.isArray(parsed.skills) ? parsed.skills.slice(0, 6) : [],
+      education: parsed.education || '',
+      summary: parsed.summary || '',
+      linkedIn: parsed.linkedIn || '',
+    };
+
+    res.json({ data: result });
+  } catch (err) {
+    console.error('Resume parse error:', err);
+    res.status(500).json({ error: { message: err.message } });
+  }
+});
+
 // POST /candidates
 router.post('/', async (req, res) => {
   try {

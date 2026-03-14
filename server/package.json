@@ -9,18 +9,13 @@
     "seed": "node seed.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
     "@xenova/transformers": "^2.17.2",
-    "axios": "^1.13.6",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
     "express": "^4.22.1",
-    "multer": "^2.1.1",
+    "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.2",
-    "pdf-parse": "^2.4.5",
-    "proxy-agent": "^7.0.0",
     "puppeteer": "^24.39.1",
-    "sharp": "^0.34.5",
     "uuid": "^10.0.0"
   }
 }

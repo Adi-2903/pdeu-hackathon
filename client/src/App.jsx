@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from './components/ui/Sidebar';
 import TopHeader from './components/layout/TopHeader';
@@ -11,12 +11,27 @@ import Sources from './pages/Sources';
 import Settings from './pages/Settings';
 import Duplicates from './pages/Duplicates';
 import { ToastProvider, useToast } from './context/ToastContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/layout/ProtectedRoute';
+import Login from './pages/Login';
 import AIChatAssistant from './components/ui/AIChatAssistant';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+
+// Scroll to top of main content area on every route change
+const ScrollToTop = ({ scrollRef }) => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (scrollRef?.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+  }, [pathname, scrollRef]);
+  return null;
+};
 
 const AppContent = () => {
   useKeyboardShortcuts();
   const { addToast } = useToast();
+  const mainScrollRef = useRef(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -26,10 +41,11 @@ const AppContent = () => {
 
   return (
     <div className="flex h-screen text-gray-900 font-sans overflow-hidden p-0 md:p-4 md:gap-6 bg-[var(--color-dark-bg)]">
+      <ScrollToTop scrollRef={mainScrollRef} />
       <Sidebar />
       <main className="flex-1 overflow-hidden w-full flex flex-col pt-4 md:pt-0 pb-20 md:pb-0 pr-4 md:pr-0">
         <TopHeader />
-        <div className="flex-1 overflow-x-hidden overflow-y-auto w-full custom-scrollbar rounded-3xl">
+        <div ref={mainScrollRef} className="flex-1 overflow-x-hidden overflow-y-auto w-full custom-scrollbar rounded-3xl">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/candidates" element={<Candidates />} />
@@ -38,7 +54,6 @@ const AppContent = () => {
             <Route path="/sources" element={<Sources />} />
             <Route path="/duplicates" element={<Duplicates />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/analytics" element={<Navigate to="/" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
@@ -50,16 +65,25 @@ const AppContent = () => {
 
 // SPLASH SCREEN
 const App = () => {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(() => {
+    // Check if splash has already been shown in this session
+    return !sessionStorage.getItem('hasSeenSplash');
+  });
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (showSplash) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+        sessionStorage.setItem('hasSeenSplash', 'true');
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSplash]);
 
   return (
-    <Router>
-      <ToastProvider>
+    <AuthProvider>
+      <Router>
+        <ToastProvider>
         <AnimatePresence mode="wait">
           {showSplash ? (
             <motion.div
@@ -82,7 +106,7 @@ const App = () => {
                     <div className="absolute inset-0 bg-white/20 blur-md transform -skew-x-12 translate-x-[-150%] animate-[shimmer_2s_infinite]"></div>
                     <span className="text-gray-900 text-4xl mr-1">✦</span>
                   </div>
-                  Talent<span className="text-[#FF6B00]">OS</span>
+                  Hire<span className="text-[#FF6B00]">X</span>
                 </div>
               </motion.div>
               <motion.p
@@ -109,7 +133,12 @@ const App = () => {
               transition={{ duration: 0.5 }}
               className="h-full w-full"
             >
-              <AppContent />
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/*" element={<AppContent />} />
+                </Route>
+              </Routes>
             </motion.div>
           )}
         </AnimatePresence>
@@ -119,7 +148,8 @@ const App = () => {
           100% { transform: skewX(-12deg) translateX(150%); }
         }
       `}</style>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 };
 

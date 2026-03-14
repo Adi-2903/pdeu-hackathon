@@ -23,7 +23,6 @@ const navGroups = [
   {
     label: 'SYSTEM',
     items: [
-      { id: 'analytics', path: '/analytics', label: 'Analytics', icon: <BarChart3 size={18} /> },
       { id: 'settings', path: '/settings', label: 'Settings', icon: <Settings size={18} /> },
     ]
   }
