@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Timer, Users, Zap, Shield, AlertTriangle, 
   ChevronRight, ChevronLeft, Save, Flag, 
-  MessageSquare, Layout, Activity, Clock
+  MessageSquare, Layout, Activity, Clock,
+  FileText, Briefcase, GraduationCap, Award,
+  CheckCircle2, XCircle, Info, Download, ArrowLeft,
+  Search, Filter, Play, Pause, RotateCw
 } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import OrangeButton from '../components/ui/OrangeButton';
@@ -12,66 +16,61 @@ import { useToast } from '../context/ToastContext';
 import api from '../api';
 
 const InterviewPanel = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { addToast } = useToast();
   
-  // Phase 1: Interview State
-  const [candidate, setCandidate] = useState({
-    name: 'Alex Rivera',
-    role: 'Senior Software Engineer',
-    department: 'Computer Science',
-    id: 'cand_123'
-  });
-  
+  // ━━━ STATE ━━━
+  const [candidate, setCandidate] = useState(null);
+  const [questions, setQuestions] = useState([]);
+  const [categories, setCategories] = useState(['CS', 'Electrical', 'Behavioral', 'Logic']);
+  const [activeCategory, setActiveCategory] = useState('CS');
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
+  
   const [totalTime, setTotalTime] = useState(0);
   const [questionTime, setQuestionTime] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   
-  // Scoring State (P1 & P2 Persistence Logic)
   const [scores, setScores] = useState({
-    p1: { technical: 0, soft_skills: 0, clarity: 0 },
-    p2: { technical: 0, soft_skills: 0, clarity: 0 }
+    p1: { technical: 5, clarity: 5, soft_skills: 5 },
+    p2: { technical: 5, clarity: 5, soft_skills: 5 }
   });
-  
   const [notes, setNotes] = useState('');
   const [redFlags, setRedFlags] = useState([]);
-  
-  // Rules-Based Question Engine
-  const questions = [
-    { 
-      id: 'q1', 
-      type: 'Fundamental', 
-      text: 'Explain the difference between SQL and NoSQL databases. When would you use one over the other?',
-      tags: ['CS', 'Database'],
-      suggested_rubric: 'Score 8+ if they mention ACID properties vs Eventual Consistency.'
-    },
-    { 
-      id: 'q2', 
-      type: 'Architecture', 
-      text: 'How would you design a rate-limiting service for a high-traffic API?',
-      tags: ['CS', 'System Design'],
-      suggested_rubric: 'Look for Token Bucket or Leaky Bucket algorithms.'
-    },
-    { 
-      id: 'q3', 
-      type: 'Integrity', 
-      text: 'Have you ever had to choose between code quality and a deadline? How did you handle it?',
-      tags: ['Behavioral'],
-      suggested_rubric: 'Value honesty and trade-off analysis over "I never compromise quality".'
-    }
-  ];
+  const [greenFlags, setGreenFlags] = useState([]);
+  const [showReport, setShowReport] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Timers Logic
+  // ━━━ FETCH DATA ━━━
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [candRes, qRes] = await Promise.all([
+          api.get(`/candidates/${id || '0eef202c-d9f2-4d68-b2e5-9592848ec751'}`), // Fallback for dev
+          api.get('/candidates/questions')
+        ]);
+        setCandidate(candRes.data);
+        setQuestions(qRes.data);
+        setIsLoading(false);
+      } catch (err) {
+        addToast('Error loading interview data', 'error');
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [id, addToast]);
+
+  // ━━━ TIMERS ━━━
   useEffect(() => {
     let interval;
-    if (!isPaused) {
+    if (!isPaused && !showReport) {
       interval = setInterval(() => {
         setTotalTime(t => t + 1);
         setQuestionTime(t => t + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, showReport]);
 
   const formatTime = (s) => {
     const mins = Math.floor(s / 60);
@@ -79,230 +78,493 @@ const InterviewPanel = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // ━━━ LOGIC ━━━
+  const filteredQuestions = questions.filter(q => q.category === activeCategory);
+  const currentQuestion = filteredQuestions[currentQuestionIdx] || { text: 'No questions available for this category.', rubric: 'N/A' };
+
   const handleNext = () => {
-    if (currentQuestionIdx < questions.length - 1) {
+    if (currentQuestionIdx < filteredQuestions.length - 1) {
       setCurrentQuestionIdx(prev => prev + 1);
       setQuestionTime(0);
     } else {
-      handleFinish();
+      addToast('End of current track.', 'info');
     }
+  };
+
+  const toggleFlag = (type, flag) => {
+    if (type === 'red') {
+      setRedFlags(prev => prev.includes(flag) ? prev.filter(f => f !== flag) : [...prev, flag]);
+    } else {
+      setGreenFlags(prev => prev.includes(flag) ? prev.filter(f => f !== flag) : [...prev, flag]);
+    }
+  };
+
+  const calculateOverall = () => {
+    const p1Avg = (scores.p1.technical + scores.p1.clarity + scores.p1.soft_skills) / 3;
+    const p2Avg = (scores.p2.technical + scores.p2.clarity + scores.p2.soft_skills) / 3;
+    return ((p1Avg + p2Avg) / 2).toFixed(1);
   };
 
   const handleFinish = async () => {
     try {
-      addToast('✅ Syncing Panel Scores...', 'success');
-      // Simulate Non-Destructive Merge Save
+      addToast('📡 Syncing Panel Report...', 'ai');
       await api.post(`/candidates/${candidate.id}/interview-sync`, {
         scores,
         notes,
         red_flags: redFlags,
-        duration: totalTime
+        green_flags: greenFlags,
+        duration: totalTime,
+        report_status: 'Ready'
       });
-      addToast('🎉 Interview Finalized & Persisted', 'success');
+      setShowReport(true);
+      addToast('✅ Report Stored Successfully', 'success');
     } catch (err) {
-      addToast('❌ Persistence Error — Local Storage Fallback Active', 'error');
+      addToast('Error syncing report', 'error');
     }
   };
 
-  const toggleRedFlag = (tag) => {
-    setRedFlags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
-  };
+  if (isLoading) return <div className="h-full flex items-center justify-center bg-slate-950 text-white">Loading Command Center...</div>;
 
   return (
-    <div className="p-8 h-full flex flex-col bg-slate-950 overflow-hidden text-white font-sans">
+    <div className="h-full flex flex-col bg-[#0F1115] text-[#E2E8F0] font-sans selection:bg-[#FF6B00]/30">
       
-      {/* ━━━ TOP COMMAND BAR ━━━ */}
-      <div className="flex justify-between items-center mb-8">
+      {/* ━━━ GLOBAL HEADER ━━━ */}
+      <header className="px-8 py-5 border-b border-white/5 flex justify-between items-center bg-[#16191F]/50 backdrop-blur-xl">
         <div className="flex items-center space-x-6">
-          <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-[#FF6B00]/10 border border-[#FF6B00]/30 flex items-center justify-center text-[#FF6B00] shadow-[0_0_20px_rgba(255,107,0,0.2)]">
-              <Users size={32} />
+          <button onClick={() => navigate(-1)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+            <ArrowLeft size={20} className="text-slate-400" />
+          </button>
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF6B00] to-[#FF8C42] flex items-center justify-center shadow-[0_8px_20px_rgba(255,107,0,0.25)]">
+              <Users size={24} className="text-[#0F1115]" />
             </div>
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-950"></div>
-          </div>
-          <div>
-            <h1 className="text-2xl font-black tracking-tight">{candidate.name}</h1>
-            <div className="flex items-center space-x-2 text-slate-400 text-sm font-bold uppercase tracking-wider">
-              <span>{candidate.role}</span>
-              <span className="text-slate-700">•</span>
-              <span className="text-[#FF6B00]">{candidate.department}</span>
+            <div>
+              <h1 className="text-xl font-black tracking-tight flex items-center">
+                {candidate.full_name} 
+                <Badge className="ml-3 bg-[#FF6B00]/10 text-[#FF6B00] border-none text-[10px] py-0.5">ID: {candidate.id.slice(0,8)}</Badge>
+              </h1>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{candidate.current_role} • {candidate.location}</p>
             </div>
           </div>
         </div>
 
-        <div className="flex space-x-4">
-          <div className="bg-white/5 border border-white/10 rounded-xl px-6 py-3 flex items-center space-x-4">
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] font-black text-slate-500 uppercase">Total Time</span>
-              <span className="text-xl font-mono font-bold text-white tracking-widest">{formatTime(totalTime)}</span>
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center bg-black/40 border border-white/10 rounded-2xl px-5 py-2.5 space-x-6">
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-slate-500 uppercase">Elapsed Total</span>
+              <span className="text-lg font-mono font-bold text-white leading-none">{formatTime(totalTime)}</span>
             </div>
-            <div className="w-[1px] h-8 bg-white/10"></div>
-            <div className="flex flex-col items-center">
-              <span className="text-[10px] font-black text-[#FF6B00] uppercase">Question Time</span>
-              <span className="text-xl font-mono font-bold text-[#FF6B00] tracking-widest">{formatTime(questionTime)}</span>
+            <div className="w-[1px] h-6 bg-white/10"></div>
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-[#FF6B00] uppercase">Question Counter</span>
+              <span className="text-lg font-mono font-bold text-[#FF6B00] leading-none">{formatTime(questionTime)}</span>
             </div>
           </div>
-          <OrangeButton onClick={() => setIsPaused(!isPaused)} variant="outline" className="px-6 border-white/10 text-white">
-            {isPaused ? <Zap size={18} className="mr-2" /> : <Timer size={18} className="mr-2" />}
-            {isPaused ? 'RESUME' : 'PAUSE'}
+          <div className="flex space-x-2">
+             <button onClick={() => setIsPaused(!isPaused)} className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+                {isPaused ? <Play size={20} /> : <Pause size={20} />}
+             </button>
+             <button onClick={() => { setTotalTime(0); setQuestionTime(0); }} className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+                <RotateCw size={20} />
+             </button>
+          </div>
+          <OrangeButton onClick={handleFinish} className="px-8 py-3.5 rounded-2xl font-black shadow-[0_8px_32px_rgba(255,107,0,0.3)]">
+            GENERATE REPORT
           </OrangeButton>
         </div>
-      </div>
+      </header>
 
-      {/* ━━━ MAIN WORKSPACE ━━━ */}
-      <div className="flex flex-1 space-x-8 overflow-hidden">
+      <div className="flex-1 flex overflow-hidden">
         
-        {/* LEFT: Question Engine */}
-        <div className="flex-1 flex flex-col space-y-6">
-          <GlassCard className="flex-1 p-8 relative overflow-hidden flex flex-col border-white/5">
-            <div className="absolute top-0 right-0 p-8">
-              <Badge className="bg-slate-800 text-slate-400 border-none font-black px-3 py-1">QUESTION {currentQuestionIdx + 1} OF {questions.length}</Badge>
-            </div>
-            
-            <div className="mb-6 flex items-center space-x-3">
-              <div className="p-2 bg-[#FF6B00] rounded-lg text-slate-950">
-                <Shield size={20} />
-              </div>
-              <span className="text-sm font-black text-[#FF6B00] uppercase tracking-widest">{questions[currentQuestionIdx].type} ENGINE</span>
-            </div>
-
-            <h2 className="text-3xl font-bold leading-tight mb-10 text-slate-100 italic">
-              "{questions[currentQuestionIdx].text}"
-            </h2>
-
-            <div className="mt-auto">
-              <div className="bg-[#FF6B00]/5 border border-[#FF6B00]/20 rounded-2xl p-6 mb-8">
-                <span className="text-[10px] font-black text-[#FF6B00] uppercase block mb-2">SCORING RUBRIC REFERENCE</span>
-                <p className="text-slate-300 text-sm leading-relaxed">{questions[currentQuestionIdx].suggested_rubric}</p>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <div className="flex space-x-2">
-                  {questions[currentQuestionIdx].tags.map(t => (
-                    <span key={t} className="px-3 py-1 bg-slate-900 border border-white/5 rounded-full text-[10px] font-bold text-slate-400">{t}</span>
-                  ))}
-                </div>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => setCurrentQuestionIdx(Math.max(0, currentQuestionIdx - 1))}
-                    className="p-4 bg-slate-900 border border-white/5 rounded-2xl text-slate-400 hover:text-white transition-all"
-                  >
-                    <ChevronLeft size={24} />
-                  </button>
-                  <button 
-                    onClick={handleNext}
-                    className="px-10 py-4 bg-[#FF6B00] text-slate-950 rounded-2xl font-black flex items-center shadow-[0_4px_20px_rgba(255,107,0,0.4)] hover:scale-[1.02] transition-all active:scale-[0.98]"
-                  >
-                    NEXT QUESTION <ChevronRight size={20} className="ml-2" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </GlassCard>
-
-          {/* NOTES AREA */}
-          <div className="h-48 relative">
-            <textarea 
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Live observations & Technical proofs..."
-              className="w-full h-full bg-slate-900/50 border border-white/5 rounded-2xl p-6 text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#FF6B00]/30 transition-all resize-none shadow-inner"
-            ></textarea>
-            <div className="absolute top-4 right-4 text-[10px] font-black text-slate-700 tracking-widest uppercase">AUTO-SYNC ACTIVE</div>
-          </div>
-        </div>
-
-        {/* RIGHT: Scoring & Panel Sync */}
-        <div className="w-96 space-y-6">
+        {/* ━━━ LEFT SIDEBAR: CANDIDATE INTEL (A-Z Info) ━━━ */}
+        <aside className="w-80 border-r border-white/5 bg-[#16191F]/30 p-6 overflow-y-auto custom-scrollbar">
+          <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center">
+            <Info size={14} className="mr-2" /> Candidate Dossier
+          </h3>
           
-          {/* PANELIST SYNC CONTROL */}
-          <GlassCard className="p-6 border-white/5">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-black text-xs uppercase tracking-widest text-slate-400 flex items-center">
-                <Activity size={14} className="mr-2 text-[#FF6B00]" /> 
-                Live Panel Sync
-              </h3>
-              <div className="flex -space-x-2">
-                <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-950 flex items-center justify-center text-[10px] font-bold">P1</div>
-                <div className="w-8 h-8 rounded-full bg-slate-800 border-2 border-slate-950 flex items-center justify-center text-[10px] font-bold">P2</div>
-              </div>
-            </div>
+          <div className="space-y-8">
+            <section>
+              <h4 className="text-[11px] font-bold text-[#FF6B00] mb-3 flex items-center">
+                <Briefcase size={12} className="mr-2" /> PROFESSIONAL SUMMARY
+              </h4>
+              <p className="text-sm text-slate-400 leading-relaxed italic border-l-2 border-slate-800 pl-4 py-1">
+                "{candidate.summary || 'No summary provided.'}"
+              </p>
+            </section>
 
-            <div className="space-y-6">
-              {['technical', 'clarity', 'soft_skills'].map(skill => (
-                <div key={skill}>
-                  <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase mb-3">
-                    <span>{skill.replace('_', ' ')}</span>
-                    <span className="text-[#FF6B00]">P1: {scores.p1[skill]} | P2: {scores.p2[skill]}</span>
+            <section>
+              <h4 className="text-[11px] font-bold text-[#FF6B00] mb-3 flex items-center">
+                <Award size={12} className="mr-2" /> TECH STACK & SKILLS
+              </h4>
+              <div className="flex flex-wrap gap-1.5">
+                {(candidate.skills || []).map(s => (
+                  <span key={s} className="px-2.5 py-1 bg-white/5 border border-white/5 rounded-lg text-[10px] font-semibold text-slate-300">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h4 className="text-[11px] font-bold text-[#FF6B00] mb-3 flex items-center">
+                <Clock size={12} className="mr-2" /> EXPERIENCE & RADAR
+              </h4>
+              <div className="bg-[#1A1D24] rounded-xl p-4 border border-white/5">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-xs font-bold">Overall Fit</span>
+                  <span className="text-[#FF6B00] font-black">{candidate.overall_score || 0}%</span>
+                </div>
+                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#FF6B00]" style={{ width: `${candidate.overall_score || 0}%` }}></div>
+                </div>
+                <p className="mt-3 text-[10px] text-slate-500">
+                  {candidate.years_of_experience} years in software engineering. Current role: {candidate.current_role}.
+                </p>
+              </div>
+            </section>
+
+            <section>
+              <h4 className="text-[11px] font-bold text-[#FF6B00] mb-3 flex items-center">
+                <GraduationCap size={12} className="mr-2" /> EDUCATION
+              </h4>
+              <div className="space-y-3">
+                 {[1, 2].map(i => (
+                   <div key={i} className="relative pl-4 border-l border-white/10">
+                      <div className="text-xs font-bold">Computer Science, B.S.</div>
+                      <div className="text-[10px] text-slate-500 uppercase tracking-tighter">Stanford University • 2020</div>
+                   </div>
+                 ))}
+              </div>
+            </section>
+          </div>
+        </aside>
+
+        {/* ━━━ MAIN WORKSPACE ━━━ */}
+        <main className="flex-1 flex flex-col p-8 space-y-8 overflow-y-auto custom-scrollbar">
+          
+          <AnimatePresence mode="wait">
+            {!showReport ? (
+              <motion.div 
+                key="interview"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-8"
+              >
+                {/* QUESTION ENGINE */}
+                <div className="space-y-6">
+                  <div className="flex space-x-2">
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => { setActiveCategory(cat); setCurrentQuestionIdx(0); }}
+                        className={`px-5 py-2.5 rounded-xl text-[11px] font-black tracking-widest transition-all ${
+                          activeCategory === cat 
+                            ? 'bg-[#FF6B00] text-[#0F1115] shadow-[0_4px_15px_rgba(255,107,0,0.3)]' 
+                            : 'bg-[#16191F] text-slate-500 hover:text-slate-300'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
                   </div>
-                  <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden">
-                    {/* Panel 1 Bar */}
-                    <div 
-                      className="absolute left-0 top-0 h-full bg-[#FF6B00] rounded-full z-10" 
-                      style={{ width: `${scores.p1[skill] * 10}%` }}
-                    ></div>
-                    {/* Panel 2 Transparent Overlay for comparison */}
-                    <div 
-                      className="absolute left-0 top-0 h-full bg-blue-500/30 rounded-full z-0 border-r border-blue-400" 
-                      style={{ width: `${scores.p2[skill] * 10}%` }}
-                    ></div>
+
+                  <GlassCard className="p-10 border-white/5 bg-[#16191F]/40 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Shield size={120} className="text-[#FF6B00]" />
+                    </div>
+                    
+                    <div className="flex items-center space-x-3 mb-8">
+                       <Badge className="bg-[#FF6B00]/10 text-[#FF6B00] border-none font-black px-4 py-1.5 uppercase tracking-widest">
+                         {currentQuestion.topic || 'General'}
+                       </Badge>
+                       <span className="text-xs font-bold text-slate-600">Question {currentQuestionIdx + 1} of {filteredQuestions.length || 0}</span>
+                    </div>
+
+                    <h2 className="text-4xl font-black leading-[1.2] text-white tracking-tight italic mb-12 max-w-4xl">
+                      "{currentQuestion.text}"
+                    </h2>
+
+                    <div className="bg-black/30 border border-white/5 rounded-2xl p-6 flex flex-col space-y-3 mb-10">
+                      <span className="text-[10px] font-black text-[#FF6B00] uppercase tracking-widest">Panel Scoring Rubric</span>
+                      <p className="text-sm text-slate-400 leading-relaxed font-medium">
+                        {currentQuestion.rubric}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <div className="flex space-x-4">
+                        <button 
+                          onClick={() => setCurrentQuestionIdx(Math.max(0, currentQuestionIdx - 1))}
+                          className="w-14 h-14 bg-[#1A1D24] border border-white/10 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white hover:border-[#FF6B00]/50 transition-all"
+                        >
+                          <ChevronLeft size={28} />
+                        </button>
+                        <button 
+                          onClick={handleNext}
+                          className="px-12 h-14 bg-[#FF6B00] text-[#0F1115] rounded-2xl font-black flex items-center shadow-[0_8px_32px_rgba(255,107,0,0.4)] hover:scale-[1.03] transition-all active:scale-[0.97]"
+                        >
+                          CONTINUE TRACK <ChevronRight size={22} className="ml-2" />
+                        </button>
+                      </div>
+                      
+                      <div className="flex space-x-6">
+                        <div className="text-center">
+                          <div className="text-[9px] font-black text-slate-600 uppercase mb-2">Technical Rigor</div>
+                          <div className="flex space-x-1">
+                            {[1, 2, 3, 4, 5].map(i => (
+                              <div key={i} className={`w-6 h-1 rounded-full ${i <= 4 ? 'bg-[#FF6B00]' : 'bg-slate-800'}`}></div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-[9px] font-black text-slate-600 uppercase mb-2">Clarity level</div>
+                          <div className="flex space-x-1">
+                            {[1, 2, 3, 4, 5].map(i => (
+                              <div key={i} className={`w-6 h-1 rounded-full ${i <= 3 ? 'bg-blue-500' : 'bg-slate-800'}`}></div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </GlassCard>
+                </div>
+
+                {/* LIVE NOTES & INPUT */}
+                <div className="grid grid-cols-3 gap-8 h-64">
+                   <div className="col-span-2 relative">
+                      <textarea 
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        placeholder="Type live panel observations, code architecture reviews, and follow-up answers..."
+                        className="w-full h-full bg-[#16191F] border border-white/5 rounded-3xl p-8 text-slate-300 placeholder-slate-700 focus:outline-none focus:border-[#FF6B00]/40 transition-all resize-none font-medium leading-relaxed"
+                      ></textarea>
+                      <div className="absolute bottom-6 right-8 flex items-center space-x-2">
+                        <span className="w-2 h-2 bg-[#FF6B00] rounded-full animate-pulse"></span>
+                        <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Panel Sync Active</span>
+                      </div>
+                   </div>
+                   
+                   <div className="space-y-4">
+                      <div className="bg-[#16191F] border border-white/5 rounded-3xl p-6 h-full flex flex-col">
+                        <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-6 border-b border-white/5 pb-2">Topic Flow Notes</h3>
+                        <div className="flex-1 space-y-4 overflow-y-auto custom-scrollbar text-xs">
+                          <div className="flex items-start space-x-3 opacity-50">
+                            <CheckCircle2 size={14} className="text-green-500 mt-0.5" />
+                            <p>Explained Time Complexity accurately for HashMaps.</p>
+                          </div>
+                          <div className="flex items-start space-x-3">
+                            <Activity size={14} className="text-[#FF6B00] mt-0.5" />
+                            <p>Currently deep-diving into Networking DNS lifecycle.</p>
+                          </div>
+                          <div className="flex items-start space-x-3 opacity-30 italic">
+                            <Clock size={14} className="text-slate-600 mt-0.5" />
+                            <p>Next: Behavioral Integrity track scheduled.</p>
+                          </div>
+                        </div>
+                      </div>
+                   </div>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="report"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="max-w-4xl mx-auto w-full bg-[#16191F] border border-[#FF6B00]/20 rounded-[3rem] p-16 relative overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+              >
+                <div className="absolute top-0 right-0 p-16 opacity-5">
+                   <FileText size={200} className="text-[#FF6B00]" />
+                </div>
+
+                <div className="flex justify-between items-start mb-16">
+                  <div>
+                    <Badge className="bg-[#FF6B00] text-[#0F1115] border-none font-black px-4 py-1 mb-4">INTERVIEW REPORT READY</Badge>
+                    <h1 className="text-5xl font-black tracking-tight">{candidate.full_name}</h1>
+                    <p className="text-slate-500 font-bold uppercase tracking-widest mt-2">Executive Summary & High-Stakes Evaluation</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-7xl font-black text-[#FF6B00] tabular-nums italic">{calculateOverall()}</div>
+                    <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Aggregate Score</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-16 mb-16">
+                   <div className="space-y-8">
+                      <div>
+                        <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                          <CheckCircle2 size={16} className="text-emerald-500 mr-2" /> GREEN FLAGS (Strengths)
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                           {greenFlags.map(f => <span key={f} className="px-4 py-2 bg-emerald-500/10 text-emerald-500 rounded-xl text-[10px] font-black border border-emerald-500/20">{f.toUpperCase()}</span>)}
+                           {greenFlags.length === 0 && <span className="text-slate-600 text-sm italic">No specific green flags flagged.</span>}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                          <XCircle size={16} className="text-red-500 mr-2" /> RED FLAGS (Concerns)
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                           {redFlags.map(f => <span key={f} className="px-4 py-2 bg-red-500/10 text-red-500 rounded-xl text-[10px] font-black border border-red-500/20">{f.toUpperCase()}</span>)}
+                           {redFlags.length === 0 && <span className="text-green-500/40 text-sm italic">Clean session — no red flags detected.</span>}
+                        </div>
+                      </div>
+                   </div>
+                   
+                   <div className="bg-black/20 rounded-[2rem] p-10 border border-white/5">
+                      <h3 className="text-xs font-black text-[#FF6B00] uppercase tracking-widest mb-6">Panel Alignment</h3>
+                      <div className="space-y-8">
+                         {['Technical', 'Clarity', 'Soft Skills'].map(skill => (
+                           <div key={skill}>
+                             <div className="flex justify-between text-[10px] font-black text-slate-500 uppercase mb-3">
+                               <span>{skill}</span>
+                               <span className="text-white">P1: {scores.p1[skill.toLowerCase().replace(' ', '_')]} | P2: {scores.p2[skill.toLowerCase().replace(' ', '_')]}</span>
+                             </div>
+                             <div className="h-1.5 bg-white/5 rounded-full overflow-hidden flex">
+                               <div className="h-full bg-slate-400" style={{ width: `${scores.p1[skill.toLowerCase().replace(' ', '_')] * 10}%` }}></div>
+                               <div className="h-full bg-[#FF6B00]" style={{ width: `${scores.p2[skill.toLowerCase().replace(' ', '_')] * 10}%` }}></div>
+                             </div>
+                           </div>
+                         ))}
+                      </div>
+                   </div>
+                </div>
+
+                <div className="space-y-6 mb-16">
+                  <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Final Panel Remarks</h3>
+                  <div className="text-slate-300 text-lg leading-relaxed font-medium bg-white/5 p-8 rounded-3xl italic">
+                    "{notes || 'No final remarks provided.'}"
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                   <OrangeButton className="flex-1 py-6 rounded-3xl font-black text-lg">
+                      <Download size={24} className="mr-3" /> EXPORT FULL SCORECARD (PDF)
+                   </OrangeButton>
+                   <button 
+                     onClick={() => setShowReport(false)}
+                     className="px-10 py-6 bg-white/5 border border-white/10 rounded-3xl font-black text-slate-400 hover:text-white transition-all uppercase text-sm tracking-widest"
+                   >
+                     CLOSE & PERSIST
+                   </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </main>
+
+        {/* ━━━ RIGHT SIDEBAR: LIVE SCORING & FLAGS ━━━ */}
+        {!showReport && (
+          <aside className="w-96 border-l border-white/5 bg-[#16191F]/30 p-8 flex flex-col space-y-8 overflow-y-auto custom-scrollbar">
+            
+            {/* PANEL SYNC */}
+            <section className="space-y-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Live Multi-Panel Scores</h3>
+                <div className="flex -space-x-3">
+                   <div className="w-10 h-10 rounded-full bg-[#1A1D24] border-2 border-[#0F1115] flex items-center justify-center text-[10px] font-black text-slate-300 shadow-xl">P1</div>
+                   <div className="w-10 h-10 rounded-full bg-[#FF6B00] border-2 border-[#0F1115] flex items-center justify-center text-[10px] font-black text-[#0F1115] shadow-xl">P2</div>
+                </div>
+              </div>
+
+              {Object.keys(scores.p1).map(skill => (
+                <div key={skill} className="bg-black/20 p-5 rounded-2xl border border-white/5">
+                  <div className="flex justify-between text-[11px] font-black uppercase mb-4">
+                    <span className="text-slate-400">{skill.replace('_', ' ')}</span>
+                    <span className="text-[#FF6B00]">{scores.p1[skill]} / 10</span>
                   </div>
                   <input 
                     type="range" min="0" max="10" 
                     value={scores.p1[skill]}
                     onChange={(e) => setScores(v => ({...v, p1: {...v.p1, [skill]: parseInt(e.target.value)}}))}
-                    className="w-full mt-2 accent-[#FF6B00] bg-transparent cursor-pointer"
+                    className="w-full h-8 accent-[#FF6B00] bg-transparent cursor-pointer appearance-none"
                   />
+                  <div className="flex justify-between mt-2">
+                    <span className="text-[8px] font-black text-slate-700">LOW</span>
+                    <span className="text-[8px] font-black text-slate-700">EXCEPTIONAL</span>
+                  </div>
                 </div>
               ))}
+            </section>
+
+            {/* TAGGING ENGINE */}
+            <div className="grid grid-cols-1 gap-6">
+                <section>
+                  <h3 className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-4 flex items-center">
+                    <Flag size={14} className="mr-2" /> RED FLAGS
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['Evasive', 'Integrity', 'No Depth', 'Arrogant', 'Over-Engineered'].map(flag => (
+                      <button
+                        key={flag}
+                        onClick={() => toggleFlag('red', flag)}
+                        className={`px-4 py-2.5 rounded-xl text-[10px] font-black border transition-all ${
+                          redFlags.includes(flag) 
+                            ? 'bg-red-500 text-white border-red-400 shadow-[0_4px_15px_rgba(239,68,68,0.3)]' 
+                            : 'bg-[#1A1D24] text-red-500/50 border-white/5 hover:border-red-500/20'
+                        }`}
+                      >
+                        {flag.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-4 flex items-center">
+                    <Zap size={14} className="mr-2" /> GREEN FLAGS
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {['First Principles', 'System-Level', 'Humble', 'Fast Solver', 'Passionate'].map(flag => (
+                      <button
+                        key={flag}
+                        onClick={() => toggleFlag('green', flag)}
+                        className={`px-4 py-2.5 rounded-xl text-[10px] font-black border transition-all ${
+                          greenFlags.includes(flag) 
+                            ? 'bg-emerald-500 text-white border-emerald-400 shadow-[0_4px_15px_rgba(16,185,129,0.3)]' 
+                            : 'bg-[#1A1D24] text-emerald-500/50 border-white/5 hover:border-emerald-500/20'
+                        }`}
+                      >
+                        {flag.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </section>
             </div>
-          </GlassCard>
-
-          {/* RED FLAG MODULE */}
-          <GlassCard className="p-6 border-red-500/10 bg-gradient-to-br from-red-500/5 to-transparent">
-            <h3 className="font-black text-xs uppercase tracking-widest text-red-500 mb-4 flex items-center">
-              <Flag size={14} className="mr-2" /> Red Flag Tagging
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              {['Integrity', 'Rudeness', 'Communication', 'Technical Gap', 'Evasive'].map(flag => (
-                <button
-                  key={flag}
-                  onClick={() => toggleRedFlag(flag)}
-                  className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all border ${
-                    redFlags.includes(flag) 
-                      ? 'bg-red-500 text-white border-red-400' 
-                      : 'bg-slate-900 text-red-500/50 border-white/5 hover:border-red-500/30'
-                  }`}
-                >
-                  {flag.toUpperCase()}
-                </button>
-              ))}
+            
+            <div className="mt-auto">
+               <div className="bg-[#FF6B00]/10 border border-[#FF6B00]/20 rounded-2xl p-6 text-center">
+                  <span className="text-[9px] font-black text-[#FF6B00] uppercase block mb-1">AGGREGATE INTENSITY</span>
+                  <div className="text-4xl font-black italic tabular-nums">{calculateOverall()}</div>
+               </div>
             </div>
-          </GlassCard>
-
-          <OrangeButton 
-            onClick={handleFinish}
-            className="w-full py-6 rounded-2xl font-black text-lg shadow-[0_10px_30px_rgba(255,107,0,0.3)]"
-          >
-            FINISH INTERVIEW
-          </OrangeButton>
-        </div>
-
+          </aside>
+        )}
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .glass-panel {
-          background: rgba(15, 23, 42, 0.7);
-          backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+        input[type=range] {
+          -webkit-appearance: none;
+        }
+        input[type=range]:focus {
+          outline: none;
         }
         input[type=range]::-webkit-slider-runnable-track {
+          width: 100%;
+          height: 4px;
+          cursor: pointer;
           background: rgba(255, 255, 255, 0.05);
           border-radius: 10px;
-          height: 6px;
         }
         input[type=range]::-webkit-slider-thumb {
-          margin-top: -6px;
+          height: 18px;
+          width: 18px;
+          border-radius: 6px;
+          background: #FF6B00;
+          cursor: pointer;
+          -webkit-appearance: none;
+          margin-top: -7px;
+          box-shadow: 0 4px 10px rgba(255, 107, 0, 0.4);
         }
       `}} />
     </div>

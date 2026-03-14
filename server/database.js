@@ -13,7 +13,8 @@ function getDefaultData() {
     company_profile: {},
     offer_letters: [],
     email_logs: [],
-    candidate_embeddings: []
+    candidate_embeddings: [],
+    questions: []
   };
 }
 

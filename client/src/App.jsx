@@ -55,7 +55,7 @@ const AppContent = () => {
             <Route path="/sources" element={<Sources />} />
             <Route path="/duplicates" element={<Duplicates />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/interview" element={<InterviewPanel />} />
+            <Route path="/interview/:id" element={<InterviewPanel />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

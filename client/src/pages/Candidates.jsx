@@ -200,6 +200,12 @@ const CandidateModal = ({ candidate, onClose, onOpenEmail }) => {
                 <FileText size={13} className="mr-1.5" /> Offer Letter
               </button>
               <button
+                onClick={() => navigate(`/interview/${candidate.id}`)}
+                className="glass-panel bg-[#FF6B00]/10 text-[#FF6B00] border-[#FF6B00]/30 text-xs font-black hover:bg-[#FF6B00]/20 py-2.5 rounded-xl transition-all flex items-center justify-center animate-pulse"
+              >
+                <Zap size={13} className="mr-1.5 fill-[#FF6B00]" /> Live Interview
+              </button>
+              <button
                 onClick={() => window.open(`/api/v1/candidates/${candidate.id}/resume`, '_blank')}
                 className="glass-panel text-gray-900 text-xs font-semibold hover:bg-white/10 py-2.5 rounded-xl transition-all flex items-center justify-center"
               >

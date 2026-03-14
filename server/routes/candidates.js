@@ -1169,7 +1169,9 @@ router.post('/:id/interview-sync', (req, res) => {
     },
     notes: `${existingFeedback?.notes || ''}\n[Interview ${new Date().toLocaleDateString()}]: ${notes}`,
     red_flags: [...new Set([...(existingFeedback?.red_flags || []), ...(red_flags || [])])],
+    green_flags: [...new Set([...(existingFeedback?.green_flags || []), ...(green_flags || [])])],
     duration,
+    report_status: req.body.report_status || 'In Progress',
     updated_at: new Date().toISOString()
   };
 
@@ -1191,6 +1193,12 @@ router.post('/:id/interview-sync', (req, res) => {
 
   db.save();
   res.json({ success: true, feedback: newFeedback });
+});
+
+// ━━━ QUESTIONS ━━━
+router.get('/questions', (req, res) => {
+  const db = getDb();
+  res.json(db.data.questions || []);
 });
 
 module.exports = router;
