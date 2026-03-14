@@ -521,22 +521,23 @@ const Candidates = () => {
     { value: 'custom',          label: '✏️ Custom' },
   ];
 
+  // Opens Gmail directly with To + Subject pre-filled, body left blank for user to write
   const handleOpenEmailModal = async (candidate) => {
-    setEmailCandidate(candidate);
-    setEmailType('offer');
-    setEmailSubject('');
-    setEmailBody('');
-    setEmailTemplates(null);
-    setIsEmailModalOpen(true);
+    if (!candidate?.email) {
+      addToast('No email address on file for this candidate', 'error');
+      return;
+    }
+    // Fetch the offer template for a default subject, then open Gmail immediately
+    let subject = `Regarding your application — ${candidate.role || 'Open Position'}`;
     try {
       const res = await api.get(`/candidates/${candidate.id}/email-templates`);
-      const templates = res.data.data;
-      setEmailTemplates(templates);
-      setEmailSubject(templates.offer.subject);
-      setEmailBody(templates.offer.body);
-    } catch (err) {
-      addToast('Failed to load email templates', 'error');
-    }
+      subject = res.data.data?.offer?.subject || subject;
+    } catch (_) { /* use fallback subject */ }
+    const gmailUrl =
+      `https://mail.google.com/mail/?view=cm&fs=1` +
+      `&to=${encodeURIComponent(candidate.email)}` +
+      `&su=${encodeURIComponent(subject)}`;
+    window.open(gmailUrl, '_blank');
   };
 
   const handleEmailTypeChange = (type) => {
